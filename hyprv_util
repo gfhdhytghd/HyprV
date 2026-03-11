@@ -1,11 +1,9 @@
 #!/bin/bash
 
 get_theme() {
-    # Check which waybar theme is set
-    THEMEIS=$(readlink -f ~/.config/waybar/style.css | cut -d '-' -f3)
+    THEMEIS=$(~/.config/HyprV/quickshell/scripts/ui-state.sh get-theme)
 
-    #if the theme is not dark then we need to switch to it
-    if [[ $THEMEIS == "dark.css" ]]; then
+    if [[ $THEMEIS == "dark" ]]; then
         SWITCHTO="-dark"
         MODESTR="Dark"
     else
@@ -15,7 +13,7 @@ get_theme() {
 }
 
 get_ver() {
-    VER=$(readlink -f ~/.config/waybar/config.jsonc | cut -d '-' -f1 | cut -d '/' -f8)
+    VER=$(~/.config/HyprV/quickshell/scripts/ui-state.sh get-variant)
 }
 
 set_current_background() {
@@ -23,7 +21,7 @@ set_current_background() {
     get_ver
     
     #set the current background
-    if [[ $THEMEIS == "dark.css" ]]; then
+    if [[ $THEMEIS == "dark" ]]; then
         swww img ~/.config/HyprV/backgrounds/$VER'-background-dark.jpg' --transition-fps 60 --transition-type wipe --transition-duration 4
     else
         swww img ~/.config/HyprV/backgrounds/$VER'-background.jpg' --transition-fps 60 --transition-type wipe --transition-duration 4
@@ -35,39 +33,21 @@ switch_version() {
     get_ver
     case $VER in
         v1)
-            #we are on v1 so switch to v2
-            VERTO="v2-"
-            notify-send -h string:x-canonical-private-synchronous:sys-notify -u low "switching to HyprV2"
+            VERTO="v2"
         ;;
         
         v2)
-            #we are on v2 so switch to v3
-            VERTO="v3-"
-            notify-send -h string:x-canonical-private-synchronous:sys-notify -u low "switching to HyprV3"
+            VERTO="v3"
         ;;
 
         v3)
-            #we are on v3 so switch to v1
-            VERTO="v1-"
-            notify-send -h string:x-canonical-private-synchronous:sys-notify -u low "switching to HyprV1"
+            VERTO="v1"
+        ;;
+        bt)
+            VERTO="v3"
         ;;
     esac
-    #set the waybar config
-    ln -sf ~/.config/HyprV/waybar/conf/$VERTO'config.jsonc' ~/.config/waybar/config.jsonc
-    #set the waybar theme
-    ln -sf ~/.config/HyprV/waybar/style/$VERTO'style'$SWITCHTO.css ~/.config/waybar/style.css
-    #set the wofi theme
-    ln -sf ~/.config/HyprV/wofi/style/$VERTO'style'$SWITCHTO.css ~/.config/wofi/style.css
-
-    #set the background
-    swww img ~/.config/HyprV/backgrounds/$VERTO'background'$SWITCHTO.jpg --transition-fps 60 --transition-type wipe --transition-duration 2
-
-    #update the sddm image
-    cp -f ~/.config/HyprV/backgrounds/$VERTO'background'$SWITCHTO.jpg /usr/share/sddm/themes/sdt/wallpaper.jpg
-
-    #restart the waybr
-    pkill waybar
-    exec waybar
+    ~/.config/HyprV/quickshell/scripts/set-variant.sh "$VERTO"
 
 }
 

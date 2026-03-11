@@ -9,7 +9,6 @@ import Quickshell.Services.Pipewire
 import Quickshell.Services.SystemTray
 import Quickshell.Services.UPower
 import Quickshell.Wayland
-import Quickshell.Widgets
 
 ShellRoot {
     id: root
@@ -235,72 +234,6 @@ ShellRoot {
         .map(entry => entry.item);
     }
 
-    component PollCommand: Item {
-        id: poll
-
-        property var command: []
-        property int interval: 1000
-        property bool active: true
-        property string output: ""
-
-        signal updated(string output, int exitCode)
-
-        function refresh() {
-            if (!active || !command || command.length === 0 || proc.running) {
-                return;
-            }
-            proc.command = command;
-            proc.running = true;
-        }
-
-        Timer {
-            interval: poll.interval
-            repeat: true
-            running: poll.active
-            triggeredOnStart: true
-            onTriggered: poll.refresh()
-        }
-
-        Process {
-            id: proc
-
-            running: false
-            stdout: StdioCollector {
-                id: collector
-            }
-            stderr: StdioCollector {}
-
-            onExited: function(exitCode) {
-                const text = (collector.text || "").trim();
-                if (exitCode === 0) {
-                    poll.output = text;
-                }
-                poll.updated(text, exitCode);
-            }
-        }
-    }
-
-    component GroupPill: Rectangle {
-        id: pill
-
-        default property alias contentData: contentRow.data
-
-        radius: 10
-        color: root.moduleBackground
-        implicitWidth: contentRow.implicitWidth
-        implicitHeight: 37
-        width: implicitWidth
-        height: implicitHeight
-
-        Row {
-            id: contentRow
-
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 0
-        }
-    }
-
     component TextModule: Item {
         id: module
 
@@ -383,121 +316,6 @@ ShellRoot {
                     module.wheelDown();
                 }
             }
-        }
-    }
-
-    component TrayButton: Item {
-        id: trayButton
-
-        property var trayItem: null
-        property var parentWindow: null
-        property string iconSource: root.trayIconSource(trayItem)
-
-        implicitWidth: 18
-        implicitHeight: 37
-
-        IconImage {
-            id: trayIcon
-            anchors.verticalCenter: parent.verticalCenter
-            width: 18
-            height: 18
-            source: trayButton.iconSource
-            asynchronous: true
-            smooth: true
-            mipmap: true
-            visible: status === Image.Ready
-        }
-
-        Text {
-            anchors.centerIn: parent
-            visible: !trayIcon.visible
-            text: {
-                const id = trayButton.trayItem?.id || "";
-                return id ? id.charAt(0).toUpperCase() : "?";
-            }
-            color: root.primaryText
-            font.family: root.baseFont
-            font.pixelSize: 10
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-            cursorShape: Qt.PointingHandCursor
-
-            onClicked: function(mouse) {
-                if (!trayButton.trayItem) {
-                    return;
-                }
-                if (mouse.button === Qt.LeftButton) {
-                    if (!trayButton.trayItem.onlyMenu) {
-                        trayButton.trayItem.activate();
-                    } else if (trayButton.trayItem.hasMenu) {
-                        root.openTrayMenu(trayButton.trayItem, trayButton, trayButton.parentWindow);
-                    }
-                } else if (mouse.button === Qt.RightButton) {
-                    if (trayButton.trayItem.hasMenu) {
-                        root.openTrayMenu(trayButton.trayItem, trayButton, trayButton.parentWindow);
-                    } else if (typeof trayButton.trayItem.secondaryActivate === "function") {
-                        trayButton.trayItem.secondaryActivate();
-                    }
-                }
-            }
-
-            onWheel: function(wheel) {
-                if (!trayButton.trayItem) {
-                    return;
-                }
-                const delta = wheel.angleDelta.y > 0 ? 1 : -1;
-                trayButton.trayItem.scroll(delta, false);
-            }
-        }
-    }
-
-    component BatteryInfoLine: Item {
-        id: infoLine
-
-        property string title: ""
-        property string value: ""
-        property color titleColor: withAlpha(root.primaryText, root.darkMode ? 0.72 : 0.68)
-        property color valueColor: root.primaryText
-        property real titleWidth: 118
-
-        width: parent ? parent.width : implicitWidth
-        implicitWidth: 296
-        implicitHeight: Math.max(titleText.implicitHeight, valueText.implicitHeight)
-
-        Text {
-            id: titleText
-
-            anchors.left: parent.left
-            anchors.top: parent.top
-            width: infoLine.titleWidth
-            text: infoLine.title
-            color: infoLine.titleColor
-            font.family: root.baseFont
-            font.pixelSize: 13
-            font.weight: Font.DemiBold
-            renderType: Text.NativeRendering
-            wrapMode: Text.WordWrap
-        }
-
-        Text {
-            id: valueText
-
-            anchors.top: parent.top
-            anchors.left: titleText.right
-            anchors.leftMargin: 12
-            anchors.right: parent.right
-            text: infoLine.value
-            color: infoLine.valueColor
-            font.family: root.baseFont
-            font.pixelSize: 13
-            font.weight: Font.Bold
-            horizontalAlignment: Text.AlignRight
-            renderType: Text.NativeRendering
-            wrapMode: Text.WordWrap
         }
     }
 
@@ -1303,6 +1121,7 @@ ShellRoot {
                     }
 
                     BatteryInfoLine {
+                        shellRoot: root
                         width: parent.width
                         title: "当前净功率"
                         value: root.batteryPowerDetailText
@@ -1310,12 +1129,14 @@ ShellRoot {
                     }
 
                     BatteryInfoLine {
+                        shellRoot: root
                         width: parent.width
                         title: "半小时平均功率"
                         value: root.batteryAveragePowerDetailText
                     }
 
                     BatteryInfoLine {
+                        shellRoot: root
                         width: parent.width
                         title: root.batteryEstimateTitle
                         value: root.batteryEstimateText
@@ -1912,10 +1733,10 @@ ShellRoot {
         id: themePoll
 
         interval: 2000
-        command: ["sh", "-lc", "readlink -f \"$HOME/.config/waybar/style.css\""]
+        command: [root.configDir + "/quickshell/scripts/ui-state.sh", "print"]
         onUpdated: function(output, exitCode) {
             if (exitCode === 0) {
-                root.darkMode = output.indexOf("-dark.css") >= 0;
+                root.darkMode = output.indexOf("theme=dark") >= 0;
             }
         }
     }
@@ -1950,7 +1771,7 @@ ShellRoot {
         id: powerProfilePoll
 
         interval: 3000
-        command: [root.configDir + "/waybar/scripts/power-profile.sh"]
+        command: [root.configDir + "/quickshell/scripts/power-profile.sh"]
         onUpdated: function(output, exitCode) {
             if (exitCode === 0 && output.length > 0) {
                 root.powerProfileText = output;
@@ -1997,7 +1818,7 @@ ShellRoot {
             screen: modelData
 
             WlrLayershell.layer: WlrLayer.Top
-            WlrLayershell.namespace: "hyprv-v2-quickshell"
+            WlrLayershell.namespace: "hyprv-quickshell"
 
             anchors.top: true
             anchors.left: true
@@ -2023,6 +1844,7 @@ ShellRoot {
                     spacing: 9.5
 
                     GroupPill {
+                        shellRoot: root
                         TextModule {
                             label: ""
                             textColor: root.launchColor
@@ -2072,6 +1894,7 @@ ShellRoot {
                     }
 
                     GroupPill {
+                        shellRoot: root
                         TextModule {
                             label: " " + Math.round(root.cpuUsage) + "%"
                             interactive: true
@@ -2099,6 +1922,7 @@ ShellRoot {
 
                 GroupPill {
                     id: centerSection
+                    shellRoot: root
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     anchors.topMargin: 10
@@ -2168,6 +1992,7 @@ ShellRoot {
                     spacing: 9.5
 
                     GroupPill {
+                        shellRoot: root
                         TextModule {
                             label: (root.temperatureC >= 70 ? " " + Math.round(root.temperatureC * 9 / 5 + 32) + "°F" : " " + Math.round(root.temperatureC) + "°C")
                             textColor: root.temperatureC >= 70 ? root.criticalColor : root.primaryText
@@ -2200,6 +2025,7 @@ ShellRoot {
                     }
 
                     GroupPill {
+                        shellRoot: root
                         TextModule {
                             label: ""
                             interactive: true
@@ -2231,14 +2057,15 @@ ShellRoot {
                             wheelInteractive: true
                             paddingLeft: 2
                             paddingRight: 10
-                            onLeftClicked: root.runDetached([root.configDir + "/waybar/scripts/volume", "--toggle"])
+                            onLeftClicked: root.runDetached([root.configDir + "/hypr/scripts/volume", "--toggle"])
                             onRightClicked: root.runDetached(["pavucontrol"])
-                            onWheelUp: root.runDetached([root.configDir + "/waybar/scripts/volume", "--dec"])
-                            onWheelDown: root.runDetached([root.configDir + "/waybar/scripts/volume", "--inc"])
+                            onWheelUp: root.runDetached([root.configDir + "/hypr/scripts/volume", "--dec"])
+                            onWheelDown: root.runDetached([root.configDir + "/hypr/scripts/volume", "--inc"])
                         }
                     }
 
                     GroupPill {
+                        shellRoot: root
                         Item {
                             implicitWidth: wifiTrayLoader.item && wifiTrayLoader.item.available ? wifiTrayLoader.item.implicitWidth : 0
                             implicitHeight: 37
@@ -2277,6 +2104,7 @@ ShellRoot {
                                     delegate: TrayButton {
                                         required property var modelData
 
+                                        shellRoot: root
                                         trayItem: modelData
                                         parentWindow: barWindow
                                     }
@@ -2291,7 +2119,7 @@ ShellRoot {
                             paddingLeft: 10
                             paddingRight: 5
                             onLeftClicked: {
-                                root.runDetached([root.configDir + "/waybar/scripts/power-profile.sh", "toggle"]);
+                                root.runDetached([root.configDir + "/quickshell/scripts/power-profile.sh", "toggle"]);
                                 powerProfileRefresh.restart();
                             }
                         }
@@ -2347,12 +2175,23 @@ ShellRoot {
                             interactive: true
                             paddingLeft: 6
                             paddingRight: 12
-                            onLeftClicked: root.runDetached([root.configDir + "/waybar/scripts/baraction"])
+                            onLeftClicked: {
+                                root.runDetached([root.configDir + "/quickshell/scripts/toggle-theme.sh"]);
+                                themeRefresh.restart();
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    Timer {
+        id: themeRefresh
+
+        interval: 350
+        repeat: false
+        onTriggered: themePoll.refresh()
     }
 
     Timer {

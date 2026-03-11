@@ -2,25 +2,20 @@
 
 set -eu
 
-iface="$(nmcli -t -f DEVICE,TYPE dev status 2>/dev/null | awk -F: '$2 == "wifi" { print $1; exit }')"
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+. "$script_dir/wifi-common.sh"
+
+iface="$(detect_wifi_iface || true)"
 command="${1:-}"
 
 run_nmcli_connect() {
     ssid="$1"
     password="$2"
-    output_file="$(mktemp)"
-    error_file="$(mktemp)"
-
-    cleanup_connect() {
-        rm -f "$output_file" "$error_file"
-    }
-
-    trap cleanup_connect EXIT INT TERM
 
     if [ -n "$password" ]; then
-        nmcli dev wifi connect "$ssid" password "$password" ifname "$iface" >"$output_file" 2>"$error_file"
+        nmcli dev wifi connect "$ssid" password "$password" ifname "$iface" >/dev/null
     else
-        nmcli dev wifi connect "$ssid" ifname "$iface" >"$output_file" 2>"$error_file"
+        nmcli dev wifi connect "$ssid" ifname "$iface" >/dev/null
     fi
 
     printf 'Connection requested for %s\n' "$ssid"
@@ -49,18 +44,12 @@ case "$command" in
         printf 'Scan started\n'
         ;;
     disconnect)
-        if [ -z "$iface" ]; then
-            printf 'No Wi-Fi device found\n' >&2
-            exit 1
-        fi
+        require_wifi_iface "$iface"
         nmcli device disconnect "$iface" >/dev/null
         printf 'Disconnected\n'
         ;;
     connect)
-        if [ -z "$iface" ]; then
-            printf 'No Wi-Fi device found\n' >&2
-            exit 1
-        fi
+        require_wifi_iface "$iface"
 
         ssid="${2:-}"
         password="${3:-}"

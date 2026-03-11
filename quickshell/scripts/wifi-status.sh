@@ -2,25 +2,12 @@
 
 set -eu
 
-detect_wifi_iface() {
-    nmcli -t -f DEVICE,TYPE dev status 2>/dev/null | awk -F: '$2 == "wifi" { print $1; exit }'
-}
-
-detect_wifi_iface_sysfs() {
-    for path in /sys/class/net/*; do
-        [ -d "$path/wireless" ] || continue
-        basename "$path"
-        return 0
-    done
-    return 1
-}
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+. "$script_dir/wifi-common.sh"
 
 iface="$(detect_wifi_iface || true)"
-if [ -z "$iface" ]; then
-    iface="$(detect_wifi_iface_sysfs || true)"
-fi
 
-radio_status="$(nmcli -t -f WIFI,WIFI-HW general status 2>/dev/null || printf 'enabled:enabled')"
+radio_status="$(wifi_radio_status)"
 wifi_enabled="$(printf '%s' "$radio_status" | cut -d: -f1)"
 wifi_hw_enabled="$(printf '%s' "$radio_status" | cut -d: -f2)"
 
@@ -97,9 +84,7 @@ if [ -n "$iface" ]; then
         }
     ' > "$tmp_networks"
 
-    nmcli -t -f UUID,TYPE connection show 2>/dev/null | awk -F: '$2 == "802-11-wireless" { print $1 }' | while IFS= read -r uuid; do
-        nmcli -g 802-11-wireless.ssid connection show "$uuid" 2>/dev/null || true
-    done | sed '/^$/d' | sort -u > "$tmp_known"
+    saved_wifi_ssids > "$tmp_known"
 fi
 
 jq -Rn \

@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+iDIR="$HOME/.config/HyprV/mako/icons"
+NOTIFY_HINT="string:x-canonical-private-synchronous:sys-notify"
+VOL_STEP="${VOL_STEP:-5}"
+MIC_STEP="${MIC_STEP:-5}"
+
+get_volume() {
+    pamixer --get-volume
+}
+
+get_icon() {
+    local current muted
+    current="$(get_volume)"
+    muted="$(pamixer --get-mute)"
+
+    if [[ "$muted" == "true" || "$current" -eq 0 ]]; then
+        echo "$iDIR/volume-mute.png"
+    elif (( current <= 30 )); then
+        echo "$iDIR/volume-low.png"
+    elif (( current <= 60 )); then
+        echo "$iDIR/volume-mid.png"
+    else
+        echo "$iDIR/volume-high.png"
+    fi
+}
+
+notify_user() {
+    notify-send -h "$NOTIFY_HINT" -u low -i "$(get_icon)" "Volume : $(get_volume) %"
+}
+
+inc_volume() {
+    pamixer -i "$VOL_STEP"
+    notify_user
+}
+
+dec_volume() {
+    pamixer -d "$VOL_STEP"
+    notify_user
+}
+
+toggle_mute() {
+    if [[ "$(pamixer --get-mute)" == "false" ]]; then
+        pamixer -m
+        notify-send -h "$NOTIFY_HINT" -u low -i "$iDIR/volume-mute.png" "Volume Switched OFF"
+    else
+        pamixer -u
+        notify-send -h "$NOTIFY_HINT" -u low -i "$(get_icon)" "Volume Switched ON"
+    fi
+}
+
+get_mic_icon() {
+    if [[ "$(pamixer --default-source --get-mute)" == "true" ]]; then
+        echo "$iDIR/microphone-mute.png"
+    else
+        echo "$iDIR/microphone.png"
+    fi
+}
+
+notify_mic_user() {
+    notify-send -h "$NOTIFY_HINT" -u low -i "$(get_mic_icon)" "Mic-Level : $(pamixer --default-source --get-volume) %"
+}
+
+toggle_mic() {
+    if [[ "$(pamixer --default-source --get-mute)" == "false" ]]; then
+        pamixer --default-source -m
+        notify-send -h "$NOTIFY_HINT" -u low -i "$iDIR/microphone-mute.png" "Microphone Switched OFF"
+    else
+        pamixer --default-source -u
+        notify-send -h "$NOTIFY_HINT" -u low -i "$iDIR/microphone.png" "Microphone Switched ON"
+    fi
+}
+
+inc_mic_volume() {
+    pamixer --default-source -i "$MIC_STEP"
+}
+
+dec_mic_volume() {
+    pamixer --default-source -d "$MIC_STEP"
+}
+
+case "${1:-}" in
+    --get)
+        get_volume
+        ;;
+    --inc)
+        inc_volume
+        ;;
+    --dec)
+        dec_volume
+        ;;
+    --toggle)
+        toggle_mute
+        ;;
+    --toggle-mic)
+        toggle_mic
+        ;;
+    --get-icon)
+        get_icon
+        ;;
+    --get-mic-icon)
+        get_mic_icon
+        ;;
+    --mic-inc)
+        inc_mic_volume
+        ;;
+    --mic-dec)
+        dec_mic_volume
+        ;;
+    *)
+        get_volume
+        ;;
+esac

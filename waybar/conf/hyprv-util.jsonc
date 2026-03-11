@@ -11,7 +11,7 @@
 
     "custom/light_dark": {
         "format": "󰐾",
-        "on-click": "~/.config/HyprV/waybar/scripts/baraction",
+        "on-click": "~/.config/HyprV/quickshell/scripts/toggle-theme.sh",
         "tooltip": false
     }
 

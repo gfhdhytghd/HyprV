@@ -54,9 +54,9 @@
     "tooltip": false,
   },
   "custom/power-profile": {
-    "exec": "~/.config/HyprV/waybar/scripts/power-profile.sh",
+    "exec": "~/.config/HyprV/quickshell/scripts/power-profile.sh",
     "interval": 3,
-    "on-click": "~/.config/HyprV/waybar/scripts/power-profile.sh toggle",
+    "on-click": "~/.config/HyprV/quickshell/scripts/power-profile.sh toggle",
   },
 
   "cpu": {
@@ -124,8 +124,8 @@
     "device": "intel_backlight",
     "format": "{icon} {percent}%",
     "format-icons": ["󰃞", "󰃟", "󰃠"],
-    "on-scroll-up": "~/.config/HyprV/waybar/scripts/brightness --dec",
-    "on-scroll-down": "~/.config/HyprV/waybar/scripts/brightness --inc",
+    "on-scroll-up": "~/.config/HyprV/hypr/scripts/brightness --dec",
+    "on-scroll-down": "~/.config/HyprV/hypr/scripts/brightness --inc",
     "min-length": 6,
   },
 
@@ -145,10 +145,10 @@
   "pulseaudio": {
     "format": "{icon}",
     "format-muted": "",
-    "on-click": "~/.config/HyprV/waybar/scripts/volume --toggle",
+    "on-click": "~/.config/HyprV/hypr/scripts/volume --toggle",
     "on-click-right": "pavucontrol",
-    "on-scroll-up": "~/.config/HyprV/waybar/scripts/volume --dec",
-    "on-scroll-down": "~/.config/HyprV/waybar/scripts/volume --inc",
+    "on-scroll-up": "~/.config/HyprV/hypr/scripts/volume --dec",
+    "on-scroll-down": "~/.config/HyprV/hypr/scripts/volume --inc",
     "scroll-step": 1,
     "format-icons": {
       "headphone": "",
@@ -165,10 +165,10 @@
     "format": "{format_source}",
     "format-source": " {volume}%",
     "format-source-muted": "",
-    "on-click": "~/.config/HyprV/waybar/scripts/volume --toggle-mic",
+    "on-click": "~/.config/HyprV/hypr/scripts/volume --toggle-mic",
     "on-click-right": "pavucontrol",
-    "on-scroll-up": "~/.config/HyprV/waybar/scripts/volume --mic-dec",
-    "on-scroll-down": "~/.config/HyprV/waybar/scripts/volume --mic-inc",
+    "on-scroll-up": "~/.config/HyprV/hypr/scripts/volume --mic-dec",
+    "on-scroll-down": "~/.config/HyprV/hypr/scripts/volume --mic-inc",
     "scroll-step": 5,
   },
 
