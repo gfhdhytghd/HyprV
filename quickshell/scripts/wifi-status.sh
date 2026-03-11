@@ -2,7 +2,24 @@
 
 set -eu
 
-iface="$(nmcli -t -f DEVICE,TYPE dev status 2>/dev/null | awk -F: '$2 == "wifi" { print $1; exit }')"
+detect_wifi_iface() {
+    nmcli -t -f DEVICE,TYPE dev status 2>/dev/null | awk -F: '$2 == "wifi" { print $1; exit }'
+}
+
+detect_wifi_iface_sysfs() {
+    for path in /sys/class/net/*; do
+        [ -d "$path/wireless" ] || continue
+        basename "$path"
+        return 0
+    done
+    return 1
+}
+
+iface="$(detect_wifi_iface || true)"
+if [ -z "$iface" ]; then
+    iface="$(detect_wifi_iface_sysfs || true)"
+fi
+
 radio_status="$(nmcli -t -f WIFI,WIFI-HW general status 2>/dev/null || printf 'enabled:enabled')"
 wifi_enabled="$(printf '%s' "$radio_status" | cut -d: -f1)"
 wifi_hw_enabled="$(printf '%s' "$radio_status" | cut -d: -f2)"

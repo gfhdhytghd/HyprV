@@ -34,6 +34,7 @@ ShellRoot {
     property string wifiSsid: ""
     property bool wifiSecure: false
     property var wifiNetworks: []
+    property bool wifiCapabilityDetected: false
     property string wifiActionMessage: ""
     property bool wifiActionBusy: false
     property string notificationAlt: "none"
@@ -103,6 +104,85 @@ ShellRoot {
         }
         return batteryGlyph(rounded) + " " + rounded + "%";
     }
+    property var batteryInfo: ({
+        available: false,
+        status: "",
+        mode: "unknown",
+        capacity: 0,
+        powerW: 0,
+        averagePowerW: 0,
+        sampleCount: 0,
+        sampleWindowSeconds: 0,
+        windowComplete: false,
+        estimateSeconds: null,
+        estimateBasis: "none",
+        energyNowWh: 0,
+        energyFullWh: 0
+    })
+    readonly property string batteryPopupTitle: batteryText.length > 0 ? batteryText : "电源"
+    readonly property string batteryStatusText: {
+        const mode = batteryInfo?.mode || "";
+        if (mode === "charging") {
+            return "正在充电";
+        }
+        if (mode === "discharging") {
+            return "电池供电中";
+        }
+        if (mode === "full") {
+            return "已充满";
+        }
+        if (mode === "plugged") {
+            return "已接通电源，当前未充电";
+        }
+        return batteryInfo?.status || "电池状态未知";
+    }
+    readonly property color batteryDetailAccentColor: {
+        const mode = batteryInfo?.mode || "";
+        if (mode === "charging" || mode === "full" || mode === "plugged") {
+            return root.batteryColor;
+        }
+        if (mode === "discharging" && root.batteryCritical) {
+            return root.criticalColor;
+        }
+        return root.primaryText;
+    }
+    readonly property string batteryPowerDetailText: batteryInfo?.available ? formatPower(Number(batteryInfo?.powerW || 0), true) : "--"
+    readonly property string batteryAveragePowerDetailText: batteryInfo?.available ? formatPower(Number(batteryInfo?.averagePowerW || 0), true) : "--"
+    readonly property string batteryEstimateTitle: {
+        const mode = batteryInfo?.mode || "";
+        if (mode === "charging" || mode === "full" || mode === "plugged") {
+            return "预计剩余充电时间";
+        }
+        return "预计剩余使用时间";
+    }
+    readonly property string batteryEstimateText: {
+        const mode = batteryInfo?.mode || "";
+        if (mode === "full") {
+            return "已充满";
+        }
+        if (mode === "plugged") {
+            return "已接通电源，当前未充电";
+        }
+        const seconds = Number(batteryInfo?.estimateSeconds);
+        if (!isFinite(seconds) || seconds < 0) {
+            return "计算中";
+        }
+        const basis = batteryInfo?.estimateBasis === "current" ? "按当前功率" : "按均值";
+        return formatDuration(seconds) + " (" + basis + ")";
+    }
+    readonly property string batterySampleWindowText: {
+        if (!batteryInfo?.available) {
+            return "";
+        }
+        const seconds = Number(batteryInfo?.sampleWindowSeconds || 0);
+        if (seconds >= 1800) {
+            return "最近 30 分钟采样";
+        }
+        if (seconds >= 60) {
+            return "已采样 " + formatDuration(seconds);
+        }
+        return "开始采样中";
+    }
     readonly property string volumeIcon: {
         const audio = audioSink?.audio;
         if (!audio) {
@@ -120,14 +200,18 @@ ShellRoot {
         }
         return "";
     }
+    function isWifiInterfaceName(name) {
+        const iface = (name || "").toLowerCase();
+        return iface.startsWith("wl") || iface.startsWith("wlan") || iface.startsWith("wifi");
+    }
     readonly property string networkIcon: {
         if (!defaultInterface) {
             return "󰤮";
         }
-        return defaultInterface.startsWith("wl") ? "󰖩" : "󰈀";
+        return isWifiInterfaceName(defaultInterface) ? "󰖩" : "󰈀";
     }
     readonly property string networkText: defaultInterface ? humanRate(networkRxRate + networkTxRate) : "nocon"
-    readonly property bool wifiWidgetVisible: wifiDevicePresent || wifiNetworks.length > 0 || defaultInterface.startsWith("wl")
+    readonly property bool wifiWidgetVisible: wifiCapabilityDetected || wifiDevicePresent || wifiNetworks.length > 0 || isWifiInterfaceName(defaultInterface)
     readonly property bool notificationDoNotDisturb: notificationAlt.indexOf("dnd") >= 0
     readonly property bool notificationHasDot: notificationAlt.indexOf("notification") >= 0
     readonly property string notificationIcon: notificationDoNotDisturb ? "" : ""
@@ -371,6 +455,52 @@ ShellRoot {
         }
     }
 
+    component BatteryInfoLine: Item {
+        id: infoLine
+
+        property string title: ""
+        property string value: ""
+        property color titleColor: withAlpha(root.primaryText, root.darkMode ? 0.72 : 0.68)
+        property color valueColor: root.primaryText
+        property real titleWidth: 118
+
+        width: parent ? parent.width : implicitWidth
+        implicitWidth: 296
+        implicitHeight: Math.max(titleText.implicitHeight, valueText.implicitHeight)
+
+        Text {
+            id: titleText
+
+            anchors.left: parent.left
+            anchors.top: parent.top
+            width: infoLine.titleWidth
+            text: infoLine.title
+            color: infoLine.titleColor
+            font.family: root.baseFont
+            font.pixelSize: 13
+            font.weight: Font.DemiBold
+            renderType: Text.NativeRendering
+            wrapMode: Text.WordWrap
+        }
+
+        Text {
+            id: valueText
+
+            anchors.top: parent.top
+            anchors.left: titleText.right
+            anchors.leftMargin: 12
+            anchors.right: parent.right
+            text: infoLine.value
+            color: infoLine.valueColor
+            font.family: root.baseFont
+            font.pixelSize: 13
+            font.weight: Font.Bold
+            horizontalAlignment: Text.AlignRight
+            renderType: Text.NativeRendering
+            wrapMode: Text.WordWrap
+        }
+    }
+
     component TrayMenuPopup: Item {
         id: trayMenuPopupRoot
 
@@ -390,6 +520,9 @@ ShellRoot {
         readonly property var rootMenuEntry: menuHandle?.menu || null
         property bool menuVisible: false
         property bool animatingClose: false
+        property int hydratorSequence: 0
+        property bool hydratorOpen: false
+        property bool openAnimationPending: false
 
         function topEntry() {
             return entryStack.count ? entryStack.get(entryStack.count - 1).handle : null;
@@ -399,10 +532,25 @@ ShellRoot {
             if (!handle) {
                 return;
             }
+            hydratorSequence += 1;
+            const sequence = hydratorSequence;
+            if (hydratorOpen) {
+                submenuHydrator.close();
+                hydratorOpen = false;
+            }
             submenuHydrator.menu = handle;
             submenuHydrator.open();
+            hydratorOpen = true;
             Qt.callLater(function() {
+                if (sequence !== hydratorSequence) {
+                    return;
+                }
+                if (!hydratorOpen || !trayMenuWindow.visible) {
+                    hydratorOpen = false;
+                    return;
+                }
                 submenuHydrator.close();
+                hydratorOpen = false;
             });
         }
 
@@ -417,6 +565,12 @@ ShellRoot {
                 return entry.checkState === Qt.Checked ? "(o)" : "( )";
             }
             return "";
+        }
+
+        function scheduleOpenAnimation() {
+            openAnimationPending = true;
+            menuChrome.prepareOpenAnimation();
+            openAnimationTimer.restart();
         }
 
         function openFor(item, source, window) {
@@ -440,7 +594,7 @@ ShellRoot {
                 }
                 hydrateMenu(rootMenuEntry || menuHandle);
                 trayMenuWindow.updateMenuPosition();
-                menuChrome.playOpenAnimation();
+                scheduleOpenAnimation();
             } else {
                 trayMenuWindow.visible = true;
             }
@@ -506,6 +660,26 @@ ShellRoot {
             interval: 0
             repeat: false
             onTriggered: trayMenuWindow.updateMenuPosition()
+        }
+
+        Timer {
+            id: openAnimationTimer
+
+            interval: 16
+            repeat: false
+            onTriggered: {
+                if (!trayMenuWindow.visible || !trayMenuPopupRoot.menuVisible || trayMenuPopupRoot.animatingClose) {
+                    trayMenuPopupRoot.openAnimationPending = false;
+                    return;
+                }
+                if (menuContent.implicitHeight <= 0) {
+                    openAnimationTimer.restart();
+                    return;
+                }
+                trayMenuPopupRoot.openAnimationPending = false;
+                trayMenuWindow.updateMenuPosition();
+                menuChrome.playOpenAnimation();
+            }
         }
 
         Timer {
@@ -612,13 +786,17 @@ ShellRoot {
                     menuFocusScope.forceActiveFocus();
                     updateMenuPosition();
                     if (!trayMenuPopupRoot.animatingClose) {
-                        menuChrome.playOpenAnimation();
+                        trayMenuPopupRoot.scheduleOpenAnimation();
                     }
                 } else {
                     if (trayMenuPopupRoot.rootMenuEntry && typeof trayMenuPopupRoot.rootMenuEntry.sendClosed === "function") {
                         trayMenuPopupRoot.rootMenuEntry.sendClosed();
                     }
                     trayMenuPopupRoot.animatingClose = false;
+                    trayMenuPopupRoot.hydratorSequence += 1;
+                    trayMenuPopupRoot.hydratorOpen = false;
+                    trayMenuPopupRoot.openAnimationPending = false;
+                    openAnimationTimer.stop();
                     menuChrome.stopAnimations();
                     menuChrome.resetAnimationState();
                     clearTimer.restart();
@@ -646,51 +824,40 @@ ShellRoot {
                 }
             }
 
-            Item {
+            AnimatedGlassPanel {
                 id: menuChrome
 
-                readonly property real lineHeight: 2
-                readonly property real fullPanelHeight: Math.min(trayMenuPopupRoot.menuMaxHeight, menuContent.implicitHeight + trayMenuPopupRoot.menuPadding * 2)
-                property real revealHeight: 0
-                property real contentOpacity: 0
-                property real contentOffset: -8
-
                 width: trayMenuPopupRoot.menuWidth
-                height: fullPanelHeight
-
-                function resetAnimationState() {
-                    revealHeight = fullPanelHeight;
-                    contentOpacity = 1;
-                    contentOffset = 0;
-                }
-
-                function playOpenAnimation() {
-                    stopAnimations();
-                    revealHeight = lineHeight;
-                    contentOpacity = 0;
-                    contentOffset = -8;
-                    menuOpenAnimation.restart();
-                }
-
-                function playCloseAnimation() {
-                    stopAnimations();
-                    menuCloseAnimation.restart();
-                }
-
-                function stopAnimations() {
-                    menuOpenAnimation.stop();
-                    menuCloseAnimation.stop();
-                }
+                fullPanelHeight: Math.min(trayMenuPopupRoot.menuMaxHeight, menuContent.implicitHeight + trayMenuPopupRoot.menuPadding * 2)
+                fillColor: trayMenuPopupRoot.glassFill
+                strokeColor: trayMenuPopupRoot.glassStroke
+                shadowColor: root.darkMode ? withAlpha("#000000", 0.45) : withAlpha("#111111", 0.18)
+                devicePixelRatio: trayMenuWindow.devicePixelRatio
+                openRevealDuration: trayMenuPopupRoot.animationDuration
+                openContentDelay: 20
+                openFadeDuration: 140
+                openSlideDuration: 180
+                openContentOffset: -8
+                closeRevealDuration: trayMenuPopupRoot.animationDuration
+                closeFadeDuration: 90
+                closeSlideDuration: 150
+                closeContentOffset: -6
 
                 onFullPanelHeightChanged: {
+                    if (trayMenuPopupRoot.openAnimationPending) {
+                        positionTimer.restart();
+                        openAnimationTimer.restart();
+                        return;
+                    }
                     if (trayMenuWindow.visible && !trayMenuPopupRoot.animatingClose) {
-                        if (menuOpenAnimation.running) {
-                            menuOpenAnimation.stop();
+                        if (menuChrome.openAnimationRunning || menuChrome.closeAnimationRunning) {
+                            positionTimer.restart();
+                            return;
                         }
                         revealHeight = fullPanelHeight;
                         contentOpacity = 1;
                         contentOffset = 0;
-                    } else if (!menuOpenAnimation.running && !menuCloseAnimation.running) {
+                    } else if (!menuChrome.openAnimationRunning && !menuChrome.closeAnimationRunning) {
                         revealHeight = fullPanelHeight;
                         if (!trayMenuWindow.visible) {
                             contentOpacity = 1;
@@ -700,269 +867,160 @@ ShellRoot {
                     positionTimer.restart();
                 }
 
-                SequentialAnimation {
-                    id: menuOpenAnimation
+                onOpenAnimationFinished: {
+                    if (!trayMenuWindow.visible || trayMenuPopupRoot.animatingClose) {
+                        return;
+                    }
+                    positionTimer.restart();
+                }
 
-                    ParallelAnimation {
-                        NumberAnimation {
-                            target: menuChrome
-                            property: "revealHeight"
-                            to: menuChrome.fullPanelHeight
-                            duration: trayMenuPopupRoot.animationDuration
-                            easing.type: Easing.OutCubic
-                        }
-
-                        SequentialAnimation {
-                            PauseAnimation {
-                                duration: 20
-                            }
-
-                            ParallelAnimation {
-                                NumberAnimation {
-                                    target: menuChrome
-                                    property: "contentOpacity"
-                                    to: 1
-                                    duration: 140
-                                    easing.type: Easing.OutQuad
-                                }
-
-                                NumberAnimation {
-                                    target: menuChrome
-                                    property: "contentOffset"
-                                    to: 0
-                                    duration: 180
-                                    easing.type: Easing.OutCubic
-                                }
-                            }
-                        }
+                onCloseAnimationFinished: {
+                    if (trayMenuPopupRoot.animatingClose && !trayMenuPopupRoot.menuVisible) {
+                        trayMenuPopupRoot.animatingClose = false;
+                        trayMenuWindow.visible = false;
                     }
                 }
 
-                ParallelAnimation {
-                    id: menuCloseAnimation
-
-                    NumberAnimation {
-                        target: menuChrome
-                        property: "contentOpacity"
-                        to: 0
-                        duration: 90
-                        easing.type: Easing.InQuad
-                    }
-
-                    NumberAnimation {
-                        target: menuChrome
-                        property: "contentOffset"
-                        to: -6
-                        duration: 150
-                        easing.type: Easing.InCubic
-                    }
-
-                    NumberAnimation {
-                        target: menuChrome
-                        property: "revealHeight"
-                        to: menuChrome.lineHeight
-                        duration: trayMenuPopupRoot.animationDuration
-                        easing.type: Easing.InCubic
-                    }
-
-                    onFinished: {
-                        if (trayMenuPopupRoot.animatingClose && !trayMenuPopupRoot.menuVisible) {
-                            trayMenuPopupRoot.animatingClose = false;
-                            trayMenuWindow.visible = false;
-                        }
-                    }
-                }
-
-                Item {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    height: menuChrome.revealHeight
+                Flickable {
+                    anchors.fill: parent
+                    anchors.margins: trayMenuPopupRoot.menuPadding
                     clip: true
+                    contentWidth: width
+                    contentHeight: menuContent.implicitHeight
 
-                    Rectangle {
-                        id: menuPanel
+                    Column {
+                        id: menuContent
 
-                        x: 0
-                        y: 0
-                        width: trayMenuPopupRoot.menuWidth
-                        height: menuChrome.fullPanelHeight
-                        radius: 10
-                        color: "transparent"
-                        border.width: 0
-                        antialiasing: true
-                        clip: true
-
-                        Item {
-                            id: menuShadowLayer
-
-                            anchors.fill: parent
-                            layer.enabled: true
-                            layer.smooth: true
-                            layer.textureSize: Qt.size(Math.round(width * trayMenuWindow.devicePixelRatio), Math.round(height * trayMenuWindow.devicePixelRatio))
-                            layer.textureMirroring: ShaderEffectSource.MirrorVertically
-
-                            readonly property int blurMax: 64
-
-                            layer.effect: MultiEffect {
-                                autoPaddingEnabled: true
-                                shadowEnabled: true
-                                blurEnabled: false
-                                maskEnabled: false
-                                shadowBlur: 10 / menuShadowLayer.blurMax
-                                shadowScale: 1
-                                shadowColor: root.darkMode ? withAlpha("#000000", 0.45) : withAlpha("#111111", 0.18)
-                            }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: 10
-                                color: trayMenuPopupRoot.glassFill
-                                border.width: 1
-                                border.color: trayMenuPopupRoot.glassStroke
-                                antialiasing: true
+                        width: parent.width
+                        spacing: 1
+                        onImplicitHeightChanged: {
+                            positionTimer.restart();
+                            if (trayMenuPopupRoot.openAnimationPending) {
+                                openAnimationTimer.restart();
                             }
                         }
 
-                        Flickable {
-                            anchors.fill: parent
-                            anchors.margins: trayMenuPopupRoot.menuPadding
-                            clip: true
-                            contentWidth: width
-                            contentHeight: menuContent.implicitHeight
-                            opacity: menuChrome.contentOpacity
-                            y: menuChrome.contentOffset
+                        Rectangle {
+                            width: parent.width
+                            height: trayMenuPopupRoot.rowHeight
+                            radius: 8
+                            visible: entryStack.count > 0
+                            color: backArea.containsMouse ? trayMenuPopupRoot.hoverFill : "transparent"
 
-                            Column {
-                                id: menuContent
+                            Text {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "< Back"
+                                color: root.primaryText
+                                font.family: root.baseFont
+                                font.pixelSize: trayMenuPopupRoot.textPixelSize
+                                renderType: Text.NativeRendering
+                            }
 
-                                width: parent.width
-                                spacing: 1
-                                onImplicitHeightChanged: positionTimer.restart()
+                            MouseArea {
+                                id: backArea
 
-                                Rectangle {
-                                    width: parent.width
-                                    height: trayMenuPopupRoot.rowHeight
-                                    radius: 8
-                                    visible: entryStack.count > 0
-                                    color: backArea.containsMouse ? trayMenuPopupRoot.hoverFill : "transparent"
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: trayMenuPopupRoot.goBack()
+                            }
+                        }
+
+                        Repeater {
+                            model: entryStack.count > 0 ? (submenuOpener.children ? submenuOpener.children : (trayMenuPopupRoot.topEntry()?.children || [])) : rootMenuOpener.children
+
+                            delegate: Rectangle {
+                                required property var modelData
+
+                                readonly property var menuEntry: modelData
+
+                                width: menuContent.width
+                                height: menuEntry?.isSeparator ? 1 : trayMenuPopupRoot.rowHeight
+                                radius: menuEntry?.isSeparator ? 0 : 8
+                                color: {
+                                    if (menuEntry?.isSeparator) {
+                                        return trayMenuPopupRoot.glassStroke;
+                                    }
+                                    if (itemArea.containsMouse && menuEntry?.enabled !== false) {
+                                        return trayMenuPopupRoot.hoverFill;
+                                    }
+                                    return "transparent";
+                                }
+
+                                MouseArea {
+                                    id: itemArea
+
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    enabled: !menuEntry?.isSeparator && menuEntry?.enabled !== false
+                                    acceptedButtons: Qt.LeftButton
+                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                    onClicked: trayMenuPopupRoot.triggerEntry(menuEntry)
+                                }
+
+                                Item {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 10
+                                    anchors.rightMargin: 10
+                                    visible: !menuEntry?.isSeparator
 
                                     Text {
+                                        id: indicatorText
+
                                         anchors.left: parent.left
-                                        anchors.leftMargin: 10
                                         anchors.verticalCenter: parent.verticalCenter
-                                        text: "< Back"
+                                        visible: text.length > 0
+                                        text: trayMenuPopupRoot.entryIndicator(menuEntry)
+                                        color: root.primaryText
+                                        font.family: root.baseFont
+                                        font.pixelSize: Math.max(11, trayMenuPopupRoot.textPixelSize - 1)
+                                        renderType: Text.NativeRendering
+                                    }
+
+                                    Image {
+                                        id: entryIcon
+
+                                        anchors.left: indicatorText.visible ? indicatorText.right : parent.left
+                                        anchors.leftMargin: indicatorText.visible ? 8 : 0
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        visible: (menuEntry?.icon ?? "") !== ""
+                                        width: 16
+                                        height: 16
+                                        source: menuEntry?.icon || ""
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        fillMode: Image.PreserveAspectFit
+                                        smooth: true
+                                    }
+
+                                    Text {
+                                        id: submenuArrow
+
+                                        anchors.right: parent.right
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        visible: menuEntry?.hasChildren ?? false
+                                        text: ">"
                                         color: root.primaryText
                                         font.family: root.baseFont
                                         font.pixelSize: trayMenuPopupRoot.textPixelSize
                                         renderType: Text.NativeRendering
                                     }
 
-                                    MouseArea {
-                                        id: backArea
-
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: trayMenuPopupRoot.goBack()
-                                    }
-                                }
-
-                                Repeater {
-                                    model: entryStack.count > 0 ? (submenuOpener.children ? submenuOpener.children : (trayMenuPopupRoot.topEntry()?.children || [])) : rootMenuOpener.children
-
-                                    delegate: Rectangle {
-                                        required property var modelData
-
-                                        readonly property var menuEntry: modelData
-
-                                        width: menuContent.width
-                                        height: menuEntry?.isSeparator ? 1 : trayMenuPopupRoot.rowHeight
-                                        radius: menuEntry?.isSeparator ? 0 : 8
-                                        color: {
-                                            if (menuEntry?.isSeparator) {
-                                                return trayMenuPopupRoot.glassStroke;
-                                            }
-                                            if (itemArea.containsMouse && menuEntry?.enabled !== false) {
-                                                return trayMenuPopupRoot.hoverFill;
-                                            }
-                                            return "transparent";
-                                        }
-
-                                        MouseArea {
-                                            id: itemArea
-
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                            enabled: !menuEntry?.isSeparator && menuEntry?.enabled !== false
-                                            acceptedButtons: Qt.LeftButton
-                                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                            onClicked: trayMenuPopupRoot.triggerEntry(menuEntry)
-                                        }
-
-                                        Item {
-                                            anchors.fill: parent
-                                            anchors.leftMargin: 10
-                                            anchors.rightMargin: 10
-                                            visible: !menuEntry?.isSeparator
-
-                                            Text {
-                                                id: indicatorText
-
-                                                anchors.left: parent.left
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                visible: text.length > 0
-                                                text: trayMenuPopupRoot.entryIndicator(menuEntry)
-                                                color: root.primaryText
-                                                font.family: root.baseFont
-                                                font.pixelSize: Math.max(11, trayMenuPopupRoot.textPixelSize - 1)
-                                                renderType: Text.NativeRendering
-                                            }
-
-                                            Image {
-                                                id: entryIcon
-
-                                                anchors.left: indicatorText.visible ? indicatorText.right : parent.left
-                                                anchors.leftMargin: indicatorText.visible ? 8 : 0
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                visible: (menuEntry?.icon ?? "") !== ""
-                                                width: 16
-                                                height: 16
-                                                source: menuEntry?.icon || ""
-                                                sourceSize.width: 16
-                                                sourceSize.height: 16
-                                                fillMode: Image.PreserveAspectFit
-                                                smooth: true
-                                            }
-
-                                            Text {
-                                                id: submenuArrow
-
-                                                anchors.right: parent.right
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                visible: menuEntry?.hasChildren ?? false
-                                                text: ">"
-                                                color: root.primaryText
-                                                font.family: root.baseFont
-                                                font.pixelSize: trayMenuPopupRoot.textPixelSize
-                                                renderType: Text.NativeRendering
-                                            }
-
-                                            Text {
-                                                anchors.left: entryIcon.visible ? entryIcon.right : (indicatorText.visible ? indicatorText.right : parent.left)
-                                                anchors.leftMargin: entryIcon.visible || indicatorText.visible ? 8 : 0
-                                                anchors.right: submenuArrow.visible ? submenuArrow.left : parent.right
-                                                anchors.rightMargin: submenuArrow.visible ? 8 : 0
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                text: menuEntry?.text || ""
-                                                color: menuEntry?.enabled === false ? withAlpha(root.primaryText, 0.55) : root.primaryText
-                                                font.family: root.baseFont
-                                                font.pixelSize: trayMenuPopupRoot.textPixelSize
-                                                elide: Text.ElideRight
-                                                wrapMode: Text.NoWrap
-                                                renderType: Text.NativeRendering
-                                            }
-                                        }
+                                    Text {
+                                        anchors.left: entryIcon.visible ? entryIcon.right : (indicatorText.visible ? indicatorText.right : parent.left)
+                                        anchors.leftMargin: entryIcon.visible || indicatorText.visible ? 8 : 0
+                                        anchors.right: submenuArrow.visible ? submenuArrow.left : parent.right
+                                        anchors.rightMargin: submenuArrow.visible ? 8 : 0
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: menuEntry?.text || ""
+                                        color: menuEntry?.enabled === false ? withAlpha(root.primaryText, 0.55) : root.primaryText
+                                        font.family: root.baseFont
+                                        font.pixelSize: trayMenuPopupRoot.textPixelSize
+                                        elide: Text.ElideRight
+                                        wrapMode: Text.NoWrap
+                                        renderType: Text.NativeRendering
                                     }
                                 }
                             }
@@ -973,9 +1031,354 @@ ShellRoot {
         }
     }
 
+    component BatteryInfoPopup: Item {
+        id: batteryPopupRoot
+
+        property var sourceItem: null
+        property var parentWindow: null
+        readonly property bool openVisible: popupRequested
+        readonly property int popupWidth: 324
+        readonly property int popupPadding: 12
+        readonly property color glassFill: withAlpha(root.darkMode ? "#101214" : "#f2f4f7", root.darkMode ? 0.42 : 0.34)
+        readonly property color glassStroke: withAlpha(root.primaryText, root.darkMode ? 0.14 : 0.10)
+        readonly property color mutedTextColor: withAlpha(root.primaryText, root.darkMode ? 0.72 : 0.68)
+        property bool popupRequested: false
+        property bool animatingClose: false
+        property bool openAnimationPending: false
+
+        function openFor(source, window) {
+            if (!source || !window) {
+                return;
+            }
+            sourceItem = source;
+            parentWindow = window;
+            popupRequested = true;
+            animatingClose = false;
+            batteryInfoPoll.refresh();
+            positionTimer.restart();
+            if (popupWindow.visible) {
+                popupCard.prepareOpenAnimation();
+                openAnimationPending = true;
+                popupOpenTimer.restart();
+                popupWindow.updatePopupPosition();
+            } else {
+                popupWindow.visible = true;
+            }
+        }
+
+        function closePopup() {
+            if ((!popupRequested && !animatingClose) || !popupWindow.visible) {
+                popupRequested = false;
+                animatingClose = false;
+                return;
+            }
+            if (animatingClose) {
+                return;
+            }
+            popupRequested = false;
+            animatingClose = true;
+            popupCard.playCloseAnimation();
+        }
+
+        function toggleFor(source, window) {
+            if (popupWindow.visible && sourceItem === source && parentWindow === window) {
+                closePopup();
+                return;
+            }
+            openFor(source, window);
+        }
+
+        Timer {
+            id: positionTimer
+
+            interval: 0
+            repeat: false
+            onTriggered: popupWindow.updatePopupPosition()
+        }
+
+        Timer {
+            id: popupOpenTimer
+
+            interval: 16
+            repeat: false
+            onTriggered: {
+                if (!popupWindow.visible || !batteryPopupRoot.popupRequested || batteryPopupRoot.animatingClose) {
+                    batteryPopupRoot.openAnimationPending = false;
+                    return;
+                }
+                if (popupContent.implicitHeight <= 0) {
+                    popupOpenTimer.restart();
+                    return;
+                }
+                batteryPopupRoot.openAnimationPending = false;
+                popupWindow.updatePopupPosition();
+                popupCard.playOpenAnimation();
+            }
+        }
+
+        PanelWindow {
+            id: popupWindow
+
+            screen: batteryPopupRoot.parentWindow?.screen || null
+            visible: false
+            color: "transparent"
+            aboveWindows: true
+            focusable: visible
+            exclusiveZone: -1
+
+            WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            WlrLayershell.namespace: "shell:hyprv-battery-info"
+
+            anchors.top: true
+            anchors.left: true
+            anchors.right: true
+            anchors.bottom: true
+
+            onWidthChanged: if (visible) {
+                updatePopupPosition();
+            }
+            onHeightChanged: if (visible) {
+                updatePopupPosition();
+            }
+
+            function updatePopupPosition() {
+                if (!visible || !batteryPopupRoot.sourceItem || !screen) {
+                    return;
+                }
+                const point = batteryPopupRoot.sourceItem.mapToGlobal(Math.round(batteryPopupRoot.sourceItem.width / 2), batteryPopupRoot.sourceItem.height);
+                const relativeX = point.x - screen.x;
+                const relativeY = point.y - screen.y;
+                const maxX = Math.max(8, width - popupCard.width - 8);
+                const desiredX = Math.round(relativeX - popupCard.width / 2);
+                popupCard.x = Math.max(8, Math.min(maxX, desiredX));
+
+                const belowY = Math.round(relativeY + 10);
+                const aboveY = Math.round(relativeY - popupCard.height - 10);
+                const fitsBelow = belowY + popupCard.height <= height - 8;
+                const fitsAbove = aboveY >= 8;
+
+                if (fitsBelow || !fitsAbove) {
+                    popupCard.y = Math.max(8, Math.min(height - popupCard.height - 8, belowY));
+                } else {
+                    popupCard.y = Math.max(8, aboveY);
+                }
+            }
+
+            onVisibleChanged: {
+                if (visible) {
+                    updatePopupPosition();
+                    popupFocusScope.forceActiveFocus();
+                    if (!batteryPopupRoot.animatingClose) {
+                        batteryPopupRoot.openAnimationPending = true;
+                        popupCard.prepareOpenAnimation();
+                        popupOpenTimer.restart();
+                    }
+                } else {
+                    batteryPopupRoot.animatingClose = false;
+                    batteryPopupRoot.openAnimationPending = false;
+                    popupOpenTimer.stop();
+                    popupCard.stopAnimations();
+                    popupCard.resetAnimationState();
+                    batteryPopupRoot.sourceItem = null;
+                    batteryPopupRoot.parentWindow = null;
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                onClicked: batteryPopupRoot.closePopup()
+            }
+
+            FocusScope {
+                id: popupFocusScope
+
+                anchors.fill: parent
+                focus: popupWindow.visible
+
+                Keys.onEscapePressed: batteryPopupRoot.closePopup()
+            }
+
+            AnimatedGlassPanel {
+                id: popupCard
+
+                width: batteryPopupRoot.popupWidth
+                fullPanelHeight: popupContent.implicitHeight + batteryPopupRoot.popupPadding * 2
+                fillColor: batteryPopupRoot.glassFill
+                strokeColor: batteryPopupRoot.glassStroke
+                shadowColor: root.darkMode ? withAlpha("#000000", 0.45) : withAlpha("#111111", 0.18)
+                devicePixelRatio: popupWindow.devicePixelRatio
+                openRevealPause: 20
+                openRevealDuration: 200
+                openContentDelay: 20
+                openFadeDuration: 140
+                openSlideDuration: 180
+                openContentOffset: -8
+                closeRevealPause: 30
+                closeRevealDuration: 180
+                closeFadeDuration: 90
+                closeSlideDuration: 150
+                closeContentOffset: -8
+
+                onFullPanelHeightChanged: {
+                    if (batteryPopupRoot.openAnimationPending) {
+                        positionTimer.restart();
+                        popupOpenTimer.restart();
+                        return;
+                    }
+                    if (popupWindow.visible && !batteryPopupRoot.animatingClose) {
+                        if (popupCard.openAnimationRunning || popupCard.closeAnimationRunning) {
+                            positionTimer.restart();
+                            return;
+                        }
+                        revealHeight = fullPanelHeight;
+                        contentOpacity = 1;
+                        contentOffset = 0;
+                    } else if (!popupCard.openAnimationRunning && !popupCard.closeAnimationRunning) {
+                        revealHeight = fullPanelHeight;
+                        if (!popupWindow.visible) {
+                            contentOpacity = 1;
+                            contentOffset = 0;
+                        }
+                    }
+                    positionTimer.restart();
+                }
+
+                onOpenAnimationFinished: {
+                    if (!popupWindow.visible || batteryPopupRoot.animatingClose) {
+                        return;
+                    }
+                    positionTimer.restart();
+                }
+
+                onCloseAnimationFinished: {
+                    if (batteryPopupRoot.animatingClose && !batteryPopupRoot.popupRequested) {
+                        batteryPopupRoot.animatingClose = false;
+                        popupWindow.visible = false;
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                }
+
+                Column {
+                    id: popupContent
+
+                    anchors.fill: parent
+                    anchors.margins: batteryPopupRoot.popupPadding
+                    spacing: 10
+                    onImplicitHeightChanged: {
+                        if (batteryPopupRoot.openAnimationPending) {
+                            popupOpenTimer.restart();
+                        }
+                    }
+
+                    Text {
+                        text: root.batteryPopupTitle
+                        color: root.batteryDetailAccentColor
+                        font.family: root.baseFont
+                        font.pixelSize: 15
+                        font.weight: Font.Bold
+                        renderType: Text.NativeRendering
+                    }
+
+                    Text {
+                        text: root.batteryStatusText
+                        color: batteryPopupRoot.mutedTextColor
+                        font.family: root.baseFont
+                        font.pixelSize: 12
+                        font.weight: Font.DemiBold
+                        renderType: Text.NativeRendering
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        radius: 1
+                        color: batteryPopupRoot.glassStroke
+                    }
+
+                    BatteryInfoLine {
+                        width: parent.width
+                        title: "当前净功率"
+                        value: root.batteryPowerDetailText
+                        valueColor: root.batteryDetailAccentColor
+                    }
+
+                    BatteryInfoLine {
+                        width: parent.width
+                        title: "半小时平均功率"
+                        value: root.batteryAveragePowerDetailText
+                    }
+
+                    BatteryInfoLine {
+                        width: parent.width
+                        title: root.batteryEstimateTitle
+                        value: root.batteryEstimateText
+                    }
+
+                    Text {
+                        width: parent.width
+                        text: root.batterySampleWindowText
+                        visible: text.length > 0
+                        color: batteryPopupRoot.mutedTextColor
+                        font.family: root.baseFont
+                        font.pixelSize: 11
+                        font.weight: Font.Medium
+                        horizontalAlignment: Text.AlignRight
+                        renderType: Text.NativeRendering
+                        wrapMode: Text.WordWrap
+                    }
+                }
+            }
+        }
+    }
+
     function withAlpha(colorString, alpha) {
         const color = Qt.color(colorString);
         return Qt.rgba(color.r, color.g, color.b, alpha);
+    }
+
+    function formatPower(value, signed) {
+        const number = Number(value);
+        if (!isFinite(number)) {
+            return "--";
+        }
+        const absolute = Math.abs(number);
+        const decimals = absolute >= 10 ? 1 : 2;
+        let prefix = "";
+        if (signed) {
+            if (number > 0.004) {
+                prefix = "+";
+            } else if (number < -0.004) {
+                prefix = "-";
+            }
+        }
+        return prefix + absolute.toFixed(decimals) + " W";
+    }
+
+    function formatDuration(totalSeconds) {
+        const value = Number(totalSeconds);
+        if (!isFinite(value) || value < 0) {
+            return "计算中";
+        }
+        const roundedMinutes = Math.round(value / 60);
+        if (roundedMinutes <= 0) {
+            return "0分钟";
+        }
+        const hours = Math.floor(roundedMinutes / 60);
+        const minutes = roundedMinutes % 60;
+        if (hours > 0 && minutes > 0) {
+            return hours + "小时" + minutes + "分钟";
+        }
+        if (hours > 0) {
+            return hours + "小时";
+        }
+        return roundedMinutes + "分钟";
     }
 
     function fileUrl(path) {
@@ -1072,18 +1475,37 @@ ShellRoot {
         return icons[index];
     }
 
-    function parseKeyValueMap(text) {
-        const result = {};
-        const lines = (text || "").split("\n");
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            const separator = line.indexOf("=");
-            if (separator <= 0) {
-                continue;
-            }
-            result[line.slice(0, separator)] = line.slice(separator + 1);
+    function resetBatteryInfo() {
+        batteryInfo = {
+            available: false,
+            status: "",
+            mode: "unknown",
+            capacity: 0,
+            powerW: 0,
+            averagePowerW: 0,
+            sampleCount: 0,
+            sampleWindowSeconds: 0,
+            windowComplete: false,
+            estimateSeconds: null,
+            estimateBasis: "none",
+            energyNowWh: 0,
+            energyFullWh: 0
+        };
+    }
+
+    function updateBatteryInfo(raw) {
+        if (!raw) {
+            resetBatteryInfo();
+            return;
         }
-        return result;
+        try {
+            const data = JSON.parse(raw);
+            if (data && typeof data === "object") {
+                batteryInfo = data;
+                return;
+            }
+        } catch (_) {}
+        resetBatteryInfo();
     }
 
     function parseNumberMap(text) {
@@ -1129,56 +1551,6 @@ ShellRoot {
             };
         }
         return null;
-    }
-
-    function normalizeWifiSignalDbm(signalDbm) {
-        if (signalDbm === undefined || signalDbm === null || isNaN(signalDbm)) {
-            return 0;
-        }
-        return Math.max(0, Math.min(1, (signalDbm + 90) / 50));
-    }
-
-    function wifiIconName(enabled, connected, strength) {
-        if (!enabled) {
-            return "network-wireless-off-symbolic";
-        }
-        if (!connected) {
-            return "network-wireless-disconnected-symbolic";
-        }
-        if (strength < 0.2) {
-            return "network-wireless-connected-00-symbolic";
-        }
-        if (strength < 0.4) {
-            return "network-wireless-connected-25-symbolic";
-        }
-        if (strength < 0.6) {
-            return "network-wireless-connected-50-symbolic";
-        }
-        if (strength < 0.8) {
-            return "network-wireless-connected-75-symbolic";
-        }
-        return "network-wireless-connected-100-symbolic";
-    }
-
-    function wifiIconSource(enabled, connected, strength) {
-        return wifiTrayIconSource(enabled, wifiHardwareEnabled, connected, strength, wifiSecure);
-    }
-
-    function wifiListIconName(signalPercent, secure) {
-        const suffix = secure ? "-secure" : "";
-        if (signalPercent < 20) {
-            return "network-wireless" + suffix + "-signal-none";
-        }
-        if (signalPercent < 40) {
-            return "network-wireless" + suffix + "-signal-low";
-        }
-        if (signalPercent < 60) {
-            return "network-wireless" + suffix + "-signal-ok";
-        }
-        if (signalPercent < 80) {
-            return "network-wireless" + suffix + "-signal-good";
-        }
-        return "network-wireless" + suffix + "-signal-excellent";
     }
 
     function wifiListIconSource(signalPercent, secure) {
@@ -1227,50 +1599,51 @@ ShellRoot {
         }
     }
 
+    function resetWifiStatus() {
+        wifiDevicePresent = false;
+        wifiRadioEnabled = false;
+        wifiHardwareEnabled = true;
+        wifiConnected = false;
+        wifiInterface = "";
+        wifiSsid = "";
+        wifiSecure = false;
+        wifiSignalStrength = 0;
+        wifiNetworks = [];
+    }
+
+    function applyWifiStatus(data) {
+        const devicePresent = !!data.present;
+        const iface = data.iface || "";
+
+        resetWifiStatus();
+        wifiHardwareEnabled = data.hardwareEnabled !== false;
+        wifiDevicePresent = devicePresent;
+        if (devicePresent || iface.length > 0) {
+            wifiCapabilityDetected = true;
+        }
+
+        if (!devicePresent) {
+            return;
+        }
+
+        wifiRadioEnabled = !!data.enabled;
+        wifiConnected = !!data.connected;
+        wifiInterface = iface;
+        wifiSsid = data.ssid || "";
+        wifiSecure = (data.security || "").trim().length > 0;
+        wifiSignalStrength = wifiConnected ? Math.max(0, Math.min(1, (Number(data.signal) || 0) / 100)) : 0;
+        wifiNetworks = Array.isArray(data.networks) ? data.networks : [];
+    }
+
     function updateWifiStatus(raw) {
         if (!raw) {
-            wifiDevicePresent = false;
-            wifiRadioEnabled = false;
-            wifiHardwareEnabled = true;
-            wifiConnected = false;
-            wifiInterface = "";
-            wifiSsid = "";
-            wifiSecure = false;
-            wifiSignalStrength = 0;
-            wifiNetworks = [];
+            resetWifiStatus();
             return;
         }
         try {
-            const data = JSON.parse(raw);
-            wifiDevicePresent = !!data.present;
-            wifiRadioEnabled = !!data.enabled;
-            wifiHardwareEnabled = data.hardwareEnabled !== false;
-            wifiConnected = !!data.connected;
-            wifiInterface = data.iface || "";
-            wifiSsid = data.ssid || "";
-            wifiSecure = (data.security || "").trim().length > 0;
-            wifiSignalStrength = wifiConnected ? Math.max(0, Math.min(1, (Number(data.signal) || 0) / 100)) : 0;
-            wifiNetworks = Array.isArray(data.networks) ? data.networks : [];
-
-            if (!wifiDevicePresent) {
-                wifiRadioEnabled = false;
-                wifiConnected = false;
-                wifiInterface = "";
-                wifiSsid = "";
-                wifiSecure = false;
-                wifiSignalStrength = 0;
-                wifiNetworks = [];
-            }
+            applyWifiStatus(JSON.parse(raw));
         } catch (_) {
-            wifiDevicePresent = false;
-            wifiRadioEnabled = false;
-            wifiHardwareEnabled = true;
-            wifiConnected = false;
-            wifiInterface = "";
-            wifiSsid = "";
-            wifiSecure = false;
-            wifiSignalStrength = 0;
-            wifiNetworks = [];
+            resetWifiStatus();
         }
     }
 
@@ -1585,6 +1958,20 @@ ShellRoot {
         }
     }
 
+    PollCommand {
+        id: batteryInfoPoll
+
+        interval: batteryInfoPopup.openVisible ? 1000 : 30000
+        command: ["sh", root.configDir + "/quickshell/scripts/battery-info.sh"]
+        onUpdated: function(output, exitCode) {
+            if (exitCode === 0) {
+                root.updateBatteryInfo(output);
+            } else {
+                root.resetBatteryInfo();
+            }
+        }
+    }
+
     TrayMenuPopup {
         id: trayMenuPopup
 
@@ -1593,6 +1980,10 @@ ShellRoot {
         Component.onDestruction: if (root.trayMenuController === this) {
             root.trayMenuController = null;
         }
+    }
+
+    BatteryInfoPopup {
+        id: batteryInfoPopup
     }
 
     Variants {
@@ -1786,11 +2177,25 @@ ShellRoot {
                             onLeftClicked: root.runDetached(["alacritty", "-t", "btop", "-o", "window.startup_mode=Fullscreen", "-e", "btop"])
                         }
 
-                        TextModule {
-                            label: root.batteryText
-                            textColor: root.batteryCritical && !root.batteryCharging ? root.criticalColor : root.batteryColor
-                            paddingLeft: 8
-                            paddingRight: 8
+                        Item {
+                            id: batteryTrigger
+
+                            width: batteryModule.implicitWidth
+                            height: batteryModule.implicitHeight
+                            implicitWidth: batteryModule.implicitWidth
+                            implicitHeight: batteryModule.implicitHeight
+
+                            TextModule {
+                                id: batteryModule
+
+                                anchors.fill: parent
+                                label: root.batteryText
+                                textColor: root.batteryCritical && !root.batteryCharging ? root.criticalColor : root.batteryColor
+                                interactive: root.batteryText.length > 0
+                                paddingLeft: 8
+                                paddingRight: 8
+                                onLeftClicked: batteryInfoPopup.toggleFor(batteryTrigger, barWindow)
+                            }
                         }
                     }
 
@@ -1843,7 +2248,7 @@ ShellRoot {
                                 id: wifiTrayLoader
                                 anchors.fill: parent
                                 active: root.wifiWidgetVisible
-                                source: Qt.resolvedUrl("WifiFallback.qml")
+                                source: Qt.resolvedUrl("WifiNative.qml")
 
                                 onLoaded: {
                                     if (item) {
