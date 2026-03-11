@@ -1,0 +1,15 @@
+configuration {
+    modi: "run,window,combi,drun";
+    icon-theme: "Papirus-Dark";
+    show-icons: true;
+    font: "JetBrainsMono NF Bold 12";
+    terminal: "alacritty";
+    drun-display-format: "{icon} {name}";
+    location: 0;
+    disable-history: false;
+    display-drun: " Aplicaciones:";
+    hide-scrollbar: true;
+    sidebar-mode: false;
+}
+
+@theme "colors.rasi"

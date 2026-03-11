@@ -1,0 +1,47 @@
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    font-size: 18px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: #e7e7ec;
+    color: #2b2b2c;
+}
+
+tooltip {
+    background: #e7e7ec;
+    opacity: 0.8;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #11111b;
+}
+
+tooltip label{
+    color: #2b2b2c;
+}
+
+#custom-power_btn,
+#custom-power_profile,
+#memory,
+#clock,
+#battery,
+#custom-light_dark,
+#tray{
+    background: #e7e7ec;
+    opacity: 1;
+    padding: 0px 8px;
+    margin: 0px 3px;
+    border: 0px;
+}
+
+
+#custom-power_profile, #battery {
+    color: #1d7715;
+    border-left: 0px;
+    border-right: 0px;
+}

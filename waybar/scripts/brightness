@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+
+###########################################################
+#   脚本功能：在亮度范围 1～400 上，以指数映射的方式
+#           实现 100 级增减，每次调用脚本自动加/减一级。
+#   说明：
+#     - MIN、MAX 分别表示物理最小/最大亮度值（此处固定为 1、400）。
+#     - LEVEL 范围 [0,100]，每次 inc/dec 对应 level +/-1。
+#     - 最终映射关系： new = round( exp( log(MAX) * level / 100 ) )
+#     - 图标按 level 分段（0-20、21-40、41-60、61-80、81-100）选取。
+###########################################################
+
+## 1. 常量定义 ##
+iDIR="$HOME/.config/HyprV/mako/icons"   # 图标目录
+MIN=1
+MAX=400
+MIN_STEP=1  # 最低亮度变化量
+
+# 启动时预先计算 log(MAX)
+#   使用 bc -l 计算自然对数：
+MAX_LOG=$(echo "l($MAX)" | bc -l)
+
+###########################################################
+#   get_current():
+#     返回当前亮度（raw value），即 brightnessctl g 的输出。
+###########################################################
+get_current() {
+    brightnessctl g
+}
+
+###########################################################
+#   level_from_value(cur):
+#     输入 cur（1～400），计算对应的 [0,100] 级别（整数，floor）。
+#     level = floor( 100 * ln(cur) / ln(MAX) )
+###########################################################
+level_from_value() {
+    local cur="$1"
+    if (( cur <= MIN )); then
+        echo 0
+        return
+    elif (( cur >= MAX )); then
+        echo 100
+        return
+    fi
+
+    # 利用 bc -l 做浮点运算，再向下取整
+    # 注意：ln(cur) / MAX_LOG * 100
+    local level_float
+    level_float=$(echo "scale=6; l($cur) / $MAX_LOG * 100" | bc -l)
+    # floor 操作：直接截取小数点前部分即可
+    local level_int="${level_float%.*}"
+    echo "$level_int"
+}
+
+###########################################################
+#   value_from_level(level):
+#     输入 level（0～100），输出对应的 “物理亮度” 值（1～400），四舍五入到最近整数。
+#     new = round( exp( MAX_LOG * level / 100 ) )
+###########################################################
+value_from_level() {
+    local level="$1"
+
+    # 如果 level=0，则返回最小值 MIN；如果 level=100，则返回 MAX
+    if (( level <= 0 )); then
+        echo "$MIN"
+        return
+    elif (( level >= 100 )); then
+        echo "$MAX"
+        return
+    fi
+
+    # 计算 exp( MAX_LOG * level / 100 )
+    # 然后用 printf "%.0f" 四舍五入
+    local exp_arg
+    exp_arg=$(echo "scale=8; $MAX_LOG * $level / 100" | bc -l)
+    # 计算指数
+    local raw_val
+    raw_val=$(echo "e($exp_arg)" | bc -l)
+    # 四舍五入到整数
+    local rounded
+    rounded=$(printf "%.0f" "$raw_val")
+    # 防止越界
+    if (( rounded < MIN )); then
+        echo "$MIN"
+    elif (( rounded > MAX )); then
+        echo "$MAX"
+    else
+        echo "$rounded"
+    fi
+}
+
+###########################################################
+#   get_icon(level):
+#     根据 level（0～100）选择对应的图标，共 5 段：
+#       [  0～20 ] → brightness-20.png
+#       [21～40 ] → brightness-40.png
+#       [41～60 ] → brightness-60.png
+#       [61～80 ] → brightness-80.png
+#       [81～100] → brightness-100.png
+###########################################################
+get_icon() {
+    local level="$1"
+    local icon_file=""
+
+    if (( level <= 20 )); then
+        icon_file="brightness-20.png"
+    elif (( level <= 40 )); then
+        icon_file="brightness-40.png"
+    elif (( level <= 60 )); then
+        icon_file="brightness-60.png"
+    elif (( level <= 80 )); then
+        icon_file="brightness-80.png"
+    else
+        icon_file="brightness-100.png"
+    fi
+
+    echo "$iDIR/$icon_file"
+}
+
+###########################################################
+#   notify_user(new_val, icon_path):
+#     调用 notify-send，通知当前亮度值（原始值）。
+###########################################################
+notify_user() {
+    local new_val="$1"
+    local icon_path="$2"
+
+    notify-send -h string:x-canonical-private-synchronous:sys-notify \
+                -u low -i "$icon_path" \
+                "Brightness: $new_val"
+}
+
+###########################################################
+#   inc_brightness():
+#     将当前亮度对应的 level + 1，然后写回实际值并通知。
+###########################################################
+inc_brightness() {
+    local cur_val level new_level new_val icon_path
+    cur_val=$(get_current)
+    level=$(level_from_value "$cur_val")
+    new_level=$(( level + 2 ))
+    if (( new_level > 100 )); then
+        new_level=100
+    fi
+    new_val=$(value_from_level "$new_level")
+    if (( new_val < 8 )); then
+        new_val=$(( cur_val + 1))
+    fi
+    icon_path=$(get_icon "$new_level")
+    brightnessctl set "${new_val}raw"  # 添加 raw
+    notify_user "$new_val" "$icon_path"
+}
+
+
+###########################################################
+#   dec_brightness():
+#     将当前亮度对应的 level - 1，然后写回实际值并通知。
+###########################################################
+dec_brightness() {
+    local cur_val level new_level new_val icon_path
+    cur_val=$(get_current)
+    level=$(level_from_value "$cur_val")
+    new_level=$(( level - 1 ))
+    new_val=$(value_from_level "$new_level")
+    # 确保亮度不会低于 MIN_STEP
+    if (( new_val < 5 )); then
+        new_val=$(( cur_val - 1))
+    fi
+    icon_path=$(get_icon "$new_level")
+    brightnessctl set "$new_val"
+    notify_user "$new_val" "$icon_path"
+}
+
+###########################################################
+#   get_direct():
+#     直接读取并打印当前亮度（raw value）。
+###########################################################
+get_direct() {
+    brightnessctl g
+}
+
+###########################################################
+#   脚本入口
+#     接受参数：--get  / --inc  / --dec
+###########################################################
+case "$1" in
+    --get)
+        get_direct
+        ;;
+    --inc)
+        inc_brightness
+        ;;
+    --dec)
+        dec_brightness
+        ;;
+    *)
+        echo "Usage: $0 [--get | --inc | --dec]"
+        exit 1
+        ;;
+esac
+
+#exit 0

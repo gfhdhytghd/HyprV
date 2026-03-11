@@ -1,0 +1,125 @@
+/***
+ *    ┏┓┏┓┓ ┏┓┳┓┏┓
+ *    ┃ ┃┃┃ ┃┃┣┫┗┓
+ *    ┗┛┗┛┗┛┗┛┛┗┗┛
+ *                
+ */
+
+
+/*--------Importing matugen colors-----*/
+@import '~/.config/rofi/matugen/matugen-rofi.rasi'
+
+
+/*--------Color definitions------------*/
+
+* {
+       /* Waybar v2 light palette mapping */
+       background:       #e7e7ec;        /* base bg */
+       background-alt:   #f0f0f4;        /* slightly lighter alt */
+       background-alpha: 0.8;            /* match semi-transparency vibe */
+       foreground:       #2b2b2c;        /* primary text */
+       border-color:     #11111b;        /* dark accent border */
+       selected:         #313244;        /* active workspace text tone */
+       selected-text:    #e7e7ec;        /* text on accent blocks */
+       active:           #407cdd;        /* blue accent */
+       urgent:           #e92d4d;        /* critical red */
+       width: 600;
+}
+element-text, element-icon , mode-switcher {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+window {
+    height: 360px;
+    border: 3px;
+    border-color: @border-color;
+    background-color: @background;
+    border-radius: 20px;
+}
+
+mainbox {
+    background-color: @background;
+}
+
+inputbar {
+    children: [prompt,entry];
+    background-color: @background;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+prompt {
+    background-color: @active;
+    padding: 6px;
+    text-color: @selected-text;
+    border-radius: 3px;
+    margin: 20px 0px 0px 20px;
+}
+
+textbox-prompt-colon {
+    expand: false;
+    str: ":";
+}
+
+entry {
+    padding: 6px;
+    margin: 20px 0px 0px 10px;
+    text-color: @foreground;
+    background-color: @background;
+}
+
+listview {
+    border: 0px 0px 0px;
+    padding: 6px 0px 0px;
+    margin: 10px 0px 0px 20px;
+    columns: 1;
+    lines: 5;
+    background-color: @background;
+}
+
+element {
+    padding: 5px;
+    background-color: @background;
+    text-color: @foreground;
+}
+
+element-icon {
+    size: 25px;
+}
+
+element selected {
+    background-color: @background;
+    text-color: @active;
+}
+
+mode-switcher {
+    spacing: 0;
+  }
+
+button {
+    padding: 10px;
+    background-color: @active;
+    text-color: @selected-text;
+    vertical-align: 0.5; 
+    horizontal-align: 0.5;
+}
+
+button selected {
+  background-color: @background;
+  text-color: @active;
+}
+
+message {
+    background-color: @background;
+    margin: 2px;
+    padding: 2px;
+    border-radius: 10px;
+}
+
+textbox {
+    padding: 6px;
+    margin: 20px 0px 0px 20px;
+    text-color: @active;
+    background-color: @background;
+}

@@ -1,0 +1,10 @@
+swipe:
+  3:
+    up:
+      command: "$HOME/.config/hypr/scripts/dropdown.sh"
+    down:
+      command: "$HOME/.config/hypr/scripts/dropdown.sh"
+    left:
+      command: "$HOME/.config/hypr/scripts/sidechat.sh"
+    right:
+      command: "$HOME/.config/hypr/scripts/sidechat.sh"

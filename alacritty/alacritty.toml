@@ -1,0 +1,56 @@
+## Alacritty Theme mirrored from kitty/current-theme.conf (1984)
+[colors.primary]
+background = "#ffffff"
+foreground = "#000000"
+
+[colors.selection]
+text = "#ffffff"
+background = "#00d5eb"
+
+[colors.cursor]
+text = "#ffffff"
+cursor = "#0d0f31"
+
+[colors.normal]
+black   = "#000000" # color0
+red     = "#ff16b0" # color1
+green   = "#2E7D32" # color2
+yellow  = "#ffea16" # color3
+blue    = "#46bdff" # color4
+magenta = "#f806fa" # color5
+cyan    = "#59e1e3" # color6
+white   = "#feffff" # color7
+
+[colors.bright]
+black   = "#000000" # color8
+red     = "#ff16b0" # color9
+green   = "#b3f361" # color10
+yellow  = "#ffea16" # color11
+blue    = "#46bdff" # color12
+magenta = "#f806fa" # color13
+cyan    = "#6be4e6" # color14
+white   = "#feffff" # color15
+
+[font]
+
+[font.normal]
+family = "Iosevka Term"
+style = "Regular"
+
+[font.bold]
+family = "Iosevka Term"
+style = "Bold"
+
+[font.italic]
+family = "Iosevka Term"
+style = "Italic"
+
+[window]
+opacity = 0.8 
+padding = { x = 4, y = 4 }   # x=左右同时生效；y=上下同时生效
+dynamic_padding = true   
+
+[keyboard]
+bindings = [
+  { key = "T", mods = "Control|Shift", action = "CreateNewWindow" }
+]

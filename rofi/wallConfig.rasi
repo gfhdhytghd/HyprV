@@ -1,0 +1,84 @@
+@import "~/.config/rofi/matugen/matugen-rofi.rasi"
+
+configuration {
+    modi: "dmenu";
+    show-icons: true;
+    drun-display-format: "{name}";
+    font: "JetBrainsMono NF 12";
+}
+
+* {
+    main-bg: @surface;
+    main-fg: @on-surface;
+    select-bg: @primary;
+    select-fg: @surface;
+}
+
+window {
+    enabled: true;
+    fullscreen: false;
+    width: 50%;
+    transparency: "off";
+    cursor: "default";
+    spacing: 5px;
+    padding: 10px;
+    border: 2px;
+    border-radius: 10px;
+    border-color: @select-bg;
+    background-color: @main-bg;
+}
+
+mainbox {
+    enabled: true;
+    children: [ "listview" ];
+    background-color: @main-bg;
+}
+
+listview {
+    enabled: true;
+    columns: 1;
+    lines: 3;
+    spacing: 10px;
+    padding: 10px;
+    cycle: true;
+    dynamic: false;
+    scrollbar: false;
+    layout: vertical;
+    fixed-height: true;
+    cursor: "default";
+    background-color: @main-bg;
+    text-color: @main-fg;
+}
+
+element {
+    enabled: true;
+    orientation: horizontal;
+    spacing: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: transparent;
+    text-color: @main-fg;
+}
+
+element selected.normal {
+    background-color: @select-bg;
+    text-color: @select-fg;
+}
+
+element-text {
+    vertical-align: 0.5;
+    horizontal-align: 0.5;
+    padding: 10px;
+    cursor: inherit;
+    background-color: transparent;
+    text-color: inherit;
+}
+element-icon {
+    size: 20%;
+    cursor: inherit;
+    border-radius: 0px;
+    background-color: transparent;
+    text-color: inherit;
+}
+

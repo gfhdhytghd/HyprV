@@ -1,0 +1,9 @@
+#!/bin/bash
+TOGGLE=/tmp/$1
+if [ -f "$TOGGLE" ]; then
+    rm $TOGGLE &&
+    $2 
+else
+    touch $TOGGLE &&
+    $3
+fi

@@ -1,0 +1,99 @@
+/* ========== Konsole Tab Bar – Minimal, Rounded, Adaptive ========== */
+/* 只作用于标签栏，尽量不影响其它控件。 */
+
+QTabBar {
+  qproperty-drawBase: 0;              /* 不绘制默认底座 */
+  qproperty-elideMode: ElideRight;    /* 文字过长右侧省略 */
+  qproperty-usesScrollButtons: 1;     /* 多标签启用滚动按钮 */
+  padding: 0px;
+  margin: 0;
+}
+
+/* 基础标签形态（未选中） */
+QTabBar::tab {
+  padding: 2px 0px 2px 4px;
+  margin: 4px 0px 0px 4px;
+  border: 0px solid palette(mid);
+  border-radius: 4px;
+  color: palette(text);
+  /* 让高度更匀称些 */
+  min-height: 14px;
+}
+
+/* 悬停：轻微提亮底色 */
+QTabBar::tab:hover {
+  background: palette(alternate-base);
+}
+
+/* 选中态：用主题高亮色块、加粗文字 */
+QTabBar::tab:selected {
+  background: palette(highlight);
+  color: palette(highlighted-text);
+  border-color: palette(highlight);
+  font-weight: 600;
+}
+
+/* 非激活窗口时的标签栏（让整体降一点对比度） */
+QTabBar:!active::tab:selected {
+  background: palette(midlight);
+  color: palette(text);
+  border-color: palette(mid);
+}
+QTabBar:!active::tab {
+  color: palette(mid);
+  border-color: palette(mid);
+}
+
+/* 紧凑/拉伸策略：最小宽度，避免过窄难读 */
+QTabBar::tab { min-width: 120px; }
+QTabBar[expanding="true"]::tab { min-width: 0; } /* 若样式被设置为可拉伸时不强求最小宽 */
+
+/* 关闭按钮：保持简洁，悬停时出现背景圆点 */
+QTabBar::close-button {
+  subcontrol-position: right;
+  width: 16px; height: 16px;
+  margin-left: 6px;
+  border-radius: 8px;
+  background: transparent;
+}
+QTabBar::close-button:hover {
+  background: palette(dark);
+}
+QTabBar::close-button:pressed {
+  background: palette(highlight);
+}
+
+/* “+ 新建标签”与滚动按钮：统一圆角微底色 */
+QTabBar QToolButton {
+  padding: 4px 8px;
+  margin: 0 2px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: palette(text);
+}
+QTabBar QToolButton:hover {
+  background: palette(alternate-base);
+  border-color: palette(mid);
+}
+QTabBar QToolButton:pressed {
+  background: palette(highlight);
+  color: palette(highlighted-text);
+  border-color: palette(highlight);
+}
+
+/* 去除某些风格的“撕裂”装饰 */
+QTabBar::tear { width: 0; height: 0; }
+
+/* 顶部/底部/左右方向的外边距微调（防止贴边） */
+QTabBar::tab:top    { margin-top:    4px; }
+QTabBar::tab:bottom { margin-bottom: 4px; }
+QTabBar::tab:left   { margin-left:   4px; }
+QTabBar::tab:right  { margin-right:  8px; }
+
+/* 焦点可视化（键盘导航时更易见） */
+QTabBar::tab:focus {
+  outline: none;
+  border: 1px solid palette(highlight);
+}
+

@@ -1,0 +1,336 @@
+windows_number=$(hyprctl clients -j | jq 'length')
+
+get_cursor_position() {
+    cursor_x=$(hyprctl cursorpos -j | jq -r '.x')
+    cursor_y=$(hyprctl cursorpos -j | jq -r '.y')
+}
+
+get_cursor_monitor_wh() {
+    local cursor_x cursor_y
+    get_cursor_position
+    eval $(hyprctl monitors -j | jq -r --argjson mx "$cursor_x" --argjson my "$cursor_y" '
+  .[]
+  | select($mx >= .x and $mx < (.x + .width) and $my >= .y and $my < (.y + .height))
+  | "curr_monitor_width=\(.width) curr_monitor_height=\(.height)"
+')
+}
+
+# 返回当前鼠标所在显示器的 ID（纯数字）
+get_cursor_monitor_id() {
+  # 把 x y 挤成一行，避免 read 分行混乱
+  read -r mx my < <(hyprctl cursorpos -j | jq -r '"\(.x) \(.y)"')
+
+  hyprctl monitors -j | jq -r --argjson mx "$mx" --argjson my "$my" '
+    .[]
+    | select(
+        ($mx >= .x) and ($mx <= (.x + .width  - 1)) and
+        ($my >= .y) and ($my <= (.y + .height - 1))
+      )
+    | .id
+  ' | head -n1
+}
+
+# Core layout generator
+# mission_control_layout WIDTH HEIGHT COUNT [--margin T R B L] [--padding T R B L] [--bases "2x4,3x5,..."] [--force "7:4,3;3:2,1;9:3,3,3"]
+# 说明：
+# - 外边距：使用 --margin 参数，可提供1个或4个值，默认20
+# - 内边距：使用 --padding 参数，可提供1个或4个值，默认5
+# - --bases：逗号分隔的 rxc 列表；每个 rxc 还会自动加入 (r-1)x(c+1) 作为候选（若 r>1）
+# - --force：分号分隔的映射；形如 N:row1,row2,...    例：7:4,3  或 9:3,3,3
+#   命中 N 时按各行列数严格布局（每行可不同列数），其余参数忽略
+layout_mission_control() {
+  local W="$1" H="$2" N="$3"
+  shift 3 || true
+
+  # 默认外边距
+  local T=20 R=20 B=20 L=20
+  # 默认内边距
+  local PT=5 PR=5 PB=5 PL=5
+  local BASES="" FORCE_MAP=""
+
+  # 解析命名参数
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --margin)
+        if [[ $# -ge 5 && $3 != --* && $4 != --* && $5 != --* ]]; then
+          # 四个值：--margin T R B L
+          T="$2"; R="$3"; B="$4"; L="$5"; shift 5
+        elif [[ $# -ge 2 && $2 != --* ]]; then
+          # 一个值：--margin VALUE
+          T="$2"; R="$2"; B="$2"; L="$2"; shift 2
+        else
+          echo "错误：--margin 需要1个或4个数值参数" >&2; return 1
+        fi
+        ;;
+      --padding)
+        if [[ $# -ge 5 && $3 != --* && $4 != --* && $5 != --* ]]; then
+          # 四个值：--padding PT PR PB PL
+          PT="$2"; PR="$3"; PB="$4"; PL="$5"; shift 5
+        elif [[ $# -ge 2 && $2 != --* ]]; then
+          # 一个值：--padding VALUE
+          PT="$2"; PR="$2"; PB="$2"; PL="$2"; shift 2
+        else
+          echo "错误：--padding 需要1个或4个数值参数" >&2; return 1
+        fi
+        ;;
+      --bases) 
+        if [[ $# -ge 2 && $2 != --* ]]; then
+          BASES="$2"; shift 2
+        else
+          echo "错误：--bases 需要参数" >&2; return 1
+        fi
+        ;;
+      --force) 
+        if [[ $# -ge 2 && $2 != --* ]]; then
+          FORCE_MAP="$2"; shift 2
+        else
+          echo "错误：--force 需要参数" >&2; return 1
+        fi
+        ;;
+      -*) echo "未知参数：$1" >&2; return 1;;
+      *) echo "位置参数错误：$1 (应使用 --margin, --padding 等)" >&2; return 1;;
+    esac
+  done
+
+  if [[ -z "$W" || -z "$H" || -z "$N" || "$N" -le 0 ]]; then
+    echo "usage: mission_control_layout WIDTH HEIGHT COUNT [--margin T R B L] [--padding T R B L] [--bases \"2x4,3x5,...\"] [--force \"7:4,3;...\"]" >&2
+    return 1
+  fi
+
+  local gridW=$(( W - L - R ))
+  local gridH=$(( H - T - B ))
+  (( gridW>0 && gridH>0 )) || { echo "invalid margins (grid <= 0)" >&2; return 1; }
+
+  # 如果 --force 命中 N，按强制映射布局（各行列数可不同）
+  if [[ -n "$FORCE_MAP" ]]; then
+    # 查找 N:pattern
+    local pattern
+    pattern=$(awk -v map="$FORCE_MAP" -v N="$N" '
+      BEGIN{
+        n=split(map,items,";")
+        for(i=1;i<=n;i++){
+          gsub(/^ +| +$/,"",items[i])
+          if(items[i]=="") continue
+          m=split(items[i],kv,":")
+          if(m==2){
+            gsub(/^ +| +$/,"",kv[1]); gsub(/^ +| +$/,"",kv[2])
+            if(kv[1]==N){ print kv[2]; exit }
+          }
+        }
+      }')
+    if [[ -n "$pattern" ]]; then
+      # pattern: "4,3" => 两行，第一行4列，第二行3列
+      # 逐行等高布局，行高 = floor(gridH / 行数)，每行 cellW = floor(gridW / 该行列数)，并水平居中
+      local rows
+      rows=$(awk -v p="$pattern" 'BEGIN{print split(p,tmp,",")}')
+      local cellH
+      if [[ "$rows" -le 0 ]]; then
+        echo "错误：行数不能为0或负数" >&2; return 1
+      fi
+      cellH=$(awk -v gh="$gridH" -v r="$rows" 'BEGIN{printf "%d", int(gh/r)}')
+      local y="$T"
+      local i=0
+
+      # 将逗号分隔的字符串转换为数组，兼容不同shell
+      ROWS_ARR=()
+      while IFS=',' read -r -d ',' value || [[ -n "$value" ]]; do
+        ROWS_ARR+=("$value")
+      done <<< "$pattern,"
+      for rc in "${ROWS_ARR[@]}"; do
+        local cols="$rc"
+        # 这一行的 cellW 和水平起始偏移（居中）
+        local cellW startX
+        if [[ "$cols" -le 0 ]]; then
+          echo "错误：列数不能为0或负数" >&2; return 1
+        fi
+        cellW=$(awk -v gw="$gridW" -v c="$cols" 'BEGIN{printf "%d", int(gw/c)}')
+        startX=$(awk -v gw="$gridW" -v c="$cols" -v cw="$cellW" 'BEGIN{printf "%d", int((gw - c*cw)/2)}')
+        local x=$(( L + startX ))
+        local j=0
+        while (( j < cols && i < N )); do
+          # 输出时减去内边距
+          printf "i=%d x=%d y=%d w=%d h=%d\n" \
+            "$i" \
+            "$((x + PL))" \
+            "$((y + PT))" \
+            "$((cellW - PL - PR))" \
+            "$((cellH - PT - PB))"
+          x=$(( x + cellW ))
+          j=$(( j + 1 ))
+          i=$(( i + 1 ))
+        done
+        y=$(( y + cellH ))
+        (( i >= N )) && return 0
+      done
+      return 0
+    fi
+  fi
+
+  # 生成候选列数（含：平方/近似平方 + bases + bases 的邻居）
+  # 评分规则：
+  #   1) 优先 remainder = cols-1（即末行只少 1 个）
+  #   2) 面积 rows*cols 尽量小
+  #   3) 行列差 |rows-cols| 尽量小
+  # 说明：rows=ceil(N/cols)
+  read -r rows cols < <(awk -v N="$N" -v bases="$BASES" '
+    function ceil(x){ return (x==int(x)?x:int(x)+1) }
+    function abs(x){ return x<0?-x:x }
+    function addcol(c){ if(c<1) return; seen[c]++; cols[++m]=c }
+
+    BEGIN{
+      # 候选 1：近似平方（以 sqrt 为中心 ±20%）
+      root = sqrt(N)
+      cmin = int(root*0.8); if(cmin<1) cmin=1
+      cmax = ceil(root*1.2)
+      for(c=cmin; c<=cmax; c++) addcol(c)
+
+      # 候选 2：用户 bases（及邻居 r-1 x c+1 -> 用其列 c 与 c+1）
+      if(length(bases)){
+        n=split(bases,arr,",")
+        for(i=1;i<=n;i++){
+          gsub(/^ +| +$/,"",arr[i]); if(arr[i]=="") continue
+          split(arr[i],rc,"x"); r=rc[1]+0; c=rc[2]+0
+          if(c>0) addcol(c)
+          if(r>1) addcol(c+1)   # 邻居  (r-1) x (c+1)，体现你给的 2x4 -> 1x5 示例
+        }
+      }
+
+      # 候选 3：兜底（1..min(N, 2*root+5)）
+      limit = int(2*root+5); if(limit<1) limit=1; if(limit>N) limit=N
+      for(c=1; c<=limit; c++) addcol(c)
+
+      # 选择最优
+      bestDef=1e9; bestArea=1e18; bestDiff=1e18; br=0; bc=0
+      for(i=1;i<=m;i++){
+        c = cols[i]
+        rows = ceil(N/c)
+        lastCount = N - (rows-1)*c; if(lastCount<=0) lastCount=c
+        def = c - lastCount  # 末行缺口
+        # 评分 1：def==1 最优 -> 赋 0；否则 1
+        pref = (def==1 ? 0 : 1)
+        area = rows*c
+        diff = abs(rows-c)
+        if( pref < bestDef ||
+           (pref==bestDef && (area<bestArea ||
+           (area==bestArea && diff<bestDiff))) ){
+          bestDef=pref; bestArea=area; bestDiff=diff; br=rows; bc=c
+        }
+      }
+      print br, bc
+    }')
+
+  # 统一网格尺寸（每行等宽列；末行不足时居中）
+  local cellW cellH
+  if [[ "$cols" -le 0 || "$rows" -le 0 ]]; then
+    echo "错误：计算得到的行数或列数无效 (rows=$rows, cols=$cols)" >&2; return 1
+  fi
+  cellW=$(awk -v gw="$gridW" -v c="$cols" 'BEGIN{printf "%d", int(gw/c)}')
+  cellH=$(awk -v gh="$gridH" -v r="$rows" 'BEGIN{printf "%d", int(gh/r)}')
+
+  local used_rows=$(( (N + cols - 1) / cols ))
+  local used_prev=$(( (used_rows - 1) * cols ))
+  local last_count=$(( N - used_prev ))
+  (( last_count<=0 )) && last_count="$cols"
+
+  local i=0
+  while (( i < N )); do
+    local r=$(( i / cols ))
+    local y=$(( T + r * cellH ))
+    local this_cols="$cols"
+    if (( r == used_rows - 1 )); then this_cols="$last_count"; fi
+    local startX
+    startX=$(awk -v gw="$gridW" -v c="$cols" -v tc="$this_cols" -v cw="$cellW" \
+      'BEGIN{printf "%d", int(((c - tc)*cw)/2)}')
+    local x=$(( L + startX ))
+    local c=0
+    while (( c < this_cols && i < N )); do
+      # 输出时减去内边距
+      printf "i=%d x=%d y=%d w=%d h=%d\n" \
+        "$i" \
+        "$((x + PL))" \
+        "$((y + PT))" \
+        "$((cellW - PL - PR))" \
+        "$((cellH - PT - PB))"
+      x=$(( x + cellW ))
+      c=$(( c + 1 ))
+      i=$(( i + 1 ))
+    done
+  done
+}
+
+# manage_window "address" --workspace <WS> --position <XxY> --size <WxH>
+# 例：manage_window "0x123456789abc" --workspace 4 --position 120x80 --size 1280x720
+# manage_window "address" --workspace <WS> --position <XxY> --size <WxH>
+# 执行顺序：set floating -> resize -> movetoworkspace -> move
+
+# manage_window "address" --workspace <WS> --position <XxY> --size <WxH>
+# 顺序：setfloating on -> resize -> movetoworkspace -> move（位置按目标显示器的局部坐标解释）
+# manage_window "address" --workspace <WS> --position <XxY> --size <WxH>
+# 顺序：setfloating(toggle) -> resize -> movetoworkspace -> move（位置按目标显示器局部坐标解释）
+manage_window() {
+  if [[ -z "$1" ]]; then
+    echo 'usage: manage_window "address" [--workspace WS] [--position XxY] [--size WxH]' >&2
+    return 1
+  fi
+  local ADDR="$1"; shift
+
+  local WS="" POS="" SIZE=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --workspace) WS="$2"; shift 2;;
+      --position)  POS="$2"; shift 2;;
+      --size)      SIZE="$2"; shift 2;;
+      *) echo "Unknown arg: $1" >&2; return 1;;
+    esac
+  done
+
+  # 解析位置
+  local X="" Y=""
+  if [[ -n "$POS" ]]; then
+    if [[ "$POS" =~ ^([0-9]+)x([0-9]+)$ ]]; then
+      X="${BASH_REMATCH[1]}"; Y="${BASH_REMATCH[2]}"
+    else
+      echo "Bad --position format. Use XxY, e.g. 200x80" >&2
+      return 1
+    fi
+  fi
+
+  # 解析尺寸
+  local W="" H=""
+  if [[ -n "$SIZE" ]]; then
+    if [[ "$SIZE" =~ ^([0-9]+)x([0-9]+)$ ]]; then
+      W="${BASH_REMATCH[1]}"; H="${BASH_REMATCH[2]}"
+    else
+      echo "Bad --size format. Use WxH, e.g. 500x500" >&2
+      return 1
+    fi
+  fi
+
+  # 1) 切换为浮动（你要求的形式：toggle；若需强制 on，把下一行改成：setfloating "on,address:${ADDR}"）
+  hyprctl dispatch setfloating "address:${ADDR}" || true
+
+  # 2) 调整大小（如有）
+  if [[ -n "$W" && -n "$H" ]]; then
+    hyprctl dispatch resizewindowpixel "exact ${W} ${H},address:${ADDR}" || true
+  fi
+
+  # 3) 移动到目标工作区（如有）
+  if [[ -n "$WS" ]]; then
+    hyprctl dispatch movetoworkspace "${WS},address:${ADDR}" || true
+  fi
+
+  # 4) 按“当前所在显示器”的局部坐标定位（若换了工作区，会以换完后的显示器为基准）
+  if [[ -n "$X" && -n "$Y" ]]; then
+    # 重新读取窗口所在显示器
+    mid=$(get_cursor_monitor_id)
+    read -r mon_x mon_y < <(hyprctl monitors -j | jq -r --argjson id "$mid" \
+      '.[] | select(.id==$id) | "\(.x) \(.y)"')
+
+    GX=$(( mon_x + X ))
+    GY=$(( mon_y + Y ))
+
+    hyprctl dispatch movewindowpixel "exact ${GX} ${GY},address:${ADDR}" || true
+  fi
+}
+
+

@@ -1,0 +1,56 @@
+/***
+ *    ┳┳┓┏┓┏┳┓┳┳┏┓┏┓┳┓  ┳┓┏┓┏┓┳
+ *    ┃┃┃┣┫ ┃ ┃┃┃┓┣ ┃┃━━┣┫┃┃┣ ┃
+ *    ┛ ┗┛┗ ┻ ┗┛┗┛┗┛┛┗  ┛┗┗┛┻ ┻
+ *                             
+ */
+
+
+* {
+    primary: #ffb4a9;
+    primary-fixed: #ffdad5;
+    primary-fixed-dim: #ffb4a9;
+    on-primary: #561e17;
+    on-primary-fixed: #3b0905;
+    on-primary-fixed-variant: #73342b;
+    primary-container: #73342b;
+    on-primary-container: #ffdad5;
+    secondary: #e7bdb6;
+    secondary-fixed: #ffdad5;
+    secondary-fixed-dim: #e7bdb6;
+    on-secondary: #442925;
+    on-secondary-fixed: #2c1512;
+    on-secondary-fixed-variant: #5d3f3b;
+    secondary-container: #5d3f3b;
+    on-secondary-container: #ffdad5;
+    tertiary: #dec38c;
+    tertiary-fixed: #fcdfa6;
+    tertiary-fixed-dim: #dec38c;
+    on-tertiary: #3e2e04;
+    on-tertiary-fixed: #251a00;
+    on-tertiary-fixed-variant: #574419;
+    tertiary-container: #574419;
+    on-tertiary-container: #fcdfa6;
+    error: #ffb4ab;
+    on-error: #690005;
+    error-container: #93000a;
+    on-error-container: #ffdad6;
+    surface: #1a1110;
+    surface-alpha: rgba(26, 17, 16, 0.7);
+    on-surface: #f1dedc;
+    on-surface-variant: #d8c2be;
+    outline: #a08c89;
+    outline-variant: #534341;
+    shadow: #000000;
+    scrim: #000000;
+    inverse-surface: #f1dedc;
+    inverse-on-surface: #392e2c;
+    inverse-primary: #904a41;
+    surface-dim: #1a1110;
+    surface-bright: #423735;
+    surface-container-lowest: #140c0b;
+    surface-container-low: #231918;
+    surface-container: #271d1c;
+    surface-container-high: #322826;
+    surface-container-highest: #3d3231;
+}
