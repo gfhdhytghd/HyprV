@@ -24,6 +24,10 @@ ShellRoot {
     property string defaultInterface: ""
     property real networkRxRate: 0
     property real networkTxRate: 0
+    property var cpuHistory: []
+    property var memoryHistory: []
+    property var networkHistory: []
+    property var cpuCoreUsages: []
     property bool wifiDevicePresent: false
     property bool wifiRadioEnabled: false
     property bool wifiHardwareEnabled: true
@@ -46,11 +50,14 @@ ShellRoot {
 
     property real _previousCpuTotal: -1
     property real _previousCpuIdle: -1
+    property var _previousCpuCoreTotals: []
+    property var _previousCpuCoreIdles: []
     property real _previousRxBytes: -1
     property real _previousTxBytes: -1
     property string _previousInterface: ""
 
-    readonly property color moduleBackground: withAlpha(darkMode ? "#1e1e2e" : "#e7e7ec", 0.8)
+    readonly property real pillOpacity: 0.8
+    readonly property color moduleBackground: withAlpha(darkMode ? "#1e1e2e" : "#e7e7ec", pillOpacity)
     readonly property color primaryText: darkMode ? "#cdd6f4" : "#2b2b2c"
     readonly property color mutedWorkspaceText: darkMode ? "#575b6a" : "#859ABF"
     readonly property color activeWorkspaceText: darkMode ? "#0c0d14" : "#1b1b1b"
@@ -61,11 +68,15 @@ ShellRoot {
     readonly property color batteryColor: darkMode ? "#a6e3a1" : "#1d7715"
     readonly property color microphoneColor: darkMode ? "#cba6f7" : "#ad6bfd"
     readonly property color criticalColor: "#e92d4d"
+    readonly property color usageLowColor: darkMode ? "#7ad48b" : "#2f9e44"
+    readonly property color usageMediumColor: darkMode ? "#f2d36b" : "#c99700"
     readonly property color mediaInactiveColor: darkMode ? "#6c7086" : "#808080"
     readonly property color workspaceHoverBackground: darkMode ? "#000000" : activeWorkspaceBackground
+    readonly property color systemChartAccent: darkMode ? "#d7a26a" : "#b9782f"
     readonly property string baseFont: "JetBrainsMono Nerd Font"
     readonly property string iconFont: "NotoSansMono Nerd Font"
     readonly property int trayMenuTextPixelSize: 14
+    readonly property int statsHistoryLimit: 120
 
     readonly property var hyprWorkspaces: {
         const values = Array.from(Hyprland.workspaces?.values || []);
@@ -332,7 +343,7 @@ ShellRoot {
         readonly property int menuPadding: 8
         readonly property int menuWidth: 300
         readonly property int menuMaxHeight: 420
-        readonly property color glassFill: withAlpha(root.darkMode ? "#101214" : "#f2f4f7", root.darkMode ? 0.42 : 0.34)
+        readonly property color glassFill: withAlpha(root.darkMode ? "#101214" : "#ffffff", root.darkMode ? 0.42 : 0.28)
         readonly property color glassStroke: withAlpha(root.primaryText, root.darkMode ? 0.14 : 0.10)
         readonly property color hoverFill: withAlpha(root.primaryText, root.darkMode ? 0.10 : 0.12)
         readonly property var rootMenuEntry: menuHandle?.menu || null
@@ -857,7 +868,7 @@ ShellRoot {
         readonly property bool openVisible: popupRequested
         readonly property int popupWidth: 324
         readonly property int popupPadding: 12
-        readonly property color glassFill: withAlpha(root.darkMode ? "#101214" : "#f2f4f7", root.darkMode ? 0.42 : 0.34)
+        readonly property color glassFill: withAlpha(root.darkMode ? "#101214" : "#ffffff", root.darkMode ? 0.42 : 0.28)
         readonly property color glassStroke: withAlpha(root.primaryText, root.darkMode ? 0.14 : 0.10)
         readonly property color mutedTextColor: withAlpha(root.primaryText, root.darkMode ? 0.72 : 0.68)
         property bool popupRequested: false
@@ -1274,6 +1285,29 @@ ShellRoot {
         return (value / (1024 * 1024 * 1024)).toFixed(1) + "GB/s";
     }
 
+    function usageSeverityColor(value) {
+        const number = Number(value);
+        if (!isFinite(number)) {
+            return primaryText;
+        }
+        if (number >= 90) {
+            return criticalColor;
+        }
+        if (number >= 60) {
+            return usageMediumColor;
+        }
+        return usageLowColor;
+    }
+
+    function appendHistory(history, value, limit) {
+        const next = Array.isArray(history) ? history.slice(0) : [];
+        next.push(Math.max(0, Number(value) || 0));
+        if (next.length > limit) {
+            next.splice(0, next.length - limit);
+        }
+        return next;
+    }
+
     function splitSections(text) {
         const sections = {};
         let current = "";
@@ -1470,7 +1504,8 @@ ShellRoot {
 
     function updateSystemStats() {
         const sections = splitSections(systemSnapshot.output);
-        const statLine = (sections.__STAT__ || [])[0] || "";
+        const statLines = sections.__STAT__ || [];
+        const statLine = statLines[0] || "";
         if (statLine) {
             const values = statLine.trim().split(/\s+/).slice(1).map(v => parseInt(v, 10));
             const idle = (values[3] || 0) + (values[4] || 0);
@@ -1486,6 +1521,37 @@ ShellRoot {
             _previousCpuTotal = total;
             _previousCpuIdle = idle;
         }
+
+        const nextCpuCoreTotals = [];
+        const nextCpuCoreIdles = [];
+        const nextCpuCoreUsages = [];
+        for (let i = 1; i < statLines.length; i++) {
+            const line = statLines[i] || "";
+            if (!/^cpu\d+\s/.test(line)) {
+                continue;
+            }
+            const values = line.trim().split(/\s+/).slice(1).map(v => parseInt(v, 10));
+            const idle = (values[3] || 0) + (values[4] || 0);
+            let total = 0;
+            for (let j = 0; j < values.length; j++) {
+                total += values[j] || 0;
+            }
+            const coreIndex = nextCpuCoreTotals.length;
+            let usage = coreIndex < cpuCoreUsages.length ? Math.max(0, Math.min(100, Number(cpuCoreUsages[coreIndex]) || 0)) : 0;
+            const previousTotal = coreIndex < _previousCpuCoreTotals.length ? Number(_previousCpuCoreTotals[coreIndex]) : -1;
+            const previousIdle = coreIndex < _previousCpuCoreIdles.length ? Number(_previousCpuCoreIdles[coreIndex]) : -1;
+            if (previousTotal >= 0 && total > previousTotal) {
+                const totalDiff = total - previousTotal;
+                const idleDiff = idle - previousIdle;
+                usage = Math.max(0, Math.min(100, (1 - idleDiff / totalDiff) * 100));
+            }
+            nextCpuCoreTotals.push(total);
+            nextCpuCoreIdles.push(idle);
+            nextCpuCoreUsages.push(usage);
+        }
+        _previousCpuCoreTotals = nextCpuCoreTotals;
+        _previousCpuCoreIdles = nextCpuCoreIdles;
+        cpuCoreUsages = nextCpuCoreUsages;
 
         const mem = parseNumberMap((sections.__MEM__ || []).join("\n"));
         const memTotal = mem.MemTotal || 0;
@@ -1508,25 +1574,25 @@ ShellRoot {
             _previousRxBytes = -1;
             _previousTxBytes = -1;
             _previousInterface = "";
-            return;
-        }
-
-        if (_previousInterface !== iface) {
+        } else if (_previousInterface !== iface) {
             _previousInterface = iface;
             _previousRxBytes = counters.rx;
             _previousTxBytes = counters.tx;
             networkRxRate = 0;
             networkTxRate = 0;
-            return;
+        } else {
+            if (_previousRxBytes >= 0 && _previousTxBytes >= 0) {
+                networkRxRate = Math.max(0, counters.rx - _previousRxBytes);
+                networkTxRate = Math.max(0, counters.tx - _previousTxBytes);
+            }
+
+            _previousRxBytes = counters.rx;
+            _previousTxBytes = counters.tx;
         }
 
-        if (_previousRxBytes >= 0 && _previousTxBytes >= 0) {
-            networkRxRate = Math.max(0, counters.rx - _previousRxBytes);
-            networkTxRate = Math.max(0, counters.tx - _previousTxBytes);
-        }
-
-        _previousRxBytes = counters.rx;
-        _previousTxBytes = counters.tx;
+        cpuHistory = appendHistory(cpuHistory, cpuUsage, statsHistoryLimit);
+        memoryHistory = appendHistory(memoryHistory, memoryUsage, statsHistoryLimit);
+        networkHistory = appendHistory(networkHistory, networkRxRate + networkTxRate, statsHistoryLimit);
     }
 
     function trayItemPriority(item) {
@@ -1807,6 +1873,12 @@ ShellRoot {
         id: batteryInfoPopup
     }
 
+    SystemStatsPopup {
+        id: systemStatsPopup
+
+        shellRoot: root
+    }
+
     Variants {
         model: Quickshell.screens
 
@@ -1896,25 +1968,35 @@ ShellRoot {
                     GroupPill {
                         shellRoot: root
                         TextModule {
+                            id: cpuTrigger
+
                             label: " " + Math.round(root.cpuUsage) + "%"
                             interactive: true
                             paddingLeft: 10
                             paddingRight: 4
-                            onLeftClicked: root.runDetached(["alacritty", "-t", "btop", "-o", "window.startup_mode=Fullscreen", "-e", "btop"])
+                            onLeftClicked: systemStatsPopup.toggleFor(cpuTrigger, barWindow)
+                            onRightClicked: root.runDetached(["alacritty", "-t", "btop", "-o", "window.startup_mode=Fullscreen", "-e", "btop"])
                         }
 
                         TextModule {
+                            id: memoryTrigger
+
                             label: " " + Math.round(root.memoryUsage) + "%"
                             interactive: true
                             paddingLeft: 6
                             paddingRight: 4
-                            onLeftClicked: root.runDetached(["alacritty", "-t", "btop", "-o", "window.startup_mode=Fullscreen", "-e", "btop"])
+                            onLeftClicked: systemStatsPopup.toggleFor(memoryTrigger, barWindow)
+                            onRightClicked: root.runDetached(["alacritty", "-t", "btop", "-o", "window.startup_mode=Fullscreen", "-e", "btop"])
                         }
 
                         TextModule {
+                            id: networkTrigger
+
                             label: root.networkIcon + " " + root.networkText
+                            interactive: true
                             paddingLeft: 6
                             paddingRight: 8
+                            onLeftClicked: systemStatsPopup.toggleFor(networkTrigger, barWindow)
                         }
                     }
 
@@ -1994,7 +2076,7 @@ ShellRoot {
                     GroupPill {
                         shellRoot: root
                         TextModule {
-                            label: (root.temperatureC >= 70 ? " " + Math.round(root.temperatureC * 9 / 5 + 32) + "°F" : " " + Math.round(root.temperatureC) + "°C")
+                            label: (root.temperatureC >= 70 ? " " : " ") + Math.round(root.temperatureC) + "°C"
                             textColor: root.temperatureC >= 70 ? root.criticalColor : root.primaryText
                             interactive: true
                             paddingLeft: 10

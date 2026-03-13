@@ -11,6 +11,9 @@ DEBOUNCE_MS=300
 TRACE_FILE=/tmp/sidechat.trace
 
 SIDECHAT_WIDTH=360
+SIDECHAT_RIGHT_MARGIN=10
+SIDECHAT_TOP_MARGIN=59
+SIDECHAT_HEIGHT_TRIM=71
 
 APP_CLASS_REGEX='^ai-hub$'
 
@@ -66,17 +69,24 @@ is_recent_trigger() {
   return 1
 }
 
+hyprctl_json() {
+  hyprctl "$@" -j 2>/dev/null
+}
+
+jq_raw_quiet() {
+  jq -r "$@" 2>/dev/null
+}
+
 get_sidechat_status() {
-  hyprctl clients -j 2>/dev/null | \
-    jq --arg re "$APP_CLASS_REGEX" 'any(.[]; .class | test($re))' 2>/dev/null | \
-    grep -q true 2>/dev/null
+  hyprctl_json clients | \
+    jq -e --arg re "$APP_CLASS_REGEX" 'any(.[]; .class | test($re))' >/dev/null 2>&1
 }
 
 get_sidechat_address() {
-  hyprctl clients -j 2>/dev/null | \
-    jq -r --arg re "$APP_CLASS_REGEX" --arg hidden "$HIDDEN_WS" \
+  hyprctl_json clients | \
+    jq_raw_quiet --arg re "$APP_CLASS_REGEX" --arg hidden "$HIDDEN_WS" \
       '(first(.[] | select((.class | test($re)) and .workspace.name != $hidden) | .address) //
-        first(.[] | select(.class | test($re)) | .address)) // empty' 2>/dev/null
+        first(.[] | select(.class | test($re)) | .address)) // empty'
 }
 
 cleanup_duplicate_sidechat_windows() {
@@ -89,9 +99,9 @@ cleanup_duplicate_sidechat_windows() {
     [[ -n "$addr" ]] || continue
     safe_hyprctl dispatch closewindow "address:${addr}" || true
   done < <(
-    hyprctl clients -j 2>/dev/null | \
-      jq -r --arg re "$APP_CLASS_REGEX" --arg keep "$keep_addr" \
-        '.[] | select((.class | test($re)) and .address != $keep) | .address' 2>/dev/null
+    hyprctl_json clients | \
+      jq_raw_quiet --arg re "$APP_CLASS_REGEX" --arg keep "$keep_addr" \
+        '.[] | select((.class | test($re)) and .address != $keep) | .address'
   )
 }
 
@@ -107,7 +117,7 @@ is_hidden_in_special_by_address() {
   local addr=$1
   [[ -n "$addr" ]] || return 1
 
-  hyprctl clients -j 2>/dev/null | \
+  hyprctl_json clients | \
     jq -e --arg addr "$addr" --arg ws "$HIDDEN_WS" \
       'any(.[]; .address == $addr and .workspace.name == $ws)' >/dev/null 2>&1
 }
@@ -172,46 +182,72 @@ is_integer() {
   [[ "${1:-}" =~ ^-?[0-9]+$ ]]
 }
 
+get_client_field_by_address() {
+  local addr=$1
+  local field=$2
+
+  [[ -n "$addr" ]] || return 1
+
+  hyprctl_json clients | \
+    jq_raw_quiet --arg addr "$addr" \
+      "first(.[] | select(.address == \$addr) | ${field}) // empty"
+}
+
+client_exists_by_address() {
+  local addr=$1
+
+  [[ -n "$addr" ]] || return 1
+
+  hyprctl_json clients | \
+    jq -e --arg addr "$addr" 'any(.[]; .address == $addr)' >/dev/null 2>&1
+}
+
+get_monitor_field_by_id() {
+  local mon_id=$1
+  local field=$2
+
+  hyprctl_json monitors | \
+    jq_raw_quiet --arg mon_id "$mon_id" \
+      "first(.[] | select((.id | tostring) == \$mon_id) | ${field}) // empty"
+}
+
+get_focused_monitor_field() {
+  local field=$1
+
+  hyprctl_json monitors | \
+    jq_raw_quiet "first(.[] | select(.focused == true) | ${field}) // empty"
+}
+
+get_monitor_geometry_by_id() {
+  local mon_id=$1
+
+  hyprctl_json monitors | \
+    jq_raw_quiet --arg mon_id "$mon_id" \
+      'first(.[] | select((.id | tostring) == $mon_id) | [.x, .y, .width, .height] | @tsv) // empty'
+}
+
+get_active_workspace_field() {
+  local field=$1
+
+  hyprctl_json activeworkspace | jq_raw_quiet "${field} // empty"
+}
+
+get_active_window_field() {
+  local field=$1
+
+  hyprctl_json activewindow | jq_raw_quiet "${field} // empty"
+}
+
 get_window_monitor_id() {
   local addr=$1
-  hyprctl clients -j 2>/dev/null | \
-    jq -r --arg addr "$addr" \
-      'first(.[] | select(.address == $addr) | .monitor) // empty' 2>/dev/null
-}
-
-get_window_x() {
-  local addr=$1
-  hyprctl clients -j 2>/dev/null | \
-    jq -r --arg addr "$addr" \
-      'first(.[] | select(.address == $addr) | .at[0]) // empty' 2>/dev/null
-}
-
-get_window_y() {
-  local addr=$1
-  hyprctl clients -j 2>/dev/null | \
-    jq -r --arg addr "$addr" \
-      'first(.[] | select(.address == $addr) | .at[1]) // empty' 2>/dev/null
-}
-
-get_window_width() {
-  local addr=$1
-  hyprctl clients -j 2>/dev/null | \
-    jq -r --arg addr "$addr" \
-      'first(.[] | select(.address == $addr) | .size[0]) // empty' 2>/dev/null
-}
-
-get_window_height() {
-  local addr=$1
-  hyprctl clients -j 2>/dev/null | \
-    jq -r --arg addr "$addr" \
-      'first(.[] | select(.address == $addr) | .size[1]) // empty' 2>/dev/null
+  get_client_field_by_address "$addr" '.monitor'
 }
 
 is_window_pinned_by_address() {
   local addr=$1
   [[ -n "$addr" ]] || return 1
 
-  hyprctl clients -j 2>/dev/null | \
+  hyprctl_json clients | \
     jq -e --arg addr "$addr" \
       'any(.[]; .address == $addr and .pinned == true)' >/dev/null 2>&1
 }
@@ -233,94 +269,28 @@ ensure_window_pinned_state() {
   fi
 }
 
-get_monitor_x_by_id() {
-  local mon_id=$1
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r --arg mon_id "$mon_id" \
-      'first(.[] | select((.id | tostring) == $mon_id) | .x) // empty' 2>/dev/null
-}
-
-get_monitor_y_by_id() {
-  local mon_id=$1
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r --arg mon_id "$mon_id" \
-      'first(.[] | select((.id | tostring) == $mon_id) | .y) // empty' 2>/dev/null
-}
-
-get_monitor_width_by_id() {
-  local mon_id=$1
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r --arg mon_id "$mon_id" \
-      'first(.[] | select((.id | tostring) == $mon_id) | .width) // empty' 2>/dev/null
-}
-
-get_monitor_height_by_id() {
-  local mon_id=$1
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r --arg mon_id "$mon_id" \
-      'first(.[] | select((.id | tostring) == $mon_id) | .height) // empty' 2>/dev/null
-}
-
 get_monitor_id_by_name() {
   local mon_name=$1
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r --arg mon_name "$mon_name" \
-      'first(.[] | select(.name == $mon_name) | .id) // empty' 2>/dev/null
+  hyprctl_json monitors | \
+    jq_raw_quiet --arg mon_name "$mon_name" \
+      'first(.[] | select(.name == $mon_name) | .id) // empty'
 }
 
 get_monitor_active_workspace_by_id() {
   local mon_id=$1
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r --arg mon_id "$mon_id" \
-      'first(.[] | select((.id | tostring) == $mon_id) | .activeWorkspace.id) // empty' 2>/dev/null
+  get_monitor_field_by_id "$mon_id" '.activeWorkspace.id'
 }
 
 get_active_workspace_id() {
-  hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null
+  get_active_workspace_field '.id'
 }
 
 get_active_workspace_monitor_name() {
-  hyprctl activeworkspace -j 2>/dev/null | jq -r '.monitor // empty' 2>/dev/null
+  get_active_workspace_field '.monitor'
 }
 
 get_focused_monitor_id() {
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r 'first(.[] | select(.focused == true) | .id) // empty' 2>/dev/null
-}
-
-get_focused_monitor_x() {
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r 'first(.[] | select(.focused == true) | .x) // empty' 2>/dev/null
-}
-
-get_focused_monitor_y() {
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r 'first(.[] | select(.focused == true) | .y) // empty' 2>/dev/null
-}
-
-get_focused_monitor_width() {
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r 'first(.[] | select(.focused == true) | .width) // empty' 2>/dev/null
-}
-
-get_focused_monitor_height() {
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r 'first(.[] | select(.focused == true) | .height) // empty' 2>/dev/null
-}
-
-get_monitor_id_by_cursor() {
-  local cursor_x
-  local cursor_y
-
-  cursor_x="$(hyprctl cursorpos -j 2>/dev/null | jq -r '(.x | floor) // empty' 2>/dev/null)"
-  cursor_y="$(hyprctl cursorpos -j 2>/dev/null | jq -r '(.y | floor) // empty' 2>/dev/null)"
-  if ! is_integer "$cursor_x" || ! is_integer "$cursor_y"; then
-    return 1
-  fi
-
-  hyprctl monitors -j 2>/dev/null | \
-    jq -r --argjson x "$cursor_x" --argjson y "$cursor_y" \
-      'first(.[] | select($x >= .x and $x < (.x + .width) and $y >= .y and $y < (.y + .height)) | .id) // empty' 2>/dev/null
+  get_focused_monitor_field '.id'
 }
 
 get_target_monitor_id() {
@@ -370,13 +340,13 @@ apply_sidechat_geometry() {
     return 1
   fi
 
-  target_h=$((mon_h / 2 - 71))
+  target_h=$((mon_h / 2 - SIDECHAT_HEIGHT_TRIM))
   if [[ $target_h -lt 1 ]]; then
     target_h=1
   fi
 
-  target_x=$((mon_x + (mon_w / 2) - 370))
-  target_y=$((mon_y + 59))
+  target_x=$((mon_x + (mon_w / 2) - SIDECHAT_WIDTH - SIDECHAT_RIGHT_MARGIN))
+  target_y=$((mon_y + SIDECHAT_TOP_MARGIN))
 
   resize_window_exact "$SIDECHAT_WIDTH" "$target_h" "$addr" || return 1
   move_window_exact "$target_x" "$target_y" "$addr"
@@ -393,15 +363,14 @@ apply_sidechat_geometry_on_focused_monitor() {
 apply_sidechat_geometry_on_monitor_id() {
   local addr=$1
   local mon_id=$2
+  local geometry
   local mon_x
   local mon_y
   local mon_w
   local mon_h
 
-  mon_x="$(get_monitor_x_by_id "$mon_id")"
-  mon_y="$(get_monitor_y_by_id "$mon_id")"
-  mon_w="$(get_monitor_width_by_id "$mon_id")"
-  mon_h="$(get_monitor_height_by_id "$mon_id")"
+  geometry="$(get_monitor_geometry_by_id "$mon_id" || true)"
+  IFS=$'\t' read -r mon_x mon_y mon_w mon_h <<< "$geometry"
   if ! is_integer "$mon_x" || ! is_integer "$mon_y" || ! is_integer "$mon_w" || ! is_integer "$mon_h"; then
     return 1
   fi
@@ -411,6 +380,7 @@ apply_sidechat_geometry_on_monitor_id() {
 apply_sidechat_geometry_on_own_monitor() {
   local addr=$1
   local mon_id
+  local geometry
   local mon_x
   local mon_y
   local mon_w
@@ -419,10 +389,8 @@ apply_sidechat_geometry_on_own_monitor() {
   mon_id="$(get_window_monitor_id "$addr")"
   [[ -n "$mon_id" ]] || return 1
 
-  mon_x="$(get_monitor_x_by_id "$mon_id")"
-  mon_y="$(get_monitor_y_by_id "$mon_id")"
-  mon_w="$(get_monitor_width_by_id "$mon_id")"
-  mon_h="$(get_monitor_height_by_id "$mon_id")"
+  geometry="$(get_monitor_geometry_by_id "$mon_id" || true)"
+  IFS=$'\t' read -r mon_x mon_y mon_w mon_h <<< "$geometry"
   if ! is_integer "$mon_x" || ! is_integer "$mon_y" || ! is_integer "$mon_w" || ! is_integer "$mon_h"; then
     return 1
   fi
@@ -432,8 +400,8 @@ apply_sidechat_geometry_on_own_monitor() {
 save_prev_focus() {
   local current_focus
   local current_ws
-  current_focus="$(hyprctl activewindow -j 2>/dev/null | jq -r '.address // empty' 2>/dev/null)"
-  current_ws="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null)"
+  current_focus="$(get_active_window_field '.address' || true)"
+  current_ws="$(get_active_workspace_id || true)"
   if [[ -n "$current_focus" ]]; then
     printf '%s\n' "$current_focus" > "$PREV_FOCUS"
   else
@@ -463,13 +431,13 @@ restore_prev_focus() {
 
   if [[ -f "$PREV_WS" ]]; then
     prev_ws="$(cat "$PREV_WS")"
-    current_ws="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null)"
+    current_ws="$(get_active_workspace_id || true)"
     if [[ -n "$prev_ws" && -n "$current_ws" && "$prev_ws" != "$current_ws" ]]; then
       return 0
     fi
   fi
 
-  if hyprctl clients -j 2>/dev/null | jq -e --arg addr "$prev_focus" 'any(.[]; .address == $addr)' >/dev/null 2>&1; then
+  if client_exists_by_address "$prev_focus"; then
     safe_hyprctl dispatch focuswindow "address:$prev_focus" || true
   fi
 }

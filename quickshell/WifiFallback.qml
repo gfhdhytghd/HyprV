@@ -14,7 +14,7 @@ WifiIndicator {
     readonly property bool wifiConnectedState: shellRoot ? shellRoot.wifiConnected : false
     readonly property real wifiStrength: shellRoot ? shellRoot.wifiSignalStrength : 0
     readonly property var networks: shellRoot ? shellRoot.wifiNetworks : []
-    readonly property color glassFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#101214" : "#f2f4f7", shellRoot.darkMode ? 0.42 : 0.34) : "#202020"
+    readonly property color glassFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#101214" : "#ffffff", shellRoot.darkMode ? 0.42 : 0.28) : "#202020"
     readonly property color glassStroke: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, shellRoot.darkMode ? 0.14 : 0.1) : "#3a3a3a"
     readonly property color cardFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#ffffff" : "#ffffff", shellRoot.darkMode ? 0.07 : 0.22) : "#2a2a2a"
     readonly property color cardStrongFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#ffffff" : "#ffffff", shellRoot.darkMode ? 0.11 : 0.3) : "#303030"
@@ -24,6 +24,7 @@ WifiIndicator {
     readonly property color mutedText: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, 0.68) : "#b0b0b0"
     readonly property color softText: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, 0.44) : "#8a8a8a"
     readonly property color inputFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#000000" : "#ffffff", shellRoot.darkMode ? 0.2 : 0.34) : "#1d1d1d"
+    readonly property real panelSurfaceOpacity: 0.82
     readonly property int popupPanelWidth: 384
     readonly property int popupRightMargin: 10
     readonly property int panelMaxHeight: 960
@@ -65,6 +66,10 @@ WifiIndicator {
         if (popup.visible && root.parentWindow && popup.anchor.window) {
             popup.anchor.updateAnchor();
         }
+    }
+
+    function panelColor(colorValue) {
+        return Qt.rgba(colorValue.r, colorValue.g, colorValue.b, colorValue.a * panelSurfaceOpacity);
     }
 
     function openPopup() {
@@ -297,7 +302,7 @@ WifiIndicator {
                     width: parent.width
                     implicitHeight: statusBody.implicitHeight + 24
                     radius: 10
-                    color: root.wifiConnectedState ? root.accentFill : root.cardStrongFill
+                    color: root.panelColor(root.wifiConnectedState ? root.accentFill : root.cardStrongFill)
                     border.width: 1
                     border.color: root.wifiConnectedState ? root.accentStroke : root.cardStroke
 
@@ -420,7 +425,7 @@ WifiIndicator {
                     visible: root.shellRoot && root.shellRoot.wifiActionMessage.length > 0
                     implicitHeight: actionMessageLabel.implicitHeight + 18
                     radius: 10
-                    color: root.cardFill
+                    color: root.panelColor(root.cardFill)
                     border.width: 1
                     border.color: root.cardStroke
 
@@ -447,7 +452,7 @@ WifiIndicator {
                     visible: root.networks.length === 0
                     implicitHeight: emptyState.implicitHeight + 26
                     radius: 10
-                    color: root.cardFill
+                    color: root.panelColor(root.cardFill)
                     border.width: 1
                     border.color: root.cardStroke
 
@@ -502,7 +507,7 @@ WifiIndicator {
                                 width: networkColumn.width
                                 implicitHeight: networkBody.implicitHeight + 20
                                 radius: 10
-                                color: modelData.active ? root.accentFill : root.cardFill
+                                color: root.panelColor(modelData.active ? root.accentFill : root.cardFill)
                                 border.width: 1
                                 border.color: modelData.active ? root.accentStroke : root.cardStroke
 
@@ -637,7 +642,7 @@ WifiIndicator {
                                                 width: parent.width
                                                 height: 38
                                                 radius: 10
-                                                color: root.inputFill
+                                                color: root.panelColor(root.inputFill)
                                                 border.width: 1
                                                 border.color: passwordInput.activeFocus ? root.accentStroke : root.cardStroke
 

@@ -8,7 +8,11 @@ Item {
     property string iconSource: ""
     property string fallbackLabel: "󰤮"
     property int iconSize: 24
-    property int fallbackPixelSize: Math.max(13, iconSize - 2)
+    readonly property bool usesSymbolicSource: (iconSource || "").indexOf("/symbolic/") >= 0
+    readonly property real contentScale: usesSymbolicSource ? (16 / 24) : 1
+    readonly property int effectiveIconSize: Math.max(16, Math.round(iconSize * contentScale))
+    readonly property int effectiveVerticalOffset: usesSymbolicSource ? -2 : 0
+    property int fallbackPixelSize: Math.max(13, effectiveIconSize - 2)
     property color fallbackColor: shellRoot ? shellRoot.primaryText : "white"
 
     implicitWidth: iconSize
@@ -20,8 +24,9 @@ Item {
         id: iconImage
 
         anchors.centerIn: parent
-        width: root.iconSize
-        height: root.iconSize
+        anchors.verticalCenterOffset: root.effectiveVerticalOffset
+        width: root.effectiveIconSize
+        height: root.effectiveIconSize
         source: root.iconSource
         asynchronous: true
         smooth: true
@@ -31,6 +36,7 @@ Item {
 
     Text {
         anchors.centerIn: parent
+        anchors.verticalCenterOffset: root.effectiveVerticalOffset
         visible: !iconImage.visible
         text: root.fallbackLabel
         color: root.fallbackColor

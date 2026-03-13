@@ -17,6 +17,7 @@ Item {
     property real fullPanelHeight: 0
     property real lineHeight: 2
     property real radius: 10
+    property real surfaceOpacity: 0.82
     property color fillColor: "#202020"
     property color strokeColor: "#404040"
     property color shadowColor: "transparent"
@@ -198,6 +199,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: root.radius
+                    opacity: root.surfaceOpacity
                     color: root.fillColor
                     border.width: 1
                     border.color: root.strokeColor

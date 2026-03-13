@@ -1,6 +1,13 @@
 #!/bin/sh
 
+: "${HYPRV_NMCLI_BROKEN_MARKER:=/tmp/hyprv-nmcli-broken}"
+
+nmcli_allowed() {
+    [ ! -e "$HYPRV_NMCLI_BROKEN_MARKER" ]
+}
+
 detect_wifi_iface_nmcli() {
+    nmcli_allowed || return 1
     nmcli -t -f DEVICE,TYPE dev status 2>/dev/null | awk -F: '$2 == "wifi" { print $1; exit }'
 }
 
@@ -30,10 +37,15 @@ detect_wifi_iface() {
 }
 
 wifi_radio_status() {
-    nmcli -t -f WIFI,WIFI-HW general status 2>/dev/null || printf 'enabled:enabled'
+    if nmcli_allowed; then
+        nmcli -t -f WIFI,WIFI-HW general status 2>/dev/null || printf 'enabled:enabled'
+    else
+        printf 'enabled:enabled'
+    fi
 }
 
 saved_wifi_ssids() {
+    nmcli_allowed || return 0
     nmcli -t -f UUID,TYPE connection show 2>/dev/null \
         | awk -F: '$2 == "802-11-wireless" { print $1 }' \
         | while IFS= read -r uuid; do

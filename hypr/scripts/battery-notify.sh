@@ -6,25 +6,23 @@
 
 set -euo pipefail
 
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+. "$SCRIPT_DIR/../../scripts/lib/battery.sh"
+
 THRESHOLD=${THRESHOLD:-10}
 RESET_THRESHOLD=${RESET_THRESHOLD:-15}
 CHECK_INTERVAL=${CHECK_INTERVAL:-60}   # seconds
 
-# Prefer first BAT* device
-BAT_PATH=""
-for d in /sys/class/power_supply/BAT*; do
-  if [ -d "$d" ]; then
-    BAT_PATH="$d"
-    break
-  fi
-done
+BAT_PATH="$(hyprv_find_battery_dir || true)"
 
 if [ -z "$BAT_PATH" ]; then
   # No battery found; exit silently
   exit 0
 fi
 
-STATE_FILE="${XDG_RUNTIME_DIR:-/tmp}/.battery_notify_state"
+STATE_DIR="$(hyprv_pick_state_dir || printf '/tmp/hyprv')"
+mkdir -p "$STATE_DIR"
+STATE_FILE="$STATE_DIR/battery-notify.state"
 last_notified="0"
 
 if [ -f "$STATE_FILE" ]; then
@@ -43,10 +41,10 @@ notify_low() {
 
 while :; do
   # Read capacity and status
-  if ! pct=$(cat "$BAT_PATH/capacity" 2>/dev/null); then
+  if ! pct=$(hyprv_read_first_existing "$BAT_PATH" capacity); then
     sleep "$CHECK_INTERVAL"; continue
   fi
-  status=$(cat "$BAT_PATH/status" 2>/dev/null || echo unknown)
+  status=$(hyprv_read_first_existing "$BAT_PATH" status || echo unknown)
 
   # Only warn when discharging and below threshold
   if [ "$status" = "Discharging" ] && [ "$pct" -lt "$THRESHOLD" ]; then
@@ -67,4 +65,3 @@ while :; do
 
   sleep "$CHECK_INTERVAL"
 done
-
