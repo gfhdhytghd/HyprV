@@ -52,7 +52,7 @@ Rectangle {
         text: chip.iconLabel
         visible: chip.iconLabel.length > 0
         color: chip.foregroundColor
-        font.family: chip.shellRoot ? chip.shellRoot.iconFont : "NotoSansMono Nerd Font"
+        font.family: chip.shellRoot ? chip.shellRoot.iconFont : "JetBrainsMono Nerd Font"
         font.pixelSize: chip.iconPixelSize
         font.weight: Font.Bold
         renderType: Text.NativeRendering

@@ -18,7 +18,7 @@ Rectangle {
         anchors.centerIn: parent
         text: ""
         color: badge.shellRoot ? badge.shellRoot.withAlpha(badge.shellRoot.primaryText, 0.82) : "white"
-        font.family: badge.shellRoot ? badge.shellRoot.iconFont : "NotoSansMono Nerd Font"
+        font.family: badge.shellRoot ? badge.shellRoot.iconFont : "JetBrainsMono Nerd Font"
         font.pixelSize: 11
         font.weight: Font.Bold
         renderType: Text.NativeRendering

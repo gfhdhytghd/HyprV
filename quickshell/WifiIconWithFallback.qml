@@ -40,7 +40,7 @@ Item {
         visible: !iconImage.visible
         text: root.fallbackLabel
         color: root.fallbackColor
-        font.family: root.shellRoot ? root.shellRoot.iconFont : "NotoSansMono Nerd Font"
+        font.family: root.shellRoot ? root.shellRoot.iconFont : "JetBrainsMono Nerd Font"
         font.pixelSize: root.fallbackPixelSize
         font.weight: Font.Bold
         renderType: Text.NativeRendering

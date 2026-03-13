@@ -5,7 +5,6 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
-import Quickshell.Services.Pipewire
 import Quickshell.Services.SystemTray
 import Quickshell.Services.UPower
 import Quickshell.Wayland
@@ -74,7 +73,7 @@ ShellRoot {
     readonly property color workspaceHoverBackground: darkMode ? "#000000" : activeWorkspaceBackground
     readonly property color systemChartAccent: darkMode ? "#d7a26a" : "#b9782f"
     readonly property string baseFont: "JetBrainsMono Nerd Font"
-    readonly property string iconFont: "NotoSansMono Nerd Font"
+    readonly property string iconFont: "JetBrainsMono Nerd Font"
     readonly property int trayMenuTextPixelSize: 14
     readonly property int statsHistoryLimit: 120
 
@@ -92,7 +91,9 @@ ShellRoot {
     }
     readonly property int activeWorkspaceId: Hyprland.focusedWorkspace?.id || 1
     readonly property string activeWindowTitle: Hyprland.activeToplevel?.title || ""
-    readonly property var audioSink: Pipewire.defaultAudioSink
+    property bool audioAvailable: false
+    property bool audioMuted: false
+    property int audioVolumePercent: 0
     readonly property var batteryDevice: UPower.displayDevice
     readonly property real batteryPercent: {
         const percent = batteryDevice?.percentage;
@@ -194,21 +195,45 @@ ShellRoot {
         return "开始采样中";
     }
     readonly property string volumeIcon: {
-        const audio = audioSink?.audio;
-        if (!audio) {
+        const percent = audioVolumePercent;
+        if (!audioAvailable) {
             return "";
         }
-        if (audio.muted) {
+        if (audioMuted) {
             return "";
         }
-        const percent = Math.round(audio.volume * 100);
-        if (percent <= 0) {
+        if (percent <= 20) {
             return "";
         }
-        if (percent < 50) {
+        if (percent <= 50) {
             return "";
         }
         return "";
+    }
+    function resetAudioState() {
+        root.audioAvailable = false;
+        root.audioMuted = false;
+        root.audioVolumePercent = 0;
+    }
+    function updateAudioState(output) {
+        let available = false;
+        let muted = false;
+        let volume = 0;
+        const lines = (output || "").split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line.startsWith("available=")) {
+                available = line.slice(10).trim() === "true";
+            } else if (line.startsWith("muted=")) {
+                muted = line.slice(6).trim() === "true";
+            } else if (line.startsWith("volume=")) {
+                const parsed = Number(line.slice(7).trim());
+                volume = isFinite(parsed) ? parsed : 0;
+            }
+        }
+        root.audioAvailable = available;
+        root.audioMuted = muted;
+        root.audioVolumePercent = Math.max(0, Math.round(volume));
     }
     function isWifiInterfaceName(name) {
         const iface = (name || "").toLowerCase();
@@ -1776,6 +1801,14 @@ ShellRoot {
     }
 
     Timer {
+        id: audioFollowupRefresh
+
+        interval: 150
+        repeat: false
+        onTriggered: audioStatusPoll.refresh()
+    }
+
+    Timer {
         interval: 1000
         repeat: true
         running: true
@@ -1829,6 +1862,20 @@ ShellRoot {
         onUpdated: function(output, exitCode) {
             if (exitCode === 0) {
                 root.updateNotificationState((output || "").split("\n")[0] || "");
+            }
+        }
+    }
+
+    PollCommand {
+        id: audioStatusPoll
+
+        interval: 750
+        command: ["sh", root.configDir + "/quickshell/scripts/audio-status.sh"]
+        onUpdated: function(output, exitCode) {
+            if (exitCode === 0) {
+                root.updateAudioState(output);
+            } else {
+                root.resetAudioState();
             }
         }
     }
@@ -2135,14 +2182,24 @@ ShellRoot {
                         TextModule {
                             label: root.volumeIcon
                             textColor: root.launchColor
+                            fontFamily: root.iconFont
                             interactive: true
                             wheelInteractive: true
                             paddingLeft: 2
                             paddingRight: 10
-                            onLeftClicked: root.runDetached([root.configDir + "/hypr/scripts/volume", "--toggle"])
+                            onLeftClicked: {
+                                root.runDetached([root.configDir + "/hypr/scripts/volume", "--toggle"]);
+                                audioFollowupRefresh.restart();
+                            }
                             onRightClicked: root.runDetached(["pavucontrol"])
-                            onWheelUp: root.runDetached([root.configDir + "/hypr/scripts/volume", "--dec"])
-                            onWheelDown: root.runDetached([root.configDir + "/hypr/scripts/volume", "--inc"])
+                            onWheelUp: {
+                                root.runDetached([root.configDir + "/hypr/scripts/volume", "--dec"]);
+                                audioFollowupRefresh.restart();
+                            }
+                            onWheelDown: {
+                                root.runDetached([root.configDir + "/hypr/scripts/volume", "--inc"]);
+                                audioFollowupRefresh.restart();
+                            }
                         }
                     }
 
