@@ -73,7 +73,7 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: button.glyphBottomMargin
             text: button.glyph
-            color: primary && card.playing ? "#ffffff" : card.titleColor
+            color: primary ? "#000000" : card.titleColor
             font.family: card.shellRoot ? card.shellRoot.iconFont : "JetBrainsMono Nerd Font"
             font.pixelSize: primary ? card.primaryGlyphPixelSize : card.secondaryGlyphPixelSize
             font.weight: Font.Bold

@@ -12,10 +12,11 @@ Rectangle {
     property color strokeColor: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, 0.1) : "#444444"
     property int minimumWidth: 0
     property int iconPixelSize: 16
+    property int cornerRadius: 10
 
     signal clicked()
 
-    radius: 10
+    radius: cornerRadius
     height: 34
     implicitWidth: Math.max(minimumWidth, Math.max(chipLabel.contentWidth, chipIcon.contentWidth) + 24)
     color: disabled

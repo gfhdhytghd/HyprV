@@ -101,6 +101,7 @@ ShellRoot {
     readonly property color criticalColor: "#e92d4d"
     readonly property color usageLowColor: darkMode ? "#7ad48b" : "#2f9e44"
     readonly property color usageMediumColor: darkMode ? "#f2d36b" : "#c99700"
+    readonly property color brightnessColor: darkMode ? "#f3b35c" : "#d47b1f"
     readonly property color mediaInactiveColor: darkMode ? "#6c7086" : "#808080"
     readonly property color workspaceHoverBackground: darkMode ? "#000000" : activeWorkspaceBackground
     readonly property color systemChartAccent: darkMode ? "#d7a26a" : "#b9782f"
@@ -1287,12 +1288,14 @@ ShellRoot {
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
             if (line.startsWith("wifi_enabled=")) {
-                root.wifiEnabled = line.slice(13).trim() === "true";
+                continue;
             } else if (line.startsWith("bluetooth_enabled=")) {
                 root.bluetoothEnabled = line.slice(18).trim() === "true";
             } else if (line.startsWith("brightness=")) {
                 const parsed = Number(line.slice(11).trim());
-                root.brightnessPercent = isFinite(parsed) ? Math.max(0, Math.min(100, Math.round(parsed))) : 50;
+                if (isFinite(parsed)) {
+                    root.brightnessPercent = Math.max(0, Math.min(100, Math.round(parsed)));
+                }
             } else if (line.startsWith("dnd=")) {
                 root.dndEnabled = line.slice(4).trim() === "true";
             } else if (line.startsWith("recording=")) {
@@ -1701,6 +1704,7 @@ ShellRoot {
         }
 
         wifiRadioEnabled = !!data.enabled;
+        wifiEnabled = wifiRadioEnabled;
         wifiConnected = !!data.connected;
         wifiInterface = iface;
         wifiSsid = data.ssid || "";
@@ -2039,6 +2043,10 @@ ShellRoot {
 
     function refreshAudioStatus() {
         audioStatusPoll.refresh();
+    }
+
+    function scheduleAudioRefresh() {
+        audioFollowupRefresh.restart();
     }
 
     function refreshMediaStatus() {
@@ -2514,7 +2522,7 @@ ShellRoot {
                         }
 
                         Item {
-                            implicitWidth: workspaceRow.implicitWidth + 4
+                            implicitWidth: workspaceRow.implicitWidth + 8
                             implicitHeight: 38
 
                             Row {
@@ -2620,11 +2628,12 @@ ShellRoot {
                     id: windowSection
 
                     readonly property real availableWidth: Math.max(0, centerSection.x - (leftSection.x + leftSection.width) - 19)
+                    readonly property real minimumWidth: 38
 
                     anchors.top: parent.top
                     anchors.topMargin: 10
                     x: leftSection.x + leftSection.width + 9.5
-                    width: Math.min(windowSection.availableWidth, windowLabel.implicitWidth + 16)
+                    width: Math.min(windowSection.availableWidth, Math.max(windowSection.minimumWidth, windowLabel.implicitWidth + 24))
                     height: 38 
                     radius: 19
                     color: root.moduleBackground
@@ -2701,11 +2710,14 @@ ShellRoot {
                         }
 
                         TextModule {
-                            label: ""
+                            label: root.mediaPlaying ? "" : ""
                             interactive: true
                             paddingLeft: 5
                             paddingRight: 0
-                            onLeftClicked: root.runDetached(["playerctl", "play-pause"])
+                            onLeftClicked: {
+                                root.mediaPlaying = !root.mediaPlaying;
+                                root.runDetached(["playerctl", "play-pause"]);
+                            }
                         }
 
                         TextModule {

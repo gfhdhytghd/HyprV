@@ -37,8 +37,11 @@ WifiIndicator {
     readonly property int popupRightMargin: 10
     readonly property int popupScreenMargin: 8
     readonly property int panelMaxHeight: 960
-    readonly property int panelVerticalPadding: 28
-    readonly property int panelSectionSpacing: 12
+    readonly property int panelVerticalPadding: 20
+    readonly property int panelSectionSpacing: 10
+    readonly property int panelPadding: 10
+    readonly property int innerPadding: 10
+    readonly property int innerRadius: 9
     readonly property real fixedSectionHeight: headerRow.height
         + statusCard.implicitHeight
         + actionRow.implicitHeight
@@ -435,7 +438,7 @@ WifiIndicator {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.margins: 14
+                    anchors.margins: root.panelPadding
                     spacing: root.panelSectionSpacing
                     onImplicitHeightChanged: {
                         if (popup.openAnimationPending) {
@@ -464,6 +467,7 @@ WifiIndicator {
                             x: parent.width - width
                             anchors.verticalCenter: parent.verticalCenter
                             shellRoot: root.shellRoot
+                            cornerRadius: root.innerRadius
                             label: "Close"
                             minimumWidth: 76
                             fillColor: root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.primaryText, root.shellRoot.darkMode ? 0.08 : 0.12) : "#333333"
@@ -477,7 +481,7 @@ WifiIndicator {
 
                     width: parent.width
                     implicitHeight: statusBody.implicitHeight + 24
-                    radius: 10
+                    radius: root.innerRadius
                     color: root.panelColor(root.networkConnectedState ? root.accentFill : root.cardStrongFill)
                     border.width: 1
                     border.color: root.networkConnectedState ? root.accentStroke : root.cardStroke
@@ -488,7 +492,7 @@ WifiIndicator {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        anchors.margins: 12
+                        anchors.margins: root.innerPadding
                         implicitHeight: Math.max(statusInfo.implicitHeight, statusIcon.implicitHeight, statusPill.implicitHeight)
 
                         WifiIconWithFallback {
@@ -508,6 +512,7 @@ WifiIndicator {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             shellRoot: root.shellRoot
+                            cornerRadius: root.innerRadius
                             label: root.wiredConnectedState
                             ? "Wired"
                             : (root.otherConnectedState
@@ -532,9 +537,9 @@ WifiIndicator {
                             id: statusInfo
 
                             anchors.left: statusIcon.right
-                            anchors.leftMargin: 12
+                            anchors.leftMargin: root.innerPadding
                             anchors.right: statusPill.left
-                            anchors.rightMargin: 12
+                            anchors.rightMargin: root.innerPadding
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 4
 
@@ -574,6 +579,7 @@ WifiIndicator {
 
                     WifiActionChip {
                         shellRoot: root.shellRoot
+                        cornerRadius: root.innerRadius
                         label: root.wifiEnabled ? "Turn Off" : "Turn On"
                         minimumWidth: 96
                         disabled: !root.shellRoot || !root.wifiControlsAvailable || !root.shellRoot.wifiHardwareEnabled || root.shellRoot.wifiActionBusy
@@ -585,6 +591,7 @@ WifiIndicator {
 
                     WifiActionChip {
                         shellRoot: root.shellRoot
+                        cornerRadius: root.innerRadius
                         label: "Rescan"
                         minimumWidth: 88
                         disabled: !root.shellRoot || !root.wifiControlsAvailable || !root.wifiEnabled || root.shellRoot.wifiActionBusy
@@ -595,6 +602,7 @@ WifiIndicator {
 
                     WifiActionChip {
                         shellRoot: root.shellRoot
+                        cornerRadius: root.innerRadius
                         label: "Advanced"
                         minimumWidth: 98
                         disabled: !root.shellRoot
@@ -610,7 +618,7 @@ WifiIndicator {
                     width: parent.width
                     visible: root.shellRoot && root.shellRoot.wifiActionMessage.length > 0
                     implicitHeight: actionMessageLabel.implicitHeight + 18
-                    radius: 10
+                    radius: root.innerRadius
                     color: root.panelColor(root.cardFill)
                     border.width: 1
                     border.color: root.cardStroke
@@ -621,7 +629,7 @@ WifiIndicator {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        anchors.margins: 9
+                        anchors.margins: root.innerPadding
                         text: root.shellRoot ? root.shellRoot.wifiActionMessage : ""
                         color: root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.primaryText, 0.82) : "#d8d8d8"
                         font.family: root.shellRoot ? root.shellRoot.baseFont : ""
@@ -637,7 +645,7 @@ WifiIndicator {
                     width: parent.width
                     visible: root.networks.length === 0
                     implicitHeight: emptyState.implicitHeight + 26
-                    radius: 10
+                    radius: root.innerRadius
                     color: root.panelColor(root.cardFill)
                     border.width: 1
                     border.color: root.cardStroke
@@ -696,7 +704,7 @@ WifiIndicator {
 
                                 width: networkColumn.width
                                 implicitHeight: networkBody.implicitHeight + 20
-                                radius: 10
+                                radius: root.innerRadius
                                 color: root.panelColor(modelData.active ? root.accentFill : root.cardFill)
                                 border.width: 1
                                 border.color: modelData.active ? root.accentStroke : root.cardStroke
@@ -738,6 +746,7 @@ WifiIndicator {
                                             anchors.right: parent.right
                                             anchors.verticalCenter: parent.verticalCenter
                                             shellRoot: root.shellRoot
+                                            cornerRadius: root.innerRadius
                                             label: ""
                                             iconLabel: networkCard.buttonIconLabel
                                             minimumWidth: 50
@@ -759,9 +768,9 @@ WifiIndicator {
                                             id: networkInfo
 
                                             anchors.left: networkIcon.right
-                                            anchors.leftMargin: 12
+                                            anchors.leftMargin: root.innerPadding
                                             anchors.right: connectChip.left
-                                            anchors.rightMargin: 12
+                                            anchors.rightMargin: root.innerPadding
                                             anchors.verticalCenter: parent.verticalCenter
                                             spacing: 4
 
@@ -798,6 +807,7 @@ WifiIndicator {
                                                         id: secureBadge
 
                                                         shellRoot: root.shellRoot
+                                                        cornerRadius: root.innerRadius
                                                         active: networkCard.modelData.secure
                                                     }
                                                 }
@@ -833,12 +843,12 @@ WifiIndicator {
                                             id: passwordRow
 
                                             width: parent.width
-                                            spacing: 8
+                                            spacing: root.panelSectionSpacing
 
                                             Rectangle {
                                                 width: parent.width
                                                 height: 38
-                                                radius: 10
+                                                radius: root.innerRadius
                                                 color: root.panelColor(root.inputFill)
                                                 border.width: 1
                                                 border.color: passwordInput.activeFocus ? root.accentStroke : root.cardStroke
@@ -849,8 +859,8 @@ WifiIndicator {
                                                     anchors.left: parent.left
                                                     anchors.right: parent.right
                                                     anchors.verticalCenter: parent.verticalCenter
-                                                    anchors.leftMargin: 12
-                                                    anchors.rightMargin: 12
+                                                    anchors.leftMargin: root.innerPadding
+                                                    anchors.rightMargin: root.innerPadding
                                                     text: networkCard.expanded ? root.passwordText : ""
                                                     activeFocusOnPress: true
                                                     focus: networkCard.expanded && popup.visible && !popup.animatingClose
@@ -874,7 +884,7 @@ WifiIndicator {
                                                 Text {
                                                     anchors.left: parent.left
                                                     anchors.verticalCenter: parent.verticalCenter
-                                                    anchors.leftMargin: 12
+                                                    anchors.leftMargin: root.innerPadding
                                                     visible: passwordInput.text.length === 0
                                                     text: "Password"
                                                     color: root.softText
@@ -885,10 +895,11 @@ WifiIndicator {
                                             }
 
                                             Row {
-                                                spacing: 8
+                                                spacing: root.panelSectionSpacing
 
                                                 WifiActionChip {
                                                     shellRoot: root.shellRoot
+                                                    cornerRadius: root.innerRadius
                                                     label: "Join"
                                                     minimumWidth: 82
                                                     disabled: root.passwordText.length === 0 || (root.shellRoot && root.shellRoot.wifiActionBusy)
@@ -900,6 +911,7 @@ WifiIndicator {
 
                                                 WifiActionChip {
                                                     shellRoot: root.shellRoot
+                                                    cornerRadius: root.innerRadius
                                                     label: "Cancel"
                                                     minimumWidth: 82
                                                     fillColor: root.cardFill

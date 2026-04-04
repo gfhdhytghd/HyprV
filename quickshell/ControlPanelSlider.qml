@@ -8,8 +8,10 @@ Item {
     property string label: ""
     property real value: 50
     property color accentColor: shellRoot ? shellRoot.launchColor : "#89b4fa"
+    property bool iconClickable: false
 
     signal valueChangeRequested(real newValue)
+    signal iconClicked()
 
     height: 62
     implicitHeight: 62
@@ -67,6 +69,14 @@ Item {
                     font.pixelSize: slider.iconPixelSize
                     font.weight: Font.Bold
                     renderType: Text.NativeRendering
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    enabled: slider.iconClickable
+                    hoverEnabled: slider.iconClickable
+                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    onClicked: slider.iconClicked()
                 }
             }
 

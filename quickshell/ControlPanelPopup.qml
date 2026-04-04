@@ -152,14 +152,28 @@ Item {
         if (shellRoot) {
             shellRoot.audioVolumePercent = nextValue;
         }
-        runAndRefresh(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", (nextValue / 100).toFixed(2)]);
+        if (shellRoot) {
+            shellRoot.runDetached(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", (nextValue / 100).toFixed(2)]);
+            shellRoot.scheduleAudioRefresh();
+        }
+    }
+
+    function toggleAudioMute() {
+        if (!shellRoot) {
+            return;
+        }
+        shellRoot.audioAvailable = true;
+        shellRoot.audioMuted = !shellRoot.audioMuted;
+        shellRoot.runDetached(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]);
+        shellRoot.scheduleAudioRefresh();
     }
 
     function toggleWifiEnabled() {
         if (!shellRoot) {
             return;
         }
-        const enabled = !shellRoot.wifiEnabled;
+        const enabled = !shellRoot.wifiRadioEnabled;
+        shellRoot.wifiRadioEnabled = enabled;
         shellRoot.wifiEnabled = enabled;
         shellRoot.wifiSetRadio(enabled);
         controlPanelRefreshTimer.restart();
@@ -247,6 +261,16 @@ Item {
         return "Balanced";
     }
 
+    function powerProfileIcon(profile) {
+        if (profile === "power-saver") {
+            return "󰾆";
+        }
+        if (profile === "performance") {
+            return "󰓅";
+        }
+        return "󰾅";
+    }
+
     function setPowerProfile(profile) {
         if (!shellRoot || !profile) {
             return;
@@ -275,6 +299,9 @@ Item {
         if (!shellRoot || !shellRoot.mediaAvailable) {
             return;
         }
+        if (Array.isArray(command) && command.length >= 2 && command[0] === "playerctl" && command[1] === "play-pause") {
+            shellRoot.mediaPlaying = !shellRoot.mediaPlaying;
+        }
         shellRoot.runDetached(command);
         mediaFollowupRefresh.restart();
     }
@@ -287,7 +314,7 @@ Item {
         if (!shellRoot) {
             return "";
         }
-        if (!shellRoot.wifiEnabled) {
+        if (!shellRoot.wifiRadioEnabled) {
             return "Turned off";
         }
         if (shellRoot.wifiConnected) {
@@ -462,7 +489,7 @@ Item {
                         icon: active ? "󰤨" : "󰤭"
                         title: popupRoot.currentWifiTitle()
                         subtitle: popupRoot.currentWifiSubtitle()
-                        active: popupRoot.shellRoot ? popupRoot.shellRoot.wifiEnabled : false
+                        active: popupRoot.shellRoot ? popupRoot.shellRoot.wifiRadioEnabled : false
                         expanded: popupRoot.wifiExpanded
                         onLeftClicked: popupRoot.toggleWifiEnabled()
                         onRightClicked: popupRoot.toggleWifiExpanded()
@@ -484,10 +511,10 @@ Item {
                     ControlPanelSplitTile {
                         width: parent.width
                         height: popupRoot.moduleSize
-                        shellRoot: popupRoot.shellRoot
+                   shellRoot: popupRoot.shellRoot
                         icon: "󰐥"
-                        title: popupRoot.egpuConfirmPending ? "Confirm disconnect" : "eGPU"
-                        subtitle: popupRoot.egpuConfirmPending ? "Tap again to disconnect" : ""
+                        title: popupRoot.egpuConfirmPending ? "Confirm?" : "eGPU"
+                        subtitle: popupRoot.egpuConfirmPending ? "Tap again" : ""
                         active: popupRoot.egpuConfirmPending
                         destructive: true
                         expandIndicatorVisible: false
@@ -573,10 +600,10 @@ Item {
                         width: parent.width
                         height: popupRoot.moduleSize
                         shellRoot: popupRoot.shellRoot
-                        icon: "󰓅"
+                        icon: popupRoot.powerProfileIcon(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
                         title: "Power"
                         subtitle: popupRoot.powerProfileLabel(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
-                        active: popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile !== "balanced" : false
+                        active: false
                         expanded: popupRoot.powerExpanded
                         onLeftClicked: popupRoot.cyclePowerProfile()
                         onRightClicked: popupRoot.togglePowerExpanded()
@@ -661,7 +688,7 @@ Item {
                     icon: "󰃟"
                     label: "Brightness"
                     value: popupRoot.shellRoot ? popupRoot.shellRoot.brightnessPercent : 50
-                    accentColor: popupRoot.shellRoot ? popupRoot.shellRoot.usageMediumColor : "#c99700"
+                    accentColor: popupRoot.shellRoot ? popupRoot.shellRoot.brightnessColor : "#d47b1f"
                     onValueChangeRequested: function(newValue) { popupRoot.setBrightnessPercent(newValue); }
                 }
 
@@ -670,10 +697,12 @@ Item {
                     width: parent.width
                     height: popupRoot.moduleSize
                     icon: popupRoot.shellRoot ? popupRoot.shellRoot.volumeIcon : ""
+                    iconClickable: true
                     label: "Volume"
                     value: popupRoot.shellRoot ? popupRoot.shellRoot.audioVolumePercent : 50
                     accentColor: popupRoot.shellRoot ? popupRoot.shellRoot.launchColor : "#89b4fa"
                     onValueChangeRequested: function(newValue) { popupRoot.setAudioVolumePercent(newValue); }
+                    onIconClicked: popupRoot.toggleAudioMute()
                 }
             }
         }

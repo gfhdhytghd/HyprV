@@ -76,7 +76,18 @@ Item {
             shellRoot.audioMuted = false;
         }
         shellRoot.runDetached(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", (nextValue / 100).toFixed(2)]);
-        shellRoot.refreshAudioStatus();
+        shellRoot.scheduleAudioRefresh();
+    }
+
+    function toggleAudioMute() {
+        if (!shellRoot || mode !== "volume") {
+            return;
+        }
+        restartAutoHide();
+        shellRoot.audioAvailable = true;
+        shellRoot.audioMuted = !shellRoot.audioMuted;
+        shellRoot.runDetached(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]);
+        shellRoot.scheduleAudioRefresh();
     }
 
     Timer {
@@ -161,13 +172,14 @@ Item {
                 icon: popupRoot.mode === "volume"
                     ? (popupRoot.shellRoot ? popupRoot.shellRoot.volumeIcon : "")
                     : "󰃟"
+                iconClickable: popupRoot.mode === "volume"
                 label: popupRoot.mode === "volume" ? "Volume" : "Brightness"
                 value: popupRoot.mode === "volume"
                     ? (popupRoot.shellRoot ? popupRoot.shellRoot.audioVolumePercent : 0)
                     : (popupRoot.shellRoot ? popupRoot.shellRoot.brightnessPercent : 0)
                 accentColor: popupRoot.mode === "volume"
                     ? (popupRoot.shellRoot ? popupRoot.shellRoot.launchColor : "#89b4fa")
-                    : (popupRoot.shellRoot ? popupRoot.shellRoot.usageMediumColor : "#c99700")
+                    : (popupRoot.shellRoot ? popupRoot.shellRoot.brightnessColor : "#d47b1f")
                 opacity: popupRoot.cardOpacity
                 scale: popupRoot.cardScale
                 transformOrigin: Item.TopRight
@@ -189,6 +201,7 @@ Item {
                 onValueChangeRequested: function(newValue) {
                     popupRoot.applyValue(newValue);
                 }
+                onIconClicked: popupRoot.toggleAudioMute()
             }
         }
     }

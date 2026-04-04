@@ -26,7 +26,10 @@ Rectangle {
     readonly property color panelFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#101214" : "#ffffff", shellRoot.darkMode ? 0.42 : 0.28) : "#202020"
     readonly property color panelStroke: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, shellRoot.darkMode ? 0.14 : 0.1) : "#3a3a3a"
     readonly property real panelSurfaceOpacity: 0.82
-    readonly property int pageSpacing: 12
+    readonly property int pageSpacing: 10
+    readonly property int panelPadding: 10
+    readonly property int innerPadding: 10
+    readonly property int innerRadius: 9
     readonly property int maxDeviceListHeight: 420
     readonly property string statusLabel: {
         if (!bluetoothPresent) {
@@ -90,7 +93,7 @@ Rectangle {
     border.width: useExternalPanelBackground ? 0 : 1
     border.color: useExternalPanelBackground ? "transparent" : panelStroke
     antialiasing: true
-    implicitHeight: contentColumn.implicitHeight + 28
+    implicitHeight: contentColumn.implicitHeight + panelPadding * 2
 
     function panelColor(colorValue) {
         return Qt.rgba(colorValue.r, colorValue.g, colorValue.b, colorValue.a * panelSurfaceOpacity);
@@ -167,7 +170,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.margins: 14
+        anchors.margins: root.panelPadding
         spacing: root.pageSpacing
 
         Item {
@@ -189,6 +192,7 @@ Rectangle {
                 x: parent.width - width
                 anchors.verticalCenter: parent.verticalCenter
                 shellRoot: root.shellRoot
+                cornerRadius: root.innerRadius
                 label: "Close"
                 minimumWidth: 76
                 fillColor: root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.primaryText, root.shellRoot.darkMode ? 0.08 : 0.12) : "#333333"
@@ -200,7 +204,7 @@ Rectangle {
         Rectangle {
             width: parent.width
             implicitHeight: statusBody.implicitHeight + 24
-            radius: 19
+            radius: root.innerRadius
             color: root.panelColor(root.connectedCount > 0 ? root.accentFill : root.cardStrongFill)
             border.width: 1
             border.color: root.connectedCount > 0 ? root.accentStroke : root.cardStroke
@@ -211,7 +215,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                anchors.margins: 12
+                anchors.margins: root.innerPadding
                 implicitHeight: Math.max(statusInfo.implicitHeight, statusIcon.implicitHeight, statusPill.implicitHeight)
 
                 Text {
@@ -233,6 +237,7 @@ Rectangle {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     shellRoot: root.shellRoot
+                    cornerRadius: root.innerRadius
                     label: root.statusLabel
                     disabled: true
                     minimumWidth: 72
@@ -249,9 +254,9 @@ Rectangle {
                     id: statusInfo
 
                     anchors.left: statusIcon.right
-                    anchors.leftMargin: 12
+                    anchors.leftMargin: root.innerPadding
                     anchors.right: statusPill.left
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: root.innerPadding
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 4
 
@@ -285,6 +290,7 @@ Rectangle {
 
             WifiActionChip {
                 shellRoot: root.shellRoot
+                cornerRadius: root.innerRadius
                 label: root.bluetoothEnabled ? "Turn Off" : "Turn On"
                 minimumWidth: 96
                 disabled: !root.shellRoot || !root.bluetoothPresent || root.busy
@@ -296,6 +302,7 @@ Rectangle {
 
             WifiActionChip {
                 shellRoot: root.shellRoot
+                cornerRadius: root.innerRadius
                 label: root.bluetoothDiscovering ? "Scanning" : "Scan"
                 minimumWidth: 88
                 disabled: !root.shellRoot || !root.bluetoothPresent || !root.bluetoothEnabled || root.busy
@@ -306,6 +313,7 @@ Rectangle {
 
             WifiActionChip {
                 shellRoot: root.shellRoot
+                cornerRadius: root.innerRadius
                 label: "Advanced"
                 minimumWidth: 98
                 disabled: !root.shellRoot
@@ -319,7 +327,7 @@ Rectangle {
             width: parent.width
             visible: root.shellRoot && root.shellRoot.bluetoothActionMessage.length > 0
             implicitHeight: actionMessageLabel.implicitHeight + 18
-            radius: 19
+            radius: root.innerRadius
             color: root.panelColor(root.cardFill)
             border.width: 1
             border.color: root.cardStroke
@@ -330,7 +338,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                anchors.margins: 9
+                anchors.margins: root.innerPadding
                 text: root.shellRoot ? root.shellRoot.bluetoothActionMessage : ""
                 color: root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.primaryText, 0.82) : "#d8d8d8"
                 font.family: root.shellRoot ? root.shellRoot.baseFont : "JetBrainsMono Nerd Font"
@@ -344,7 +352,7 @@ Rectangle {
             width: parent.width
             visible: root.devices.length === 0
             implicitHeight: emptyState.implicitHeight + 26
-            radius: 19
+            radius: root.innerRadius
             color: root.panelColor(root.cardFill)
             border.width: 1
             border.color: root.cardStroke
@@ -397,7 +405,7 @@ Rectangle {
 
                         width: deviceColumn.width
                         implicitHeight: deviceBody.implicitHeight + 20
-                        radius: 19
+                        radius: root.innerRadius
                         color: root.panelColor(modelData.connected ? root.accentFill : root.cardFill)
                         border.width: 1
                         border.color: modelData.connected ? root.accentStroke : root.cardStroke
@@ -434,6 +442,7 @@ Rectangle {
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
                                     shellRoot: root.shellRoot
+                                    cornerRadius: root.innerRadius
                                     label: ""
                                     iconLabel: root.deviceActionIcon(modelData)
                                     minimumWidth: 50
@@ -452,9 +461,9 @@ Rectangle {
                                     id: deviceInfo
 
                                     anchors.left: deviceIcon.right
-                                    anchors.leftMargin: 12
+                                    anchors.leftMargin: root.innerPadding
                                     anchors.right: actionChip.left
-                                    anchors.rightMargin: 12
+                                    anchors.rightMargin: root.innerPadding
                                     anchors.verticalCenter: parent.verticalCenter
                                     spacing: 4
 

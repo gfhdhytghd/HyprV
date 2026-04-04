@@ -29,7 +29,7 @@ printf 'bluetooth_enabled=%s\n' "$bluetooth_enabled"
 # Screen brightness
 brightness=50
 if command -v brightnessctl >/dev/null 2>&1; then
-    pct="$(timeout 2s sh -lc "brightnessctl -m 2>/dev/null | awk -F, '{gsub(/%/,\"\",\\\$4); print \\\$4}'" 2>/dev/null || true)"
+    pct="$(timeout 2s sh -lc "brightnessctl -m 2>/dev/null | cut -d, -f4 | tr -d '%'" 2>/dev/null || true)"
     if [[ -n "$pct" && "$pct" =~ ^[0-9]+$ ]]; then
         brightness="$pct"
     fi
