@@ -32,7 +32,7 @@ Rectangle {
     readonly property real frameRadius: 19
     readonly property real outerPadding: 9
     readonly property real alignedArtSize: 44
-    readonly property real alignedArtRadius: 10
+    readonly property real alignedArtRadius: 11
     readonly property real artSize: Math.max(42, Math.min(alignedArtSize, height * 0.42))
     readonly property real artRadius: Math.min(alignedArtRadius, artSize / 2)
     readonly property real titlePixelSize: 12

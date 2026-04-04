@@ -26,7 +26,7 @@ Item {
     readonly property real outerPadding: 9
     readonly property real contentGap: 9
     readonly property real alignedIconSize: 44
-    readonly property real alignedIconRadius: 10
+    readonly property real alignedIconRadius: 11
     property real contentOffsetY: -8
     readonly property real iconBoxSize: Math.max(28, Math.min(alignedIconSize, height - outerPadding * 2))
     readonly property real iconRadius: Math.min(alignedIconRadius, iconBoxSize / 2)

@@ -36,7 +36,7 @@ Item {
     readonly property real inset: Math.max(6, Math.round(height * 0.14))
     readonly property real iconWellWidth: Math.max(28, iconAreaWidth - inset * 2)
     readonly property real iconWellHeight: Math.max(28, height - inset * 2)
-    readonly property real iconWellRadius: 10
+    readonly property real iconWellRadius: 11
     readonly property real iconPixelSize: Math.max(16, Math.min(20, Math.min(iconWellWidth, iconWellHeight) * 0.48))
     readonly property real iconTextGap: 9
     readonly property real contentStartX: inset + iconWellWidth + iconTextGap

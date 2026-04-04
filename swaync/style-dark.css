@@ -20,18 +20,27 @@ slider {
   background-color: #8caaee;
 }
 
+.blank-window,
+.floating-notifications,
+.floating-notifications.background,
+.control-center .control-center-list,
+.control-center .control-center-list-placeholder {
+  background: transparent;
+}
+
 .floating-notifications.background .notification-row .notification-background {
-  /* box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #414559; */
-  border-radius: 11px;
+  box-shadow: inset 0 0 0 1px rgba(198, 208, 245, 0.11);
+  border-radius: 19px;
   margin: 0px 10px 10px 0px;
-  background-color: #303446;
+  background-color: rgba(16, 18, 20, 0.18);
   color: #c6d0f5;
   padding: 0;
 }
 
 .floating-notifications.background .notification-row .notification-background .notification {
   padding: 7px;
-  border-radius: 12.6px;
+  border-radius: 19px;
+  background: rgba(48, 52, 70, 0.34);
 }
 
 .floating-notifications.background .notification-row .notification-background .notification.critical {
@@ -97,13 +106,12 @@ slider {
 }
 
 .control-center {
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #414559;
-  border-radius: 11px;
-  margin: 0px 10px 0px 0px;
-  background-color: #303446;
+  box-shadow: inset 0 0 0 1px rgba(198, 208, 245, 0.11);
+  border-radius: 19px;
+  margin: 0px 10px 10px 0px;
+  background-color: rgba(16, 18, 20, 0.18);
   color: #c6d0f5;
   padding: 14px;
-  box-shadow: #232634;
 }
 
 .control-center .widget-title > label {
@@ -132,16 +140,17 @@ slider {
 }
 
 .control-center .notification-row .notification-background {
-  border-radius: 11px;
+  border-radius: 9px;
   color: #c6d0f5;
-  background-color: #414559;
-  box-shadow: inset 0 0 0 1px #51576d;
+  background-color: rgb(48, 52, 70);
+  box-shadow: inset 0 0 0 1px rgba(198, 208, 245, 0.11);
   margin-top: 14px;
 }
 
 .control-center .notification-row .notification-background .notification {
   padding: 7px;
-  border-radius: 11px;
+  border-radius: 9px;
+  background: rgb(65, 69, 89);
 }
 
 .control-center .notification-row .notification-background .notification.critical {
