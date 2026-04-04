@@ -42,6 +42,13 @@ ShellRoot {
     property bool _wifiStatusInitialized: false
     property var _cachedWifiNetworks: []
     property double _cachedWifiNetworksTimestamp: 0
+    property bool bluetoothPresent: false
+    property bool bluetoothDiscovering: false
+    property bool bluetoothPairable: false
+    property var bluetoothDevices: []
+    property string bluetoothActionMessage: ""
+    property bool bluetoothActionBusy: false
+    property bool _bluetoothStatusInitialized: false
     property string notificationAlt: "none"
     property string notificationTooltip: ""
     property string powerProfileText: "⚖️"
@@ -50,6 +57,22 @@ ShellRoot {
     property string fluentBaseIconDir: ""
     property var trayMenuController: null
 
+    property bool wifiEnabled: true
+    property bool bluetoothEnabled: false
+    property int brightnessPercent: 50
+    property bool dndEnabled: false
+    property bool screenRecording: false
+    property string powerProfile: "balanced"
+    property bool preventSleepEnabled: false
+    property bool mediaAvailable: false
+    property bool mediaPlaying: false
+    property string mediaTitle: ""
+    property string mediaArtist: ""
+    property string mediaPlayerName: ""
+    property string mediaArtUrl: ""
+    property var primaryBarWindow: null
+    property var wifiPanelController: null
+
     property real _previousCpuTotal: -1
     property real _previousCpuIdle: -1
     property var _previousCpuCoreTotals: []
@@ -57,6 +80,7 @@ ShellRoot {
     property real _previousRxBytes: -1
     property real _previousTxBytes: -1
     property string _previousInterface: ""
+    property bool _showQuickAdjustAfterBrightnessProbe: false
     readonly property bool networkConnected: defaultInterface.length > 0
     readonly property string activeNetworkType: networkTypeForInterface(defaultInterface)
     readonly property bool wifiConnectionActive: activeNetworkType === "wifi"
@@ -80,6 +104,8 @@ ShellRoot {
     readonly property color mediaInactiveColor: darkMode ? "#6c7086" : "#808080"
     readonly property color workspaceHoverBackground: darkMode ? "#000000" : activeWorkspaceBackground
     readonly property color systemChartAccent: darkMode ? "#d7a26a" : "#b9782f"
+    readonly property int screenCornerShadeSize: 27
+    readonly property color screenCornerShadeColor: "#000000"
     readonly property string baseFont: "JetBrainsMono Nerd Font"
     readonly property string iconFont: "JetBrainsMono Nerd Font"
     readonly property int trayMenuTextPixelSize: 14
@@ -243,6 +269,45 @@ ShellRoot {
         root.audioMuted = muted;
         root.audioVolumePercent = Math.max(0, Math.round(volume));
     }
+    function resetMediaState() {
+        root.mediaAvailable = false;
+        root.mediaPlaying = false;
+        root.mediaTitle = "";
+        root.mediaArtist = "";
+        root.mediaPlayerName = "";
+        root.mediaArtUrl = "";
+    }
+    function updateMediaState(output) {
+        let available = false;
+        let playing = false;
+        let title = "";
+        let artist = "";
+        let player = "";
+        let artUrl = "";
+        const lines = (output || "").split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line.startsWith("available=")) {
+                available = line.slice(10).trim() === "true";
+            } else if (line.startsWith("playing=")) {
+                playing = line.slice(8).trim() === "true";
+            } else if (line.startsWith("title=")) {
+                title = line.slice(6).trim();
+            } else if (line.startsWith("artist=")) {
+                artist = line.slice(7).trim();
+            } else if (line.startsWith("player=")) {
+                player = line.slice(7).trim();
+            } else if (line.startsWith("art_url=")) {
+                artUrl = line.slice(8).trim();
+            }
+        }
+        root.mediaAvailable = available;
+        root.mediaPlaying = playing;
+        root.mediaTitle = title;
+        root.mediaArtist = artist;
+        root.mediaPlayerName = player;
+        root.mediaArtUrl = artUrl;
+    }
     function isWifiInterfaceName(name) {
         const iface = (name || "").toLowerCase();
         return iface.startsWith("wl") || iface.startsWith("wlan") || iface.startsWith("wifi");
@@ -269,9 +334,9 @@ ShellRoot {
     readonly property string networkText: defaultInterface ? humanRate(networkRxRate + networkTxRate) : "nocon"
     readonly property bool wifiWidgetVisible: wifiCapabilityDetected || wifiDevicePresent || wifiNetworks.length > 0 || isWifiInterfaceName(defaultInterface)
     readonly property bool networkWidgetVisible: networkConnected || wifiWidgetVisible
-    readonly property bool notificationDoNotDisturb: notificationAlt.indexOf("dnd") >= 0
+    readonly property bool notificationDoNotDisturb: dndEnabled || notificationAlt.indexOf("dnd") >= 0
     readonly property bool notificationHasDot: notificationAlt.indexOf("notification") >= 0
-    readonly property string notificationIcon: notificationDoNotDisturb ? "" : ""
+    readonly property string notificationIcon: notificationDoNotDisturb ? "󰂛" : ""
     readonly property var sortedTrayItems: {
         const items = Array.from(SystemTray.items.values || []);
         const hideDedicatedWifiItems = root.networkWidgetVisible;
@@ -303,7 +368,7 @@ ShellRoot {
         property real paddingLeft: 8
         property real paddingRight: 8
         property real minimumWidth: 0
-        property real moduleHeight: 37
+        property real moduleHeight: 38
         property bool interactive: false
         property bool wheelInteractive: false
         property bool hoverable: false
@@ -325,7 +390,7 @@ ShellRoot {
         Rectangle {
             anchors.fill: parent
             anchors.margins: module.highlightInset
-            radius: 10
+            radius: 19
             color: highlighted ? module.highlightColor : root.workspaceHoverBackground
             visible: highlighted || (module.hoverable && mouseArea.containsMouse)
         }
@@ -1217,6 +1282,32 @@ ShellRoot {
         }
     }
 
+    function updateControlPanelState(output) {
+        const lines = (output || "").split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line.startsWith("wifi_enabled=")) {
+                root.wifiEnabled = line.slice(13).trim() === "true";
+            } else if (line.startsWith("bluetooth_enabled=")) {
+                root.bluetoothEnabled = line.slice(18).trim() === "true";
+            } else if (line.startsWith("brightness=")) {
+                const parsed = Number(line.slice(11).trim());
+                root.brightnessPercent = isFinite(parsed) ? Math.max(0, Math.min(100, Math.round(parsed))) : 50;
+            } else if (line.startsWith("dnd=")) {
+                root.dndEnabled = line.slice(4).trim() === "true";
+            } else if (line.startsWith("recording=")) {
+                root.screenRecording = line.slice(10).trim() === "true";
+            } else if (line.startsWith("power_profile=")) {
+                const profile = line.slice(14).trim();
+                if (profile.length > 0) {
+                    root.powerProfile = profile;
+                }
+            } else if (line.startsWith("prevent_sleep=")) {
+                root.preventSleepEnabled = line.slice(14).trim() === "true";
+            }
+        }
+    }
+
     function withAlpha(colorString, alpha) {
         const color = Qt.color(colorString);
         return Qt.rgba(color.r, color.g, color.b, alpha);
@@ -1540,6 +1631,14 @@ ShellRoot {
         wifiNetworks = [];
     }
 
+    function resetBluetoothStatus() {
+        bluetoothPresent = false;
+        bluetoothEnabled = false;
+        bluetoothDiscovering = false;
+        bluetoothPairable = false;
+        bluetoothDevices = [];
+    }
+
     function cloneWifiNetworks(networks) {
         if (!Array.isArray(networks)) {
             return [];
@@ -1623,6 +1722,48 @@ ShellRoot {
         } catch (_) {
             if (!_wifiStatusInitialized) {
                 resetWifiStatus();
+            }
+        }
+    }
+
+    function cloneBluetoothDevices(devices) {
+        if (!Array.isArray(devices)) {
+            return [];
+        }
+        return devices.map(device => ({
+            address: device.address || "",
+            name: device.name || "",
+            icon: device.icon || "bluetooth",
+            paired: !!device.paired,
+            trusted: !!device.trusted,
+            connected: !!device.connected,
+            blocked: !!device.blocked,
+            rssi: device.rssi === null || device.rssi === undefined ? null : Number(device.rssi)
+        }));
+    }
+
+    function applyBluetoothStatus(data) {
+        resetBluetoothStatus();
+        bluetoothPresent = !!data.present;
+        bluetoothEnabled = !!data.enabled;
+        bluetoothDiscovering = !!data.discovering;
+        bluetoothPairable = !!data.pairable;
+        bluetoothDevices = cloneBluetoothDevices(data.devices);
+        _bluetoothStatusInitialized = true;
+    }
+
+    function updateBluetoothStatus(raw) {
+        if (!raw) {
+            if (!_bluetoothStatusInitialized) {
+                resetBluetoothStatus();
+            }
+            return;
+        }
+        try {
+            applyBluetoothStatus(JSON.parse(raw));
+        } catch (_) {
+            if (!_bluetoothStatusInitialized) {
+                resetBluetoothStatus();
             }
         }
     }
@@ -1792,8 +1933,22 @@ ShellRoot {
         runDetached(["sh", "-lc", "if command -v nm-connection-editor >/dev/null 2>&1; then exec nm-connection-editor; elif command -v iwgtk >/dev/null 2>&1; then exec iwgtk; else exec alacritty -t nmtui -e nmtui; fi"]);
     }
 
+    function openWifiPanel() {
+        if (wifiPanelController && wifiPanelController.available && wifiPanelController.openPopup) {
+            wifiPanelController.openPopup();
+        }
+    }
+
     function refreshWifiStatus() {
         wifiStatusPoll.refresh();
+    }
+
+    function openBluetoothManager() {
+        runDetached(["sh", "-lc", "if command -v blueman-manager >/dev/null 2>&1; then exec blueman-manager; elif command -v blueberry >/dev/null 2>&1; then exec blueberry; else exec alacritty -t bluetoothctl -e bluetoothctl; fi"]);
+    }
+
+    function refreshBluetoothStatus() {
+        bluetoothStatusPoll.refresh();
     }
 
     function startWifiAction(command, pendingMessage, successMessage) {
@@ -1805,6 +1960,17 @@ ShellRoot {
         _wifiActionSuccessMessage = successMessage || "";
         wifiActionRunner.command = command;
         wifiActionRunner.running = true;
+    }
+
+    function startBluetoothAction(command, pendingMessage, successMessage) {
+        if (!command || command.length === 0 || bluetoothActionRunner.running) {
+            return;
+        }
+        bluetoothActionBusy = true;
+        bluetoothActionMessage = pendingMessage || "";
+        _bluetoothActionSuccessMessage = successMessage || "";
+        bluetoothActionRunner.command = command;
+        bluetoothActionRunner.running = true;
     }
 
     function wifiSetRadio(enabled) {
@@ -1824,12 +1990,63 @@ ShellRoot {
         startWifiAction(command, "Connecting to " + (ssid || "network") + "...", "Connection requested for " + (ssid || "network"));
     }
 
+    function bluetoothSetPower(enabled) {
+        startBluetoothAction(["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "toggle", enabled ? "on" : "off"], enabled ? "Turning Bluetooth on..." : "Turning Bluetooth off...", enabled ? "Bluetooth enabled" : "Bluetooth disabled");
+    }
+
+    function bluetoothScan() {
+        startBluetoothAction(["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "scan"], "Scanning for Bluetooth devices...", "Bluetooth scan complete");
+    }
+
+    function bluetoothConnect(address, paired, label) {
+        const command = ["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "connect", address || "", paired ? "true" : "false"];
+        const name = label || address || "device";
+        startBluetoothAction(command, "Connecting to " + name + "...", "Connection requested for " + name);
+    }
+
+    function bluetoothDisconnect(address, label) {
+        const command = ["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "disconnect", address || ""];
+        const name = label || address || "device";
+        startBluetoothAction(command, "Disconnecting " + name + "...", "Disconnected " + name);
+    }
+
+    function bluetoothRemove(address, label) {
+        const command = ["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "remove", address || ""];
+        const name = label || address || "device";
+        startBluetoothAction(command, "Removing " + name + "...", "Removed " + name);
+    }
+
     function runDetached(command) {
         if (!command || command.length === 0) {
             return;
         }
         detachedRunner.command = command;
         detachedRunner.startDetached();
+    }
+
+    function refreshControlPanelStatus() {
+        controlPanelStatusPoll.refresh();
+    }
+
+    function refreshBrightnessStatus(showQuickAdjust) {
+        if (showQuickAdjust) {
+            _showQuickAdjustAfterBrightnessProbe = true;
+        }
+        if (!quickAdjustBrightnessProbe.running) {
+            quickAdjustBrightnessProbe.running = true;
+        }
+    }
+
+    function refreshAudioStatus() {
+        audioStatusPoll.refresh();
+    }
+
+    function refreshMediaStatus() {
+        mediaStatusPoll.refresh();
+    }
+
+    function refreshPowerProfileStatus() {
+        powerProfilePoll.refresh();
     }
 
     Process {
@@ -1866,6 +2083,7 @@ ShellRoot {
     }
 
     property string _wifiActionSuccessMessage: ""
+    property string _bluetoothActionSuccessMessage: ""
 
     Process {
         id: wifiActionRunner
@@ -1892,12 +2110,68 @@ ShellRoot {
         }
     }
 
+    Process {
+        id: bluetoothActionRunner
+
+        running: false
+        stdout: StdioCollector {
+            id: bluetoothActionStdout
+        }
+        stderr: StdioCollector {
+            id: bluetoothActionStderr
+        }
+
+        onExited: function(exitCode) {
+            const stdout = (bluetoothActionStdout.text || "").trim();
+            const stderr = (bluetoothActionStderr.text || "").trim();
+            bluetoothActionBusy = false;
+            if (exitCode === 0) {
+                bluetoothActionMessage = stdout.length > 0 ? stdout : _bluetoothActionSuccessMessage;
+            } else {
+                bluetoothActionMessage = stderr.length > 0 ? stderr : (stdout.length > 0 ? stdout : "Bluetooth action failed");
+            }
+            bluetoothStatusPoll.refresh();
+            bluetoothFollowupRefresh.restart();
+            controlPanelStatusPoll.refresh();
+        }
+    }
+
+    Process {
+        id: quickAdjustBrightnessProbe
+
+        running: false
+        command: ["sh", "-lc", "brightnessctl -m 2>/dev/null | awk -F, '{gsub(/%/,\"\",$4); print $4}'"]
+        stdout: StdioCollector {
+            id: quickAdjustBrightnessProbeStdout
+        }
+
+        onExited: function(exitCode) {
+            const parsed = Number((quickAdjustBrightnessProbeStdout.text || "").trim());
+            if (exitCode === 0 && isFinite(parsed)) {
+                root.brightnessPercent = Math.max(0, Math.min(100, Math.round(parsed)));
+            }
+            if (root._showQuickAdjustAfterBrightnessProbe) {
+                root._showQuickAdjustAfterBrightnessProbe = false;
+                quickAdjustPopup.show("brightness");
+            }
+            root.refreshControlPanelStatus();
+        }
+    }
+
     Timer {
         id: wifiFollowupRefresh
 
         interval: 1500
         repeat: false
         onTriggered: wifiStatusPoll.refresh()
+    }
+
+    Timer {
+        id: bluetoothFollowupRefresh
+
+        interval: 1500
+        repeat: false
+        onTriggered: bluetoothStatusPoll.refresh()
     }
 
     Timer {
@@ -1953,6 +2227,18 @@ ShellRoot {
     }
 
     PollCommand {
+        id: bluetoothStatusPoll
+
+        interval: controlPanelPopup.popupRequested && controlPanelPopup.bluetoothExpanded ? 4000 : 15000
+        command: ["sh", root.configDir + "/quickshell/scripts/bluetooth-status.sh"]
+        onUpdated: function(output, exitCode) {
+            if (exitCode === 0) {
+                root.updateBluetoothStatus(output);
+            }
+        }
+    }
+
+    PollCommand {
         id: notificationPoll
 
         interval: 2000
@@ -1974,6 +2260,21 @@ ShellRoot {
                 root.updateAudioState(output);
             } else {
                 root.resetAudioState();
+            }
+        }
+    }
+
+    PollCommand {
+        id: mediaStatusPoll
+
+        active: controlPanelPopup.popupRequested
+        interval: 1000
+        command: ["sh", root.configDir + "/quickshell/scripts/media-status.sh"]
+        onUpdated: function(output, exitCode) {
+            if (exitCode === 0) {
+                root.updateMediaState(output);
+            } else {
+                root.resetMediaState();
             }
         }
     }
@@ -2024,6 +2325,138 @@ ShellRoot {
         shellRoot: root
     }
 
+    PollCommand {
+        id: controlPanelStatusPoll
+
+        interval: controlPanelPopup.popupRequested ? 1500 : 10000
+        command: ["sh", root.configDir + "/quickshell/scripts/control-panel-status.sh"]
+        onUpdated: function(output, exitCode) {
+            if (exitCode === 0) {
+                root.updateControlPanelState(output);
+            }
+        }
+    }
+
+    ControlPanelPopup {
+        id: controlPanelPopup
+
+        shellRoot: root
+    }
+
+    QuickAdjustPopup {
+        id: quickAdjustPopup
+
+        shellRoot: root
+    }
+
+    IpcHandler {
+        target: "controlPanel"
+        enabled: true
+
+        function toggle() {
+            controlPanelPopup.toggleCentered(root.primaryBarWindow);
+        }
+    }
+
+    IpcHandler {
+        target: "quickAdjust"
+        enabled: true
+
+        function showBrightness() {
+            root._showQuickAdjustAfterBrightnessProbe = true;
+            if (quickAdjustPopup.mode === "brightness" && quickAdjustPopup.shellRoot && quickAdjustPopup.shellRoot.primaryBarWindow) {
+                quickAdjustPopup.restartAutoHide();
+            }
+            root.refreshBrightnessStatus(true);
+        }
+
+        function showVolume() {
+            quickAdjustPopup.show("volume");
+            root.refreshAudioStatus();
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        PanelWindow {
+            required property var modelData
+
+            screen: modelData
+            visible: true
+
+            aboveWindows: true
+            focusable: false
+            exclusiveZone: -1
+            color: "transparent"
+            surfaceFormat.opaque: false
+            mask: Region {
+                item: topLeftShade
+
+                Region {
+                    item: topRightShade
+                }
+
+                Region {
+                    item: bottomLeftShade
+                }
+
+                Region {
+                    item: bottomRightShade
+                }
+            }
+
+            WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+            WlrLayershell.namespace: "hyprv-screen-corner-overlay-" + (screen?.name || "")
+
+            anchors.top: true
+            anchors.left: true
+            anchors.right: true
+            anchors.bottom: true
+
+            ScreenCornerShade {
+                id: topLeftShade
+                anchors.left: parent.left
+                anchors.top: parent.top
+                width: root.screenCornerShadeSize
+                height: root.screenCornerShadeSize
+                corner: "topLeft"
+                shadeColor: root.screenCornerShadeColor
+            }
+
+            ScreenCornerShade {
+                id: topRightShade
+                anchors.right: parent.right
+                anchors.top: parent.top
+                width: root.screenCornerShadeSize
+                height: root.screenCornerShadeSize
+                corner: "topRight"
+                shadeColor: root.screenCornerShadeColor
+            }
+
+            ScreenCornerShade {
+                id: bottomLeftShade
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                width: root.screenCornerShadeSize
+                height: root.screenCornerShadeSize
+                corner: "bottomLeft"
+                shadeColor: root.screenCornerShadeColor
+            }
+
+            ScreenCornerShade {
+                id: bottomRightShade
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                width: root.screenCornerShadeSize
+                height: root.screenCornerShadeSize
+                corner: "bottomRight"
+                shadeColor: root.screenCornerShadeColor
+            }
+        }
+    }
+
     Variants {
         model: Quickshell.screens
 
@@ -2041,10 +2474,16 @@ ShellRoot {
             anchors.left: true
             anchors.right: true
 
-            implicitHeight: 47
+            implicitHeight: 48
             exclusiveZone: implicitHeight + 10
-            margins.bottom: 10
             color: "transparent"
+            margins.bottom: 10
+
+            Component.onCompleted: {
+                if (!root.primaryBarWindow) {
+                    root.primaryBarWindow = barWindow;
+                }
+            }
 
             Item {
                 id: contentRoot
@@ -2067,16 +2506,16 @@ ShellRoot {
                             textColor: root.launchColor
                             fontFamily: root.baseFont
                             fontPixelSize: 17
-                            moduleHeight: 37
+                            moduleHeight: 38
                             interactive: true
-                            paddingLeft: 6
-                            paddingRight: 3
+                            paddingLeft: 7
+                            paddingRight: 4
                             onLeftClicked: root.runDetached(["rofi", "-show", "drun"])
                         }
 
                         Item {
                             implicitWidth: workspaceRow.implicitWidth + 4
-                            implicitHeight: 37
+                            implicitHeight: 38
 
                             Row {
                                 id: workspaceRow
@@ -2095,10 +2534,10 @@ ShellRoot {
                                         textColor: root.mutedWorkspaceText
                                         interactive: true
                                         hoverable: true
-                                        moduleHeight: 37
+                                        moduleHeight: 32
                                         paddingLeft: 5
                                         paddingRight: 5
-                                        minimumWidth: 30
+                                        minimumWidth: 32
                                         highlightInset: 0
                                         highlighted: root.activeWorkspaceId === modelData.id || (modelData.urgent && root.activeWorkspaceId !== modelData.id)
                                         highlightColor: modelData.urgent && root.activeWorkspaceId !== modelData.id ? root.urgentWorkspaceBackground : root.activeWorkspaceBackground
@@ -2117,7 +2556,7 @@ ShellRoot {
 
                             label: " " + Math.round(root.cpuUsage) + "%"
                             interactive: true
-                            paddingLeft: 10
+                            paddingLeft: 12
                             paddingRight: 4
                             onLeftClicked: systemStatsPopup.toggleFor(cpuTrigger, barWindow)
                             onRightClicked: root.runDetached(["alacritty", "-t", "btop", "-o", "window.startup_mode=Fullscreen", "-e", "btop"])
@@ -2140,7 +2579,7 @@ ShellRoot {
                             label: root.networkIcon + " " + root.networkText
                             interactive: true
                             paddingLeft: 6
-                            paddingRight: 8
+                            paddingRight: 12
                             onLeftClicked: systemStatsPopup.toggleFor(networkTrigger, barWindow)
                         }
                     }
@@ -2158,7 +2597,7 @@ ShellRoot {
                         label: ""
                         interactive: true
                         paddingLeft: 11
-                        paddingRight: 11
+                        paddingRight: 12
                         onLeftClicked: root.runDetached(["hyprlock"])
                     }
 
@@ -2171,8 +2610,8 @@ ShellRoot {
                     TextModule {
                         label: ""
                         interactive: true
-                        paddingLeft: 11
-                        paddingRight: 11
+                        paddingLeft: 10
+                        paddingRight: 13
                         onLeftClicked: root.runDetached(["wlogout", "--protocol", "layer-shell", "-b", "5"])
                     }
                 }
@@ -2186,8 +2625,8 @@ ShellRoot {
                     anchors.topMargin: 10
                     x: leftSection.x + leftSection.width + 9.5
                     width: Math.min(windowSection.availableWidth, windowLabel.implicitWidth + 16)
-                    height: 37
-                    radius: 10
+                    height: 38 
+                    radius: 19
                     color: root.moduleBackground
                     visible: root.activeWindowTitle.length > 0 && width > 0
 
@@ -2195,9 +2634,9 @@ ShellRoot {
                         id: windowLabel
 
                         anchors.left: parent.left
-                        anchors.leftMargin: 8
+                        anchors.leftMargin: 12
                         anchors.right: parent.right
-                        anchors.rightMargin: 8
+                        anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
                         text: root.activeWindowTitle
                         color: root.primaryText
@@ -2244,8 +2683,8 @@ ShellRoot {
                                 label: root.batteryText
                                 textColor: root.batteryCritical && !root.batteryCharging ? root.criticalColor : root.batteryColor
                                 interactive: root.batteryText.length > 0
-                                paddingLeft: 8
-                                paddingRight: 8
+                                paddingLeft: 5
+                                paddingRight: 12
                                 onLeftClicked: batteryInfoPopup.toggleFor(batteryTrigger, barWindow)
                             }
                         }
@@ -2256,7 +2695,7 @@ ShellRoot {
                         TextModule {
                             label: ""
                             interactive: true
-                            paddingLeft: 8
+                            paddingLeft: 9
                             paddingRight: 5
                             onLeftClicked: root.runDetached(["playerctl", "previous"])
                         }
@@ -2265,15 +2704,15 @@ ShellRoot {
                             label: ""
                             interactive: true
                             paddingLeft: 5
-                            paddingRight: 5
+                            paddingRight: 0
                             onLeftClicked: root.runDetached(["playerctl", "play-pause"])
                         }
 
                         TextModule {
                             label: ""
                             interactive: true
-                            paddingLeft: 0
-                            paddingRight: 4
+                            paddingLeft: 5
+                            paddingRight: 0
                             onLeftClicked: root.runDetached(["playerctl", "next"])
                         }
 
@@ -2283,8 +2722,8 @@ ShellRoot {
                             fontFamily: root.iconFont
                             interactive: true
                             wheelInteractive: true
-                            paddingLeft: 2
-                            paddingRight: 10
+                            paddingLeft: 8
+                            paddingRight: 12
                             onLeftClicked: {
                                 root.runDetached([root.configDir + "/hypr/scripts/volume", "--toggle"]);
                                 audioFollowupRefresh.restart();
@@ -2304,8 +2743,13 @@ ShellRoot {
                     GroupPill {
                         shellRoot: root
                         Item {
+                            implicitWidth: 4
+                            implicitHeight: 38
+                        }
+
+                        Item {
                             implicitWidth: wifiTrayLoader.item && wifiTrayLoader.item.available ? wifiTrayLoader.item.implicitWidth : 0
-                            implicitHeight: 37
+                            implicitHeight: 38
                             visible: implicitWidth > 0
 
                             Loader {
@@ -2318,6 +2762,9 @@ ShellRoot {
                                     if (item) {
                                         item.shellRoot = root;
                                         item.parentWindow = barWindow;
+                                        if (!root.wifiPanelController || barWindow === root.primaryBarWindow) {
+                                            root.wifiPanelController = item;
+                                        }
                                     }
                                 }
                             }
@@ -2325,7 +2772,7 @@ ShellRoot {
 
                         Item {
                             implicitWidth: trayRow.implicitWidth > 0 ? trayRow.implicitWidth +2 : 0
-                            implicitHeight: 37
+                            implicitHeight: 38
                             visible: trayRow.implicitWidth > 0
 
                             Row {
@@ -2349,21 +2796,38 @@ ShellRoot {
                             }
                         }
 
-                        TextModule {
-                            label: root.powerProfileText
-                            fontPixelSize: 14
-                            interactive: true
-                            paddingLeft: 10
-                            paddingRight: 5
-                            onLeftClicked: {
-                                root.runDetached([root.configDir + "/quickshell/scripts/power-profile.sh", "toggle"]);
-                                powerProfileRefresh.restart();
+                        Item {
+                            id: controlPanelTrigger
+
+                            implicitWidth: controlPanelIcon.width + 12
+                            implicitHeight: 38
+
+                            Image {
+                                id: controlPanelIcon
+
+                                anchors.centerIn: parent
+                                width: 16
+                                height: 16
+                                source: root.darkMode
+                                    ? Qt.resolvedUrl("assets/bar/control-panel-dark.svg")
+                                    : Qt.resolvedUrl("assets/bar/control-panel-light.svg")
+                                fillMode: Image.PreserveAspectFit
+                                smooth: true
+                                mipmap: true
+                                sourceSize.width: 32
+                                sourceSize.height: 32
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: controlPanelPopup.toggleFor(controlPanelTrigger, barWindow)
                             }
                         }
 
                         Item {
                             implicitWidth: notificationGlyph.implicitWidth + 10
-                            implicitHeight: 37
+                            implicitHeight: 38
 
                             Text {
                                 id: notificationGlyph
@@ -2407,15 +2871,9 @@ ShellRoot {
                             }
                         }
 
-                        TextModule {
-                            label: "󰐾"
-                            interactive: true
-                            paddingLeft: 6
-                            paddingRight: 12
-                            onLeftClicked: {
-                                root.runDetached([root.configDir + "/quickshell/scripts/toggle-theme.sh"]);
-                                themeRefresh.restart();
-                            }
+                        Item {
+                            implicitWidth: 6
+                            implicitHeight: 38
                         }
                     }
                 }

@@ -6,6 +6,8 @@ AnimatedReveal {
     property bool expanded: false
     property bool openAnimationPending: false
 
+    fullHeight: contentItem.childrenRect.height
+
     layoutHeightFollowsReveal: true
     lineHeight: 0
 

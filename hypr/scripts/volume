@@ -6,6 +6,7 @@ iDIR="$HOME/.config/HyprV/mako/icons"
 NOTIFY_HINT="string:x-canonical-private-synchronous:sys-notify"
 VOL_STEP="${VOL_STEP:-5}"
 MIC_STEP="${MIC_STEP:-5}"
+QS_CONFIG_DIR="$HOME/.config/HyprV/quickshell"
 
 get_volume() {
     pamixer --get-volume
@@ -28,7 +29,7 @@ get_icon() {
 }
 
 notify_user() {
-    notify-send -h "$NOTIFY_HINT" -u low -i "$(get_icon)" "Volume : $(get_volume) %"
+    quickshell -p "$QS_CONFIG_DIR" ipc call quickAdjust showVolume >/dev/null 2>&1 || true
 }
 
 inc_volume() {
@@ -44,11 +45,10 @@ dec_volume() {
 toggle_mute() {
     if [[ "$(pamixer --get-mute)" == "false" ]]; then
         pamixer -m
-        notify-send -h "$NOTIFY_HINT" -u low -i "$iDIR/volume-mute.png" "Volume Switched OFF"
     else
         pamixer -u
-        notify-send -h "$NOTIFY_HINT" -u low -i "$(get_icon)" "Volume Switched ON"
     fi
+    notify_user
 }
 
 get_mic_icon() {

@@ -6,10 +6,10 @@ Rectangle {
     property var shellRoot: null
     default property alias contentData: contentRow.data
 
-    radius: 10
+    radius: 24
     color: shellRoot ? shellRoot.moduleBackground : "#303030"
     implicitWidth: contentRow.implicitWidth
-    implicitHeight: 37
+    implicitHeight: 38
     width: implicitWidth
     height: implicitHeight
 

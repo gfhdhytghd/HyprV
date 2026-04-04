@@ -15,6 +15,7 @@ iDIR="$HOME/.config/HyprV/mako/icons"   # 图标目录
 MIN=1
 MAX=400
 MIN_STEP=1  # 最低亮度变化量
+QS_CONFIG_DIR="$HOME/.config/HyprV/quickshell"
 
 # 启动时预先计算 log(MAX)
 #   使用 bc -l 计算自然对数：
@@ -122,12 +123,7 @@ get_icon() {
 #     调用 notify-send，通知当前亮度值（原始值）。
 ###########################################################
 notify_user() {
-    local new_val="$1"
-    local icon_path="$2"
-
-    notify-send -h string:x-canonical-private-synchronous:sys-notify \
-                -u low -i "$icon_path" \
-                "Brightness: $new_val"
+    quickshell -p "$QS_CONFIG_DIR" ipc call quickAdjust showBrightness >/dev/null 2>&1 || true
 }
 
 ###########################################################

@@ -16,7 +16,7 @@ Item {
 
     property real fullPanelHeight: 0
     property real lineHeight: 2
-    property real radius: 10
+    property real radius: 19
     property real surfaceOpacity: 0.82
     property color fillColor: "#202020"
     property color strokeColor: "#404040"

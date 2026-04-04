@@ -10,7 +10,7 @@ Item {
     property string iconSource: shellRoot ? shellRoot.trayIconSource(trayItem) : ""
 
     implicitWidth: 18
-    implicitHeight: 37
+    implicitHeight: 38
 
     IconImage {
         id: trayIcon
