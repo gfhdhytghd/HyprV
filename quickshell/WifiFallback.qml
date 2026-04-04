@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Wayland
 
 WifiIndicator {
     id: root
@@ -9,11 +10,18 @@ WifiIndicator {
     property bool popupVisible: false
     property string expandedSsid: ""
     property string passwordText: ""
+    property var displayedNetworks: []
+    property double displayedNetworksTimestamp: 0
 
     readonly property bool wifiEnabled: shellRoot ? shellRoot.wifiRadioEnabled : false
-    readonly property bool wifiConnectedState: shellRoot ? shellRoot.wifiConnected : false
+    readonly property bool wifiConnectedState: shellRoot ? (shellRoot.wifiConnectionActive || shellRoot.wifiConnected) : false
+    readonly property bool networkConnectedState: shellRoot ? shellRoot.networkConnected : false
+    readonly property bool wiredConnectedState: shellRoot ? shellRoot.wiredConnectionActive : false
+    readonly property bool otherConnectedState: shellRoot ? shellRoot.otherConnectionActive : false
+    readonly property bool wifiControlsAvailable: shellRoot ? (shellRoot.wifiDevicePresent || shellRoot.wifiCapabilityDetected) : false
     readonly property real wifiStrength: shellRoot ? shellRoot.wifiSignalStrength : 0
-    readonly property var networks: shellRoot ? shellRoot.wifiNetworks : []
+    readonly property var liveNetworks: shellRoot ? shellRoot.wifiNetworks : []
+    readonly property var networks: displayedNetworks
     readonly property color glassFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#101214" : "#ffffff", shellRoot.darkMode ? 0.42 : 0.28) : "#202020"
     readonly property color glassStroke: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, shellRoot.darkMode ? 0.14 : 0.1) : "#3a3a3a"
     readonly property color cardFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#ffffff" : "#ffffff", shellRoot.darkMode ? 0.07 : 0.22) : "#2a2a2a"
@@ -27,6 +35,7 @@ WifiIndicator {
     readonly property real panelSurfaceOpacity: 0.82
     readonly property int popupPanelWidth: 384
     readonly property int popupRightMargin: 10
+    readonly property int popupScreenMargin: 8
     readonly property int panelMaxHeight: 960
     readonly property int panelVerticalPadding: 28
     readonly property int panelSectionSpacing: 12
@@ -41,10 +50,19 @@ WifiIndicator {
     readonly property real fixedSpacingHeight: Math.max(0, fixedSectionCount - 1) * panelSectionSpacing
     readonly property real networkListTopSpacing: root.networks.length > 0 ? panelSectionSpacing : 0
     readonly property real maxNetworkListHeight: Math.max(0, panelMaxHeight - panelVerticalPadding - fixedSectionHeight - fixedSpacingHeight - networkListTopSpacing)
-    readonly property string trayIconUrl: shellRoot ? shellRoot.wifiTrayIconSource(wifiEnabled, shellRoot.wifiHardwareEnabled, wifiConnectedState, wifiStrength, shellRoot.wifiSecure) : ""
+    readonly property string trayIconUrl: shellRoot ? shellRoot.networkTrayIconSource() : ""
     readonly property string connectionSummary: {
         if (!shellRoot) {
             return "";
+        }
+        if (wiredConnectedState) {
+            return "Ethernet connected";
+        }
+        if (otherConnectedState) {
+            return "Connected via " + (shellRoot.defaultInterface || "network");
+        }
+        if (!wifiControlsAvailable) {
+            return "No wireless device detected";
         }
         if (!shellRoot.wifiHardwareEnabled) {
             return "Hardware blocked";
@@ -53,18 +71,18 @@ WifiIndicator {
             return "Wi-Fi disabled";
         }
         if (wifiConnectedState) {
-            return shellRoot.wifiSsid + "  " + Math.round(wifiStrength * 100) + "%";
+            return (shellRoot.wifiSsid || "Wi-Fi connected") + "  " + Math.round(wifiStrength * 100) + "%";
         }
         return "Not connected";
     }
 
-    available: shellRoot ? shellRoot.wifiWidgetVisible : false
+    available: shellRoot ? shellRoot.networkWidgetVisible : false
     iconSource: trayIconUrl
-    fallbackLabel: shellRoot ? shellRoot.wifiTrayGlyph(wifiEnabled, wifiConnectedState, wifiStrength) : "󰤮"
+    fallbackLabel: shellRoot ? shellRoot.networkTrayGlyph() : "󰤮"
 
     function updatePopupAnchor() {
-        if (popup.visible && root.parentWindow && popup.anchor.window) {
-            popup.anchor.updateAnchor();
+        if (popup.visible) {
+            popup.updatePopupPosition();
         }
     }
 
@@ -72,8 +90,86 @@ WifiIndicator {
         return Qt.rgba(colorValue.r, colorValue.g, colorValue.b, colorValue.a * panelSurfaceOpacity);
     }
 
+    function cloneNetwork(network) {
+        return {
+            active: !!network.active,
+            ssid: network.ssid || "",
+            signal: Number(network.signal) || 0,
+            security: network.security || "",
+            secure: !!network.secure,
+            known: !!network.known,
+            enterprise: !!network.enterprise
+        };
+    }
+
+    function mergeNetworkLists(primary, fallback) {
+        const bySsid = {};
+        const merged = [];
+
+        for (let i = 0; i < primary.length; i++) {
+            const network = cloneNetwork(primary[i]);
+            if (!network.ssid || bySsid[network.ssid]) {
+                continue;
+            }
+            bySsid[network.ssid] = true;
+            merged.push(network);
+        }
+
+        for (let i = 0; i < fallback.length; i++) {
+            const network = cloneNetwork(fallback[i]);
+            if (!network.ssid || bySsid[network.ssid]) {
+                continue;
+            }
+            bySsid[network.ssid] = true;
+            merged.push(network);
+        }
+
+        return merged;
+    }
+
+    function syncNetworkList(force) {
+        const source = Array.isArray(root.liveNetworks) ? root.liveNetworks : [];
+        const nextNetworks = source.map(cloneNetwork);
+        const cacheAgeMs = Date.now() - displayedNetworksTimestamp;
+        const popupShouldHoldSnapshot = root.popupVisible
+            && root.wifiEnabled
+            && (!root.shellRoot || root.shellRoot.wifiHardwareEnabled);
+
+        if (!force && expandedSsid.length > 0) {
+            const expandedNetworkStillAvailable = source.some(network => (network.ssid || "") === expandedSsid);
+            if (expandedNetworkStillAvailable) {
+                return;
+            }
+        }
+
+        if (nextNetworks.length > 0) {
+            const shouldMergeWithDisplayed = popupShouldHoldSnapshot
+                && displayedNetworks.length > 0
+                && nextNetworks.length < displayedNetworks.length
+                && cacheAgeMs < 30000;
+
+            displayedNetworks = shouldMergeWithDisplayed
+                ? mergeNetworkLists(nextNetworks, displayedNetworks)
+                : nextNetworks;
+            displayedNetworksTimestamp = Date.now();
+        } else if (!(popupShouldHoldSnapshot && displayedNetworks.length > 0 && cacheAgeMs < 30000)) {
+            displayedNetworks = [];
+            displayedNetworksTimestamp = Date.now();
+        }
+
+        if (expandedSsid.length > 0) {
+            const expandedNetworkStillAvailable = displayedNetworks.some(network =>
+                network.ssid === expandedSsid && network.secure && !network.known
+            );
+            if (!expandedNetworkStillAvailable) {
+                expandedSsid = "";
+                passwordText = "";
+            }
+        }
+    }
+
     function openPopup() {
-        if (shellRoot) {
+        if (shellRoot && (!Array.isArray(root.liveNetworks) || root.liveNetworks.length === 0)) {
             shellRoot.refreshWifiStatus();
         }
         popupVisible = true;
@@ -150,6 +246,25 @@ WifiIndicator {
         passwordText = "";
     }
 
+    onShellRootChanged: syncNetworkList(true)
+
+    onPopupVisibleChanged: {
+        if (popupVisible) {
+            syncNetworkList(true);
+            return;
+        }
+        expandedSsid = "";
+        passwordText = "";
+        syncNetworkList(true);
+    }
+
+    onExpandedSsidChanged: {
+        if (expandedSsid.length === 0) {
+            passwordText = "";
+            syncNetworkList(true);
+        }
+    }
+
     onLeftClicked: togglePopup()
 
     onXChanged: {
@@ -164,21 +279,74 @@ WifiIndicator {
         }
     }
 
-    PopupWindow {
+    Component.onCompleted: syncNetworkList(true)
+
+    Connections {
+        target: root.shellRoot
+
+        function onWifiNetworksChanged() {
+            root.syncNetworkList(false);
+        }
+    }
+
+    PanelWindow {
         id: popup
 
         property bool animatingClose: false
         property bool openAnimationPending: false
 
+        screen: root.parentWindow ? root.parentWindow.screen : null
         visible: root.popupVisible || animatingClose
         color: "transparent"
-        implicitWidth: root.popupPanelWidth
-        implicitHeight: popupChrome.implicitHeight
-        anchor.window: root.parentWindow
+        aboveWindows: true
+        focusable: visible
+        exclusiveZone: -1
+
+        WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+        WlrLayershell.namespace: "shell:hyprv-wifi"
+
+        anchors.top: true
+        anchors.left: true
+        anchors.right: true
+        anchors.bottom: true
+
+        onWidthChanged: if (visible) {
+            updatePopupPosition();
+        }
+        onHeightChanged: if (visible) {
+            updatePopupPosition();
+        }
+
+        function updatePopupPosition() {
+            if (!visible || !root.parentWindow || !screen) {
+                return;
+            }
+            const point = root.mapToGlobal(Math.round(root.width / 2), root.height);
+            const relativeY = point.y - screen.y;
+            const belowY = Math.round(relativeY + 10);
+            const aboveY = Math.round(relativeY - popupChrome.height - 10);
+            const fitsBelow = belowY + popupChrome.height <= height - root.popupScreenMargin;
+            const fitsAbove = aboveY >= root.popupScreenMargin;
+            popupChrome.x = Math.max(
+                root.popupScreenMargin,
+                Math.min(width - popupChrome.width - root.popupScreenMargin, width - popupChrome.width - root.popupRightMargin)
+            );
+
+            if (fitsBelow || !fitsAbove) {
+                popupChrome.y = Math.max(
+                    root.popupScreenMargin,
+                    Math.min(height - popupChrome.height - root.popupScreenMargin, belowY)
+                );
+            } else {
+                popupChrome.y = Math.max(root.popupScreenMargin, aboveY);
+            }
+        }
 
         onVisibleChanged: {
             if (visible) {
                 root.updatePopupAnchor();
+                popupFocusScope.forceActiveFocus();
                 if (!animatingClose) {
                     popup.openAnimationPending = true;
                     popupChrome.prepareOpenAnimation();
@@ -193,108 +361,116 @@ WifiIndicator {
             }
         }
 
-        anchor.onAnchoring: {
-            if (!root.parentWindow) {
-                return;
-            }
-            const point = root.mapToItem(root.parentWindow.contentItem, 0, root.height);
-            anchor.rect.x = Math.round(root.parentWindow.width - root.popupPanelWidth - root.popupRightMargin);
-            anchor.rect.y = Math.round(point.y + 10);
-            anchor.rect.width = 1;
-            anchor.rect.height = 1;
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+            onClicked: root.closePopup()
         }
 
-        AnimatedGlassPanel {
-            id: popupChrome
+        FocusScope {
+            id: popupFocusScope
 
-            width: parent.width
-            fullPanelHeight: Math.min(root.panelMaxHeight, panelColumn.implicitHeight + root.panelVerticalPadding)
-            fillColor: root.glassFill
-            strokeColor: root.glassStroke
-            shadowColor: "transparent"
-            devicePixelRatio: root.parentWindow ? root.parentWindow.devicePixelRatio : 1
-            openRevealPause: 85
-            openRevealDuration: 280
-            openContentDelay: 60
-            openFadeDuration: 180
-            openSlideDuration: 220
-            openContentOffset: -10
-            closeRevealPause: 35
-            closeRevealDuration: 210
-            closeFadeDuration: 110
-            closeSlideDuration: 170
-            closeContentOffset: -8
+            anchors.fill: parent
+            focus: popup.visible
 
-            onFullPanelHeightChanged: {
-                if (popup.openAnimationPending) {
-                    root.updatePopupAnchor();
-                    popupOpenTimer.restart();
-                    return;
-                }
-                if (!popupChrome.openAnimationRunning && !popupChrome.closeAnimationRunning) {
-                    revealHeight = fullPanelHeight;
-                    if (!popup.visible) {
-                        contentOpacity = 1;
-                        contentOffset = 0;
-                    }
-                }
-            }
+            Keys.onEscapePressed: root.closePopup()
 
-            onOpenAnimationFinished: {
-                if (!popup.visible || popup.animatingClose) {
-                    return;
-                }
-                root.updatePopupAnchor();
-            }
+            AnimatedGlassPanel {
+                id: popupChrome
 
-            onCloseAnimationFinished: {
-                if (popup.animatingClose && !root.popupVisible) {
-                    popup.animatingClose = false;
-                }
-            }
+                width: root.popupPanelWidth
+                fullPanelHeight: Math.min(root.panelMaxHeight, panelColumn.implicitHeight + root.panelVerticalPadding)
+                fillColor: root.glassFill
+                strokeColor: root.glassStroke
+                shadowColor: "transparent"
+                devicePixelRatio: popup.devicePixelRatio
+                openRevealPause: 85
+                openRevealDuration: 280
+                openContentDelay: 60
+                openFadeDuration: 180
+                openSlideDuration: 220
+                openContentOffset: -10
+                closeRevealPause: 35
+                closeRevealDuration: 210
+                closeFadeDuration: 110
+                closeSlideDuration: 170
+                closeContentOffset: -8
 
-            Column {
-                id: panelColumn
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.margins: 14
-                spacing: root.panelSectionSpacing
-                onImplicitHeightChanged: {
+                onFullPanelHeightChanged: {
                     if (popup.openAnimationPending) {
+                        root.updatePopupAnchor();
                         popupOpenTimer.restart();
+                        return;
+                    }
+                    if (!popupChrome.openAnimationRunning && !popupChrome.closeAnimationRunning) {
+                        revealHeight = fullPanelHeight;
+                        if (!popup.visible) {
+                            contentOpacity = 1;
+                            contentOffset = 0;
+                        }
                     }
                 }
 
-                Item {
-                    id: headerRow
-
-                    width: parent.width
-                    height: 36
-
-                    Text {
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "Wireless"
-                        color: root.shellRoot ? root.shellRoot.primaryText : "white"
-                        font.family: root.shellRoot ? root.shellRoot.baseFont : ""
-                        font.pixelSize: 17
-                        font.weight: Font.Bold
-                        renderType: Text.NativeRendering
+                onOpenAnimationFinished: {
+                    if (!popup.visible || popup.animatingClose) {
+                        return;
                     }
+                    root.updatePopupAnchor();
+                }
 
-                    WifiActionChip {
-                        x: parent.width - width
-                        anchors.verticalCenter: parent.verticalCenter
-                        shellRoot: root.shellRoot
-                        label: "Close"
-                        minimumWidth: 76
-                        fillColor: root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.primaryText, root.shellRoot.darkMode ? 0.08 : 0.12) : "#333333"
-                        strokeColor: root.cardStroke
-                        onClicked: root.closePopup()
+                onCloseAnimationFinished: {
+                    if (popup.animatingClose && !root.popupVisible) {
+                        popup.animatingClose = false;
                     }
                 }
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                }
+
+                Column {
+                    id: panelColumn
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 14
+                    spacing: root.panelSectionSpacing
+                    onImplicitHeightChanged: {
+                        if (popup.openAnimationPending) {
+                            popupOpenTimer.restart();
+                        }
+                    }
+
+                    Item {
+                        id: headerRow
+
+                        width: parent.width
+                        height: 36
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Network"
+                            color: root.shellRoot ? root.shellRoot.primaryText : "white"
+                            font.family: root.shellRoot ? root.shellRoot.baseFont : ""
+                            font.pixelSize: 17
+                            font.weight: Font.Bold
+                            renderType: Text.NativeRendering
+                        }
+
+                        WifiActionChip {
+                            x: parent.width - width
+                            anchors.verticalCenter: parent.verticalCenter
+                            shellRoot: root.shellRoot
+                            label: "Close"
+                            minimumWidth: 76
+                            fillColor: root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.primaryText, root.shellRoot.darkMode ? 0.08 : 0.12) : "#333333"
+                            strokeColor: root.cardStroke
+                            onClicked: root.closePopup()
+                        }
+                    }
 
                 Rectangle {
                     id: statusCard
@@ -302,9 +478,9 @@ WifiIndicator {
                     width: parent.width
                     implicitHeight: statusBody.implicitHeight + 24
                     radius: 10
-                    color: root.panelColor(root.wifiConnectedState ? root.accentFill : root.cardStrongFill)
+                    color: root.panelColor(root.networkConnectedState ? root.accentFill : root.cardStrongFill)
                     border.width: 1
-                    border.color: root.wifiConnectedState ? root.accentStroke : root.cardStroke
+                    border.color: root.networkConnectedState ? root.accentStroke : root.cardStroke
 
                     Item {
                         id: statusBody
@@ -322,7 +498,7 @@ WifiIndicator {
                             anchors.verticalCenter: parent.verticalCenter
                             shellRoot: root.shellRoot
                             iconSource: root.trayIconUrl
-                            fallbackLabel: root.shellRoot ? root.shellRoot.wifiTrayGlyph(root.wifiEnabled, root.wifiConnectedState, root.wifiStrength) : "󰤮"
+                            fallbackLabel: root.shellRoot ? root.shellRoot.networkTrayGlyph() : "󰤮"
                             iconSize: 24
                         }
 
@@ -332,16 +508,22 @@ WifiIndicator {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             shellRoot: root.shellRoot
-                            label: !root.shellRoot || !root.shellRoot.wifiHardwareEnabled
-                            ? "Blocked"
-                            : (root.wifiEnabled ? (root.wifiConnectedState ? "Online" : "Ready") : "Off")
+                            label: root.wiredConnectedState
+                            ? "Wired"
+                            : (root.otherConnectedState
+                                ? "Online"
+                                : (!root.wifiControlsAvailable
+                                    ? "No Wi-Fi"
+                                    : (!root.shellRoot || !root.shellRoot.wifiHardwareEnabled
+                                        ? "Blocked"
+                                        : (root.wifiEnabled ? (root.wifiConnectedState ? "Online" : "Ready") : "Off"))))
                             disabled: true
                             minimumWidth: 72
                             fillColor: root.cardFill
-                            foregroundColor: root.wifiConnectedState
+                            foregroundColor: root.networkConnectedState
                             ? (root.shellRoot ? root.shellRoot.launchColor : "white")
                             : (root.shellRoot ? root.shellRoot.primaryText : "white")
-                            strokeColor: root.wifiConnectedState
+                            strokeColor: root.networkConnectedState
                             ? (root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.launchColor, 0.18) : "#5176d2")
                             : root.cardStroke
                         }
@@ -369,7 +551,11 @@ WifiIndicator {
 
                             Text {
                                 width: parent.width
-                                text: root.shellRoot && root.shellRoot.wifiDevicePresent ? "Interface: " + (root.shellRoot.wifiInterface || "wifi") : "No wireless device detected"
+                                text: root.shellRoot && root.networkConnectedState
+                                ? "Interface: " + (root.shellRoot.defaultInterface || "network")
+                                : (root.shellRoot && root.shellRoot.wifiDevicePresent
+                                    ? "Wireless interface: " + (root.shellRoot.wifiInterface || "wifi")
+                                    : "No wireless device detected")
                                 elide: Text.ElideRight
                                 color: root.mutedText
                                 font.family: root.shellRoot ? root.shellRoot.baseFont : ""
@@ -390,7 +576,7 @@ WifiIndicator {
                         shellRoot: root.shellRoot
                         label: root.wifiEnabled ? "Turn Off" : "Turn On"
                         minimumWidth: 96
-                        disabled: !root.shellRoot || !root.shellRoot.wifiHardwareEnabled || root.shellRoot.wifiActionBusy
+                        disabled: !root.shellRoot || !root.wifiControlsAvailable || !root.shellRoot.wifiHardwareEnabled || root.shellRoot.wifiActionBusy
                         fillColor: root.cardStrongFill
                         foregroundColor: root.shellRoot ? root.shellRoot.launchColor : "white"
                         strokeColor: root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.launchColor, 0.18) : "#5176d2"
@@ -401,7 +587,7 @@ WifiIndicator {
                         shellRoot: root.shellRoot
                         label: "Rescan"
                         minimumWidth: 88
-                        disabled: !root.shellRoot || !root.wifiEnabled || root.shellRoot.wifiActionBusy
+                        disabled: !root.shellRoot || !root.wifiControlsAvailable || !root.wifiEnabled || root.shellRoot.wifiActionBusy
                         fillColor: root.cardFill
                         strokeColor: root.cardStroke
                         onClicked: root.shellRoot.wifiRescan()
@@ -462,7 +648,11 @@ WifiIndicator {
                         anchors.centerIn: parent
                         width: parent.width - 28
                         horizontalAlignment: Text.AlignHCenter
-                        text: root.wifiEnabled ? "No visible networks right now." : "Turn Wi-Fi on to scan for networks."
+                        text: !root.wifiControlsAvailable
+                        ? (root.networkConnectedState ? "Ethernet is active. No wireless device detected." : "No wireless device detected.")
+                        : (root.wifiEnabled
+                            ? (root.networkConnectedState ? "Ethernet is active. No visible Wi-Fi networks right now." : "No visible networks right now.")
+                            : (root.networkConnectedState ? "Ethernet is active. Turn Wi-Fi on to scan for wireless networks." : "Turn Wi-Fi on to scan for networks."))
                         color: root.mutedText
                         font.family: root.shellRoot ? root.shellRoot.baseFont : ""
                         font.pixelSize: 13
@@ -510,6 +700,13 @@ WifiIndicator {
                                 color: root.panelColor(modelData.active ? root.accentFill : root.cardFill)
                                 border.width: 1
                                 border.color: modelData.active ? root.accentStroke : root.cardStroke
+                                onExpandedChanged: {
+                                    if (expanded) {
+                                        passwordFocusTimer.restart();
+                                    } else {
+                                        passwordFocusTimer.stop();
+                                    }
+                                }
 
                                 Column {
                                     id: networkBody
@@ -655,10 +852,15 @@ WifiIndicator {
                                                     anchors.leftMargin: 12
                                                     anchors.rightMargin: 12
                                                     text: networkCard.expanded ? root.passwordText : ""
+                                                    activeFocusOnPress: true
+                                                    focus: networkCard.expanded && popup.visible && !popup.animatingClose
+                                                    selectByMouse: true
                                                     color: root.shellRoot ? root.shellRoot.primaryText : "white"
                                                     font.family: root.shellRoot ? root.shellRoot.baseFont : ""
                                                     font.pixelSize: 13
+                                                    font.letterSpacing: 3
                                                     echoMode: TextInput.Password
+                                                    inputMethodHints: Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
                                                     renderType: Text.NativeRendering
                                                     onTextChanged: root.passwordText = text
 
@@ -709,10 +911,23 @@ WifiIndicator {
                                                 }
                                             }
                                         }
+
+                                        Timer {
+                                            id: passwordFocusTimer
+
+                                            interval: 60
+                                            repeat: false
+                                            onTriggered: {
+                                                if (networkCard.expanded && popup.visible && !popup.animatingClose) {
+                                                    passwordInput.forceActiveFocus();
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+                    }
                     }
                 }
             }

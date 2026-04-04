@@ -1,14 +1,56 @@
 #!/bin/sh
 
 : "${HYPRV_NMCLI_BROKEN_MARKER:=/tmp/hyprv-nmcli-broken}"
+: "${HYPRV_NMCLI_RETRY_SECONDS:=20}"
+
+mark_nmcli_failed() {
+    failed_at="$(date +%s 2>/dev/null || printf '0')"
+    printf '%s\n' "$failed_at" > "$HYPRV_NMCLI_BROKEN_MARKER" 2>/dev/null || :
+}
+
+clear_nmcli_failed() {
+    rm -f "$HYPRV_NMCLI_BROKEN_MARKER"
+}
 
 nmcli_allowed() {
-    [ ! -e "$HYPRV_NMCLI_BROKEN_MARKER" ]
+    [ ! -e "$HYPRV_NMCLI_BROKEN_MARKER" ] && return 0
+
+    failed_at="$(cat "$HYPRV_NMCLI_BROKEN_MARKER" 2>/dev/null || true)"
+    case "$failed_at" in
+        ''|*[!0-9]*)
+            clear_nmcli_failed
+            return 0
+            ;;
+    esac
+
+    now="$(date +%s 2>/dev/null || printf '0')"
+    case "$now" in
+        ''|*[!0-9]*)
+            return 1
+            ;;
+    esac
+
+    if [ $((now - failed_at)) -ge "$HYPRV_NMCLI_RETRY_SECONDS" ]; then
+        clear_nmcli_failed
+        return 0
+    fi
+
+    return 1
+}
+
+run_nmcli() {
+    if nmcli "$@"; then
+        clear_nmcli_failed
+        return 0
+    fi
+
+    mark_nmcli_failed
+    return 1
 }
 
 detect_wifi_iface_nmcli() {
     nmcli_allowed || return 1
-    nmcli -t -f DEVICE,TYPE dev status 2>/dev/null | awk -F: '$2 == "wifi" { print $1; exit }'
+    run_nmcli -t -f DEVICE,TYPE dev status 2>/dev/null | awk -F: '$2 == "wifi" { print $1; exit }'
 }
 
 detect_wifi_iface_sysfs() {
@@ -38,7 +80,7 @@ detect_wifi_iface() {
 
 wifi_radio_status() {
     if nmcli_allowed; then
-        nmcli -t -f WIFI,WIFI-HW general status 2>/dev/null || printf 'enabled:enabled'
+        run_nmcli -t -f WIFI,WIFI-HW general status 2>/dev/null || printf 'enabled:enabled'
     else
         printf 'enabled:enabled'
     fi
@@ -46,10 +88,10 @@ wifi_radio_status() {
 
 saved_wifi_ssids() {
     nmcli_allowed || return 0
-    nmcli -t -f UUID,TYPE connection show 2>/dev/null \
+    run_nmcli -t -f UUID,TYPE connection show 2>/dev/null \
         | awk -F: '$2 == "802-11-wireless" { print $1 }' \
         | while IFS= read -r uuid; do
-            nmcli -g 802-11-wireless.ssid connection show "$uuid" 2>/dev/null || true
+            run_nmcli -g 802-11-wireless.ssid connection show "$uuid" 2>/dev/null || true
         done \
         | sed '/^$/d' \
         | sort -u

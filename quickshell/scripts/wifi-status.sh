@@ -6,7 +6,6 @@ script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$script_dir/wifi-common.sh"
 
 iface="$(detect_wifi_iface || true)"
-nmcli_broken_marker="/tmp/hyprv-nmcli-broken"
 
 radio_status="$(wifi_radio_status)"
 wifi_enabled="$(printf '%s' "$radio_status" | cut -d: -f1)"
@@ -61,8 +60,8 @@ fallback_current_network() {
 }
 
 if [ -n "$iface" ]; then
-    if [ ! -e "$nmcli_broken_marker" ] \
-        && nmcli -m multiline -f IN-USE,SSID,SIGNAL,SECURITY,BARS dev wifi list ifname "$iface" --rescan no > "$tmp_networks_raw" 2>/dev/null; then
+    if nmcli_allowed \
+        && run_nmcli -m multiline -f IN-USE,SSID,SIGNAL,SECURITY,BARS dev wifi list ifname "$iface" --rescan no > "$tmp_networks_raw" 2>/dev/null; then
         awk '
             function trim(text) {
                 sub(/^[[:space:]]+/, "", text);
@@ -125,10 +124,9 @@ if [ -n "$iface" ]; then
                 emit();
             }
         ' < "$tmp_networks_raw" > "$tmp_networks"
-        rm -f "$nmcli_broken_marker"
         saved_wifi_ssids > "$tmp_known"
     else
-        : > "$nmcli_broken_marker"
+        mark_nmcli_failed
         fallback_current_network > "$tmp_networks"
     fi
 fi

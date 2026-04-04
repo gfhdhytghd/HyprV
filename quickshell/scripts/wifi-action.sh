@@ -13,9 +13,9 @@ run_nmcli_connect() {
     password="$2"
 
     if [ -n "$password" ]; then
-        nmcli dev wifi connect "$ssid" password "$password" ifname "$iface" >/dev/null
+        run_nmcli dev wifi connect "$ssid" password "$password" ifname "$iface" >/dev/null
     else
-        nmcli dev wifi connect "$ssid" ifname "$iface" >/dev/null
+        run_nmcli dev wifi connect "$ssid" ifname "$iface" >/dev/null
     fi
 
     printf 'Connection requested for %s\n' "$ssid"
@@ -28,7 +28,7 @@ case "$command" in
             printf 'toggle expects "on" or "off"\n' >&2
             exit 2
         fi
-        nmcli radio wifi "$state" >/dev/null
+        run_nmcli radio wifi "$state" >/dev/null
         if [ "$state" = "on" ]; then
             printf 'Wi-Fi enabled\n'
         else
@@ -37,15 +37,15 @@ case "$command" in
         ;;
     rescan)
         if [ -n "$iface" ]; then
-            nmcli dev wifi rescan ifname "$iface" >/dev/null
+            run_nmcli dev wifi rescan ifname "$iface" >/dev/null
         else
-            nmcli dev wifi rescan >/dev/null
+            run_nmcli dev wifi rescan >/dev/null
         fi
         printf 'Scan started\n'
         ;;
     disconnect)
         require_wifi_iface "$iface"
-        nmcli device disconnect "$iface" >/dev/null
+        run_nmcli device disconnect "$iface" >/dev/null
         printf 'Disconnected\n'
         ;;
     connect)

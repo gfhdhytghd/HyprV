@@ -22,9 +22,9 @@ set_current_background() {
     
     #set the current background
     if [[ $THEMEIS == "dark" ]]; then
-        swww img ~/.config/HyprV/backgrounds/$VER'-background-dark.jpg' --transition-fps 60 --transition-type wipe --transition-duration 4
+        awww img ~/.config/HyprV/backgrounds/$VER'-background-dark.jpg' --transition-fps 60 --transition-type wipe --transition-duration 4
     else
-        swww img ~/.config/HyprV/backgrounds/$VER'-background.jpg' --transition-fps 60 --transition-type wipe --transition-duration 4
+        awww img ~/.config/HyprV/backgrounds/$VER'-background.jpg' --transition-fps 60 --transition-type wipe --transition-duration 4
     fi
 }
 

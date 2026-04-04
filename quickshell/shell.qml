@@ -39,6 +39,9 @@ ShellRoot {
     property bool wifiCapabilityDetected: false
     property string wifiActionMessage: ""
     property bool wifiActionBusy: false
+    property bool _wifiStatusInitialized: false
+    property var _cachedWifiNetworks: []
+    property double _cachedWifiNetworksTimestamp: 0
     property string notificationAlt: "none"
     property string notificationTooltip: ""
     property string powerProfileText: "⚖️"
@@ -54,6 +57,11 @@ ShellRoot {
     property real _previousRxBytes: -1
     property real _previousTxBytes: -1
     property string _previousInterface: ""
+    readonly property bool networkConnected: defaultInterface.length > 0
+    readonly property string activeNetworkType: networkTypeForInterface(defaultInterface)
+    readonly property bool wifiConnectionActive: activeNetworkType === "wifi"
+    readonly property bool wiredConnectionActive: activeNetworkType === "wired"
+    readonly property bool otherConnectionActive: activeNetworkType === "other"
 
     readonly property real pillOpacity: 0.8
     readonly property color moduleBackground: withAlpha(darkMode ? "#1e1e2e" : "#e7e7ec", pillOpacity)
@@ -239,6 +247,19 @@ ShellRoot {
         const iface = (name || "").toLowerCase();
         return iface.startsWith("wl") || iface.startsWith("wlan") || iface.startsWith("wifi");
     }
+    function isWiredInterfaceName(name) {
+        const iface = (name || "").toLowerCase();
+        return iface.startsWith("en") || iface.startsWith("eth");
+    }
+    function networkTypeForInterface(name) {
+        if (isWifiInterfaceName(name)) {
+            return "wifi";
+        }
+        if (isWiredInterfaceName(name)) {
+            return "wired";
+        }
+        return name ? "other" : "offline";
+    }
     readonly property string networkIcon: {
         if (!defaultInterface) {
             return "󰤮";
@@ -247,12 +268,13 @@ ShellRoot {
     }
     readonly property string networkText: defaultInterface ? humanRate(networkRxRate + networkTxRate) : "nocon"
     readonly property bool wifiWidgetVisible: wifiCapabilityDetected || wifiDevicePresent || wifiNetworks.length > 0 || isWifiInterfaceName(defaultInterface)
+    readonly property bool networkWidgetVisible: networkConnected || wifiWidgetVisible
     readonly property bool notificationDoNotDisturb: notificationAlt.indexOf("dnd") >= 0
     readonly property bool notificationHasDot: notificationAlt.indexOf("notification") >= 0
     readonly property string notificationIcon: notificationDoNotDisturb ? "" : ""
     readonly property var sortedTrayItems: {
         const items = Array.from(SystemTray.items.values || []);
-        const hideDedicatedWifiItems = root.wifiWidgetVisible;
+        const hideDedicatedWifiItems = root.networkWidgetVisible;
         return items
         .filter(item => {
                 if (!hideDedicatedWifiItems) {
@@ -1296,6 +1318,23 @@ ShellRoot {
         return fluentWifiIconSource("nm-signal-" + wifiSignalBucket(signalPercent) + (secure ? "-secure" : ""), false);
     }
 
+    function wiredTrayIconSource(connected) {
+        if (darkMode) {
+            return fluentWifiIconSource(connected ? "network-wired" : "network-wired-disconnected", true);
+        }
+        return fluentWifiIconSource(connected ? "network-wired" : "network-wired-offline", false);
+    }
+
+    function networkTrayIconSource() {
+        if (wiredConnectionActive || otherConnectionActive) {
+            return wiredTrayIconSource(true);
+        }
+        if (wifiConnectionActive) {
+            return wifiTrayIconSource(true, wifiHardwareEnabled, true, wifiSignalStrength, wifiSecure);
+        }
+        return wifiTrayIconSource(wifiRadioEnabled, wifiHardwareEnabled, wifiConnected, wifiSignalStrength, wifiSecure);
+    }
+
     function humanRate(bytesPerSecond) {
         const value = Math.max(0, bytesPerSecond || 0);
         if (value < 1024) {
@@ -1463,6 +1502,16 @@ ShellRoot {
         return wifiSignalGlyph(Math.round((strength || 0) * 100));
     }
 
+    function networkTrayGlyph() {
+        if (wiredConnectionActive || otherConnectionActive) {
+            return "󰈀";
+        }
+        if (wifiConnectionActive) {
+            return wifiTrayGlyph(true, true, wifiSignalStrength);
+        }
+        return wifiTrayGlyph(wifiRadioEnabled, wifiConnected, wifiSignalStrength);
+    }
+
     function updateNotificationState(raw) {
         if (!raw) {
             notificationAlt = "none";
@@ -1491,6 +1540,49 @@ ShellRoot {
         wifiNetworks = [];
     }
 
+    function cloneWifiNetworks(networks) {
+        if (!Array.isArray(networks)) {
+            return [];
+        }
+        return networks.map(network => ({
+            active: !!network.active,
+            ssid: network.ssid || "",
+            signal: Number(network.signal) || 0,
+            security: network.security || "",
+            bars: network.bars || "",
+            secure: !!network.secure,
+            known: !!network.known,
+            enterprise: !!network.enterprise
+        }));
+    }
+
+    function resolveWifiNetworks(data) {
+        const nextNetworks = Array.isArray(data.networks) ? data.networks : [];
+        if (nextNetworks.length > 0) {
+            _cachedWifiNetworks = cloneWifiNetworks(nextNetworks);
+            _cachedWifiNetworksTimestamp = Date.now();
+            return nextNetworks;
+        }
+
+        const cacheAgeMs = Date.now() - _cachedWifiNetworksTimestamp;
+        const shouldReuseCachedNetworks = !!data.present
+            && data.hardwareEnabled !== false
+            && (!!data.enabled || !!data.connected)
+            && _cachedWifiNetworks.length > 0
+            && cacheAgeMs < 30000;
+
+        if (shouldReuseCachedNetworks) {
+            return cloneWifiNetworks(_cachedWifiNetworks);
+        }
+
+        if (!data.present || data.hardwareEnabled === false || !data.enabled) {
+            _cachedWifiNetworks = [];
+            _cachedWifiNetworksTimestamp = 0;
+        }
+
+        return [];
+    }
+
     function applyWifiStatus(data) {
         const devicePresent = !!data.present;
         const iface = data.iface || "";
@@ -1503,6 +1595,9 @@ ShellRoot {
         }
 
         if (!devicePresent) {
+            _cachedWifiNetworks = [];
+            _cachedWifiNetworksTimestamp = 0;
+            _wifiStatusInitialized = true;
             return;
         }
 
@@ -1512,18 +1607,23 @@ ShellRoot {
         wifiSsid = data.ssid || "";
         wifiSecure = (data.security || "").trim().length > 0;
         wifiSignalStrength = wifiConnected ? Math.max(0, Math.min(1, (Number(data.signal) || 0) / 100)) : 0;
-        wifiNetworks = Array.isArray(data.networks) ? data.networks : [];
+        wifiNetworks = resolveWifiNetworks(data);
+        _wifiStatusInitialized = true;
     }
 
     function updateWifiStatus(raw) {
         if (!raw) {
-            resetWifiStatus();
+            if (!_wifiStatusInitialized) {
+                resetWifiStatus();
+            }
             return;
         }
         try {
             applyWifiStatus(JSON.parse(raw));
         } catch (_) {
-            resetWifiStatus();
+            if (!_wifiStatusInitialized) {
+                resetWifiStatus();
+            }
         }
     }
 
@@ -1848,8 +1948,6 @@ ShellRoot {
         onUpdated: function(output, exitCode) {
             if (exitCode === 0) {
                 root.updateWifiStatus(output);
-            } else {
-                root.updateWifiStatus("");
             }
         }
     }
@@ -2213,7 +2311,7 @@ ShellRoot {
                             Loader {
                                 id: wifiTrayLoader
                                 anchors.fill: parent
-                                active: root.wifiWidgetVisible
+                                active: root.networkWidgetVisible
                                 source: Qt.resolvedUrl("WifiNative.qml")
 
                                 onLoaded: {

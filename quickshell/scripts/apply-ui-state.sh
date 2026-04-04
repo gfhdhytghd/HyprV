@@ -153,12 +153,12 @@ apply_links_and_theme() {
         kvantummanager --set "Orchis${orchis_suffix}" >/dev/null 2>&1 || true
     fi
 
-    if [[ -f "$background_target" ]] && command -v swww >/dev/null 2>&1; then
-        if ! pgrep -x swww-daemon >/dev/null 2>&1; then
-            nohup swww-daemon >/dev/null 2>&1 &
+    if [[ -f "$background_target" ]] && command -v awww >/dev/null 2>&1; then
+        if ! pgrep -x awww-daemon >/dev/null 2>&1; then
+            nohup awww-daemon >/dev/null 2>&1 &
             sleep 0.2
         fi
-        swww img "$background_target" --transition-fps 180 --transition-type wipe --transition-duration 2 >/dev/null 2>&1 || true
+        awww img "$background_target" --transition-fps 180 --transition-type wipe --transition-duration 2 >/dev/null 2>&1 || true
     fi
 
     if command -v kwriteconfig6 >/dev/null 2>&1; then
