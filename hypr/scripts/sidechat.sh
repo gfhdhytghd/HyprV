@@ -12,8 +12,9 @@ TRACE_FILE=/tmp/sidechat.trace
 
 SIDECHAT_WIDTH=360
 SIDECHAT_RIGHT_MARGIN=10
-SIDECHAT_TOP_MARGIN=59
-SIDECHAT_HEIGHT_TRIM=71
+# Match the current bar clearance while preserving the previous bottom edge.
+SIDECHAT_TOP_MARGIN=60
+SIDECHAT_HEIGHT_TRIM=72
 
 APP_CLASS_REGEX='^ai-hub$'
 

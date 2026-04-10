@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
 ###########################################################
-#   脚本功能：在亮度范围 1～400 上，以指数映射的方式
-#           实现 100 级增减，每次调用脚本自动加/减一级。
+#   脚本功能：在亮度范围 1～400 上，以指数曲线生成严格单调的
+#           50 级亮度表；每次调用脚本自动加/减一级。
 #   说明：
 #     - MIN、MAX 分别表示物理最小/最大亮度值（此处固定为 1、400）。
-#     - LEVEL 范围 [0,100]，每次 inc/dec 对应 level +/-1。
-#     - 最终映射关系： new = round( exp( log(MAX) * level / 100 ) )
+#     - STEP 范围 [0,50]，每次 inc/dec 对应 step +/-1。
+#     - UI 仍然显示 [0,100]，每个 step 对应固定 2%。
+#     - 启动时会预生成 51 个 step -> raw 的唯一映射值。
+#     - 反查时返回最接近当前 raw 值的 step，保证 UI 与脚本步进一致。
 #     - 图标按 level 分段（0-20、21-40、41-60、61-80、81-100）选取。
 ###########################################################
 
@@ -14,12 +16,47 @@
 iDIR="$HOME/.config/HyprV/mako/icons"   # 图标目录
 MIN=1
 MAX=400
-MIN_STEP=1  # 最低亮度变化量
+STEP_MAX=50
+UI_MAX=100
 QS_CONFIG_DIR="$HOME/.config/HyprV/quickshell"
+declare -a STEP_VALUES=()
 
 # 启动时预先计算 log(MAX)
 #   使用 bc -l 计算自然对数：
 MAX_LOG=$(echo "l($MAX)" | bc -l)
+
+###########################################################
+#   init_step_table():
+#     生成严格递增的 step -> raw 表，保证 50 级步进一一对应。
+###########################################################
+init_step_table() {
+    local step prev raw target rounded min_allowed max_allowed
+
+    prev=$(( MIN - 1 ))
+    for (( step = 0; step <= STEP_MAX; step++ )); do
+        if (( step == 0 )); then
+            raw=$MIN
+        elif (( step == STEP_MAX )); then
+            raw=$MAX
+        else
+            target=$(echo "scale=10; e($MAX_LOG * $step / $STEP_MAX)" | bc -l)
+            rounded=$(printf "%.0f" "$target")
+            min_allowed=$(( prev + 1 ))
+            max_allowed=$(( MAX - (STEP_MAX - step) ))
+
+            if (( rounded < min_allowed )); then
+                raw=$min_allowed
+            elif (( rounded > max_allowed )); then
+                raw=$max_allowed
+            else
+                raw=$rounded
+            fi
+        fi
+
+        STEP_VALUES[$step]=$raw
+        prev=$raw
+    done
+}
 
 ###########################################################
 #   get_current():
@@ -29,65 +66,96 @@ get_current() {
     brightnessctl g
 }
 
+init_step_table
+
 ###########################################################
-#   level_from_value(cur):
-#     输入 cur（1～400），计算对应的 [0,100] 级别（整数，floor）。
-#     level = floor( 100 * ln(cur) / ln(MAX) )
+#   step_from_value(cur):
+#     输入 cur（1～400），返回最接近当前 raw 的逻辑 step。
 ###########################################################
-level_from_value() {
+step_from_value() {
     local cur="$1"
+    local step raw prev_raw
+
     if (( cur <= MIN )); then
         echo 0
         return
     elif (( cur >= MAX )); then
-        echo 100
+        echo "$STEP_MAX"
         return
     fi
 
-    # 利用 bc -l 做浮点运算，再向下取整
-    # 注意：ln(cur) / MAX_LOG * 100
-    local level_float
-    level_float=$(echo "scale=6; l($cur) / $MAX_LOG * 100" | bc -l)
-    # floor 操作：直接截取小数点前部分即可
-    local level_int="${level_float%.*}"
-    echo "$level_int"
+    for (( step = 0; step <= STEP_MAX; step++ )); do
+        raw=${STEP_VALUES[$step]}
+        if (( raw >= cur )); then
+            if (( step == 0 )); then
+                echo 0
+            else
+                prev_raw=${STEP_VALUES[$(( step - 1 ))]}
+                if (( cur - prev_raw <= raw - cur )); then
+                    echo $(( step - 1 ))
+                else
+                    echo "$step"
+                fi
+            fi
+            return
+        fi
+    done
+
+    echo "$STEP_MAX"
 }
 
 ###########################################################
-#   value_from_level(level):
-#     输入 level（0～100），输出对应的 “物理亮度” 值（1～400），四舍五入到最近整数。
-#     new = round( exp( MAX_LOG * level / 100 ) )
+#   value_from_step(step):
+#     输入 step（0～50），输出对应的物理亮度值（1～400）。
 ###########################################################
-value_from_level() {
+value_from_step() {
+    local step="$1"
+
+    if (( step <= 0 )); then
+        echo "$MIN"
+        return
+    elif (( step >= STEP_MAX )); then
+        echo "$MAX"
+        return
+    fi
+
+    echo "${STEP_VALUES[$step]}"
+}
+
+###########################################################
+#   ui_level_from_step(step):
+#     将 50 级 step 转成 UI 百分比。每个 step 固定 2%。
+###########################################################
+ui_level_from_step() {
+    local step="$1"
+
+    if (( step <= 0 )); then
+        echo 0
+        return
+    elif (( step >= STEP_MAX )); then
+        echo "$UI_MAX"
+        return
+    fi
+
+    echo $(( step * UI_MAX / STEP_MAX ))
+}
+
+###########################################################
+#   step_from_ui_level(level):
+#     将 UI 百分比转换成最接近的 step。
+###########################################################
+step_from_ui_level() {
     local level="$1"
 
-    # 如果 level=0，则返回最小值 MIN；如果 level=100，则返回 MAX
     if (( level <= 0 )); then
-        echo "$MIN"
+        echo 0
         return
-    elif (( level >= 100 )); then
-        echo "$MAX"
+    elif (( level >= UI_MAX )); then
+        echo "$STEP_MAX"
         return
     fi
 
-    # 计算 exp( MAX_LOG * level / 100 )
-    # 然后用 printf "%.0f" 四舍五入
-    local exp_arg
-    exp_arg=$(echo "scale=8; $MAX_LOG * $level / 100" | bc -l)
-    # 计算指数
-    local raw_val
-    raw_val=$(echo "e($exp_arg)" | bc -l)
-    # 四舍五入到整数
-    local rounded
-    rounded=$(printf "%.0f" "$raw_val")
-    # 防止越界
-    if (( rounded < MIN )); then
-        echo "$MIN"
-    elif (( rounded > MAX )); then
-        echo "$MAX"
-    else
-        echo "$rounded"
-    fi
+    echo $(( (level * STEP_MAX + UI_MAX / 2) / UI_MAX ))
 }
 
 ###########################################################
@@ -119,11 +187,21 @@ get_icon() {
 }
 
 ###########################################################
-#   notify_user(new_val, icon_path):
-#     调用 notify-send，通知当前亮度值（原始值）。
+#   notify_user(action, level):
+#     通知 quickshell 更新亮度快捷弹窗。
 ###########################################################
 notify_user() {
-    quickshell -p "$QS_CONFIG_DIR" ipc call quickAdjust showBrightness >/dev/null 2>&1 || true
+    local action="${1:-showBrightness}"
+    local level="${2:-}"
+
+    if [[ -n "$level" ]]; then
+        quickshell -p "$QS_CONFIG_DIR" ipc call quickAdjust "$action" "$level" >/dev/null 2>&1 || true
+        quickshell -p "$QS_CONFIG_DIR" ipc call quickAdjust showBrightness >/dev/null 2>&1 || true
+        return
+    fi
+
+    quickshell -p "$QS_CONFIG_DIR" ipc call quickAdjust "$action" >/dev/null 2>&1 || \
+        quickshell -p "$QS_CONFIG_DIR" ipc call quickAdjust showBrightness >/dev/null 2>&1 || true
 }
 
 ###########################################################
@@ -131,20 +209,17 @@ notify_user() {
 #     将当前亮度对应的 level + 1，然后写回实际值并通知。
 ###########################################################
 inc_brightness() {
-    local cur_val level new_level new_val icon_path
+    local cur_val step new_step new_val ui_level
     cur_val=$(get_current)
-    level=$(level_from_value "$cur_val")
-    new_level=$(( level + 2 ))
-    if (( new_level > 100 )); then
-        new_level=100
+    step=$(step_from_value "$cur_val")
+    new_step=$(( step + 1 ))
+    if (( new_step > STEP_MAX )); then
+        new_step=$STEP_MAX
     fi
-    new_val=$(value_from_level "$new_level")
-    if (( new_val < 8 )); then
-        new_val=$(( cur_val + 1))
-    fi
-    icon_path=$(get_icon "$new_level")
-    brightnessctl set "${new_val}raw"  # 添加 raw
-    notify_user "$new_val" "$icon_path"
+    new_val=$(value_from_step "$new_step")
+    ui_level=$(ui_level_from_step "$new_step")
+    brightnessctl set "${new_val}raw"
+    notify_user showBrightnessLevel "$ui_level"
 }
 
 
@@ -153,18 +228,17 @@ inc_brightness() {
 #     将当前亮度对应的 level - 1，然后写回实际值并通知。
 ###########################################################
 dec_brightness() {
-    local cur_val level new_level new_val icon_path
+    local cur_val step new_step new_val ui_level
     cur_val=$(get_current)
-    level=$(level_from_value "$cur_val")
-    new_level=$(( level - 1 ))
-    new_val=$(value_from_level "$new_level")
-    # 确保亮度不会低于 MIN_STEP
-    if (( new_val < 5 )); then
-        new_val=$(( cur_val - 1))
+    step=$(step_from_value "$cur_val")
+    new_step=$(( step - 1 ))
+    if (( new_step < 0 )); then
+        new_step=0
     fi
-    icon_path=$(get_icon "$new_level")
-    brightnessctl set "$new_val"
-    notify_user "$new_val" "$icon_path"
+    new_val=$(value_from_step "$new_step")
+    ui_level=$(ui_level_from_step "$new_step")
+    brightnessctl set "${new_val}raw"
+    notify_user showBrightnessLevel "$ui_level"
 }
 
 ###########################################################
@@ -176,12 +250,78 @@ get_direct() {
 }
 
 ###########################################################
+#   get_level():
+#     返回当前亮度对应的 UI 百分比（0～100）。
+###########################################################
+get_level() {
+    local cur_val step
+    cur_val=$(get_current)
+    step=$(step_from_value "$cur_val")
+    ui_level_from_step "$step"
+}
+
+###########################################################
+#   get_ui_level():
+#     UI 与脚本步进保持一致，这里直接复用 UI 百分比。
+###########################################################
+get_ui_level() {
+    get_level
+}
+
+###########################################################
+#   set_level(level):
+#     按 UI 百分比（0～100）设置亮度，不触发通知。
+###########################################################
+set_level() {
+    local level="${1:-}"
+    local step new_val
+
+    if [[ -z "$level" || ! "$level" =~ ^-?[0-9]+$ ]]; then
+        echo "Invalid level: $level" >&2
+        exit 1
+    fi
+
+    if (( level < 0 )); then
+        level=0
+    elif (( level > UI_MAX )); then
+        level=$UI_MAX
+    fi
+
+    step=$(step_from_ui_level "$level")
+    new_val=$(value_from_step "$step")
+    brightnessctl set "${new_val}raw"
+}
+
+###########################################################
+#   set_ui_level(level):
+#     UI 与脚本步进保持一致，这里直接复用 UI 百分比。
+###########################################################
+set_ui_level() {
+    set_level "${1:-}"
+}
+
+###########################################################
 #   脚本入口
-#     接受参数：--get  / --inc  / --dec
+#     接受参数：
+#       --get / --get-level / --set-level <n>
+#       --get-ui-level / --set-ui-level <n>
+#       --inc / --dec
 ###########################################################
 case "$1" in
     --get)
         get_direct
+        ;;
+    --get-level)
+        get_level
+        ;;
+    --set-level)
+        set_level "${2:-}"
+        ;;
+    --get-ui-level)
+        get_ui_level
+        ;;
+    --set-ui-level)
+        set_ui_level "${2:-}"
         ;;
     --inc)
         inc_brightness
@@ -190,7 +330,7 @@ case "$1" in
         dec_brightness
         ;;
     *)
-        echo "Usage: $0 [--get | --inc | --dec]"
+        echo "Usage: $0 [--get | --get-level | --set-level <n> | --get-ui-level | --set-ui-level <n> | --inc | --dec]"
         exit 1
         ;;
 esac

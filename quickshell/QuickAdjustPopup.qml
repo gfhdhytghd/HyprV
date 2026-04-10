@@ -64,9 +64,7 @@ Item {
         restartAutoHide();
 
         if (mode === "brightness") {
-            shellRoot.brightnessPercent = nextValue;
-            shellRoot.runDetached(["brightnessctl", "s", nextValue + "%"]);
-            shellRoot.refreshControlPanelStatus();
+            shellRoot.applyBrightnessPercent(nextValue);
             return;
         }
 

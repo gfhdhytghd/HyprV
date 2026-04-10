@@ -140,11 +140,10 @@ Item {
     }
 
     function setBrightnessPercent(value) {
-        const nextValue = clampPercent(value);
-        if (shellRoot) {
-            shellRoot.brightnessPercent = nextValue;
+        if (!shellRoot) {
+            return;
         }
-        runAndRefresh(["brightnessctl", "s", nextValue + "%"]);
+        shellRoot.applyBrightnessPercent(clampPercent(value));
     }
 
     function setAudioVolumePercent(value) {
@@ -183,9 +182,7 @@ Item {
         if (!shellRoot) {
             return;
         }
-        const enabled = !shellRoot.bluetoothEnabled;
-        shellRoot.bluetoothEnabled = enabled;
-        shellRoot.bluetoothSetPower(enabled);
+        shellRoot.bluetoothSetPower(!shellRoot.bluetoothEnabled);
     }
 
     function toggleDnd() {

@@ -141,6 +141,14 @@ Item {
                 radius: parent.radius
                 color: slider.accentColor
                 antialiasing: true
+
+                Behavior on width {
+                    enabled: !trackArea.pressed
+                    NumberAnimation {
+                        duration: 90
+                        easing.type: Easing.OutCubic
+                    }
+                }
             }
 
             Rectangle {
@@ -155,6 +163,14 @@ Item {
                 border.width: 2
                 border.color: slider.accentColor
                 antialiasing: true
+
+                Behavior on x {
+                    enabled: !trackArea.pressed
+                    NumberAnimation {
+                        duration: 90
+                        easing.type: Easing.OutCubic
+                    }
+                }
 
                 scale: trackArea.pressed ? 1.15 : (trackArea.containsMouse ? 1.05 : 1)
                 Behavior on scale {

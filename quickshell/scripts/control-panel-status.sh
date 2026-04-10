@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-. "$script_dir/bluetooth-common.sh"
-
 run_quick() {
     timeout 2s "$@" 2>/dev/null || true
 }
@@ -17,18 +14,15 @@ if command -v nmcli >/dev/null 2>&1; then
 fi
 printf 'wifi_enabled=%s\n' "$wifi_enabled"
 
-# Bluetooth power state
-bluetooth_enabled=false
-if command -v bluetoothctl >/dev/null 2>&1; then
-    if [[ "$(bt_property_bool "$(bt_show_capture)" "Powered")" == "true" ]]; then
-        bluetooth_enabled=true
-    fi
-fi
-printf 'bluetooth_enabled=%s\n' "$bluetooth_enabled"
-
 # Screen brightness
 brightness=50
-if command -v brightnessctl >/dev/null 2>&1; then
+brightness_script="${HOME}/.config/HyprV/hypr/scripts/brightness"
+if [[ -x "$brightness_script" ]]; then
+    pct="$(run_quick "$brightness_script" --get-level)"
+    if [[ -n "$pct" && "$pct" =~ ^[0-9]+$ ]]; then
+        brightness="$pct"
+    fi
+elif command -v brightnessctl >/dev/null 2>&1; then
     pct="$(timeout 2s sh -lc "brightnessctl -m 2>/dev/null | cut -d, -f4 | tr -d '%'" 2>/dev/null || true)"
     if [[ -n "$pct" && "$pct" =~ ^[0-9]+$ ]]; then
         brightness="$pct"

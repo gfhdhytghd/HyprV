@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Effects
 import Quickshell
+import Quickshell.Bluetooth
 import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Services.SystemTray
@@ -59,6 +60,13 @@ ShellRoot {
 
     property bool wifiEnabled: true
     property bool bluetoothEnabled: false
+    property bool bluetoothShowUnnamedDevices: true
+    readonly property var bluetoothAdapterObject: Bluetooth.defaultAdapter
+    readonly property var bluetoothDeviceObjects: bluetoothAdapterObject && bluetoothAdapterObject.devices
+        ? Array.from(bluetoothAdapterObject.devices.values || [])
+        : []
+    readonly property string brightnessScriptPath: configDir + "/hypr/scripts/brightness"
+    readonly property int brightnessUiStepPercent: 2
     property int brightnessPercent: 50
     property bool dndEnabled: false
     property bool screenRecording: false
@@ -81,6 +89,14 @@ ShellRoot {
     property real _previousTxBytes: -1
     property string _previousInterface: ""
     property bool _showQuickAdjustAfterBrightnessProbe: false
+    property bool _brightnessProbeQueued: false
+    property int _pendingBrightnessPercent: -1
+    property string _bluetoothActionKind: ""
+    property string _bluetoothActionAddress: ""
+    property string _bluetoothActionLabel: ""
+    property string _bluetoothActionFailureMessage: ""
+    property bool _bluetoothConnectRequestedAfterPair: false
+    property bool _bluetoothScanStopRequested: false
     readonly property bool networkConnected: defaultInterface.length > 0
     readonly property string activeNetworkType: networkTypeForInterface(defaultInterface)
     readonly property bool wifiConnectionActive: activeNetworkType === "wifi"
@@ -245,6 +261,11 @@ ShellRoot {
         }
         return "";
     }
+
+    onBluetoothAdapterObjectChanged: syncBluetoothStatusFromModel()
+    onBluetoothDeviceObjectsChanged: syncBluetoothStatusFromModel()
+
+    Component.onCompleted: syncBluetoothStatusFromModel()
     function resetAudioState() {
         root.audioAvailable = false;
         root.audioMuted = false;
@@ -453,7 +474,7 @@ ShellRoot {
         property int textPixelSize: root.trayMenuTextPixelSize
         readonly property int animationDuration: 200
         readonly property int rowHeight: Math.max(34, textPixelSize + 18)
-        readonly property int menuPadding: 8
+        readonly property int menuPadding: 9
         readonly property int menuWidth: 300
         readonly property int menuMaxHeight: 420
         readonly property color glassFill: withAlpha(root.darkMode ? "#101214" : "#ffffff", root.darkMode ? 0.42 : 0.28)
@@ -771,6 +792,7 @@ ShellRoot {
 
                 width: trayMenuPopupRoot.menuWidth
                 fullPanelHeight: Math.min(trayMenuPopupRoot.menuMaxHeight, menuContent.implicitHeight + trayMenuPopupRoot.menuPadding * 2)
+                radius: 19
                 fillColor: trayMenuPopupRoot.glassFill
                 strokeColor: trayMenuPopupRoot.glassStroke
                 shadowColor: root.darkMode ? withAlpha("#000000", 0.45) : withAlpha("#111111", 0.18)
@@ -845,13 +867,13 @@ ShellRoot {
                         Rectangle {
                             width: parent.width
                             height: trayMenuPopupRoot.rowHeight
-                            radius: 8
+                            radius: 11
                             visible: entryStack.count > 0
                             color: backArea.containsMouse ? trayMenuPopupRoot.hoverFill : "transparent"
 
                             Text {
                                 anchors.left: parent.left
-                                anchors.leftMargin: 10
+                                anchors.leftMargin: 9
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: "< Back"
                                 color: root.primaryText
@@ -880,7 +902,7 @@ ShellRoot {
 
                                 width: menuContent.width
                                 height: menuEntry?.isSeparator ? 1 : trayMenuPopupRoot.rowHeight
-                                radius: menuEntry?.isSeparator ? 0 : 8
+                                radius: menuEntry?.isSeparator ? 0 : 11
                                 color: {
                                     if (menuEntry?.isSeparator) {
                                         return trayMenuPopupRoot.glassStroke;
@@ -904,8 +926,8 @@ ShellRoot {
 
                                 Item {
                                     anchors.fill: parent
-                                    anchors.leftMargin: 10
-                                    anchors.rightMargin: 10
+                                    anchors.leftMargin: 9
+                                    anchors.rightMargin: 9
                                     visible: !menuEntry?.isSeparator
 
                                     Text {
@@ -1289,8 +1311,6 @@ ShellRoot {
             const line = lines[i].trim();
             if (line.startsWith("wifi_enabled=")) {
                 continue;
-            } else if (line.startsWith("bluetooth_enabled=")) {
-                root.bluetoothEnabled = line.slice(18).trim() === "true";
             } else if (line.startsWith("brightness=")) {
                 const parsed = Number(line.slice(11).trim());
                 if (isFinite(parsed)) {
@@ -1416,7 +1436,7 @@ ShellRoot {
         if (darkMode) {
             return fluentWifiIconSource(connected ? "network-wired" : "network-wired-disconnected", true);
         }
-        return fluentWifiIconSource(connected ? "network-wired" : "network-wired-offline", false);
+        return fileUrl(configDir + "/quickshell/assets/tray/" + (connected ? "network-wired-light.svg" : "network-wired-offline-light.svg"));
     }
 
     function networkTrayIconSource() {
@@ -1730,44 +1750,225 @@ ShellRoot {
         }
     }
 
-    function cloneBluetoothDevices(devices) {
-        if (!Array.isArray(devices)) {
-            return [];
+    function normalizeBluetoothIdentifier(value) {
+        return (value || "").trim().toUpperCase().replace(/-/g, ":");
+    }
+
+    function bluetoothNameLooksLikeAddress(name, address) {
+        const trimmedName = (name || "").trim();
+        if (trimmedName.length === 0) {
+            return true;
         }
-        return devices.map(device => ({
+        const normalizedName = normalizeBluetoothIdentifier(trimmedName);
+        const normalizedAddress = normalizeBluetoothIdentifier(address);
+        if (normalizedAddress.length > 0 && normalizedName === normalizedAddress) {
+            return true;
+        }
+        return /^([0-9A-F]{2}[:-]){5}[0-9A-F]{2}$/.test(trimmedName.toUpperCase());
+    }
+
+    function bluetoothDeviceName(device) {
+        if (!device) {
+            return "";
+        }
+        const rawName = (device.name || device.deviceName || "").trim();
+        if (bluetoothNameLooksLikeAddress(rawName, device.address || "")) {
+            return "";
+        }
+        return rawName;
+    }
+
+    function bluetoothDeviceSnapshot(device) {
+        if (!device) {
+            return null;
+        }
+        const name = bluetoothDeviceName(device);
+        return {
             address: device.address || "",
-            name: device.name || "",
+            name: name,
+            displayName: name.length > 0 ? name : (device.address || "Unknown device"),
+            hasName: name.length > 0,
             icon: device.icon || "bluetooth",
             paired: !!device.paired,
             trusted: !!device.trusted,
             connected: !!device.connected,
             blocked: !!device.blocked,
-            rssi: device.rssi === null || device.rssi === undefined ? null : Number(device.rssi)
-        }));
+            rssi: null
+        };
     }
 
-    function applyBluetoothStatus(data) {
-        resetBluetoothStatus();
-        bluetoothPresent = !!data.present;
-        bluetoothEnabled = !!data.enabled;
-        bluetoothDiscovering = !!data.discovering;
-        bluetoothPairable = !!data.pairable;
-        bluetoothDevices = cloneBluetoothDevices(data.devices);
+    function sortedBluetoothSnapshots() {
+        const devices = Array.isArray(root.bluetoothDeviceObjects) ? root.bluetoothDeviceObjects : [];
+        const snapshots = [];
+        for (let i = 0; i < devices.length; i++) {
+            const snapshot = bluetoothDeviceSnapshot(devices[i]);
+            if (snapshot) {
+                snapshots.push(snapshot);
+            }
+        }
+        snapshots.sort((a, b) => {
+            if (!!a.connected !== !!b.connected) {
+                return a.connected ? -1 : 1;
+            }
+            if (!!a.paired !== !!b.paired) {
+                return a.paired ? -1 : 1;
+            }
+            if (!!a.trusted !== !!b.trusted) {
+                return a.trusted ? -1 : 1;
+            }
+            return (a.displayName || a.address).localeCompare(b.displayName || b.address, undefined, {
+                sensitivity: "base"
+            });
+        });
+        return snapshots;
+    }
+
+    function findBluetoothDevice(address) {
+        if (!address) {
+            return null;
+        }
+        const devices = Array.isArray(root.bluetoothDeviceObjects) ? root.bluetoothDeviceObjects : [];
+        for (let i = 0; i < devices.length; i++) {
+            if (((devices[i] && devices[i].address) || "") === address) {
+                return devices[i];
+            }
+        }
+        return null;
+    }
+
+    function syncBluetoothStatusFromModel() {
+        const adapter = root.bluetoothAdapterObject;
+        if (!adapter) {
+            resetBluetoothStatus();
+            _bluetoothStatusInitialized = true;
+            maybeFinishBluetoothAction();
+            return;
+        }
+
+        bluetoothPresent = true;
+        bluetoothEnabled = !!adapter.enabled;
+        bluetoothDiscovering = !!adapter.discovering;
+        bluetoothPairable = !!adapter.pairable;
+        bluetoothDevices = sortedBluetoothSnapshots();
         _bluetoothStatusInitialized = true;
+        maybeFinishBluetoothAction();
     }
 
-    function updateBluetoothStatus(raw) {
-        if (!raw) {
-            if (!_bluetoothStatusInitialized) {
-                resetBluetoothStatus();
+    function resetBluetoothActionState() {
+        _bluetoothActionKind = "";
+        _bluetoothActionAddress = "";
+        _bluetoothActionLabel = "";
+        _bluetoothActionSuccessMessage = "";
+        _bluetoothActionFailureMessage = "";
+        _bluetoothConnectRequestedAfterPair = false;
+        _bluetoothScanStopRequested = false;
+        bluetoothActionTimeout.stop();
+        bluetoothScanStopTimer.stop();
+    }
+
+    function beginBluetoothAction(actionKind, address, label, pendingMessage, successMessage, failureMessage, timeoutMs) {
+        if (bluetoothActionBusy) {
+            return false;
+        }
+        bluetoothActionBusy = true;
+        bluetoothActionMessage = pendingMessage || "";
+        _bluetoothActionKind = actionKind || "";
+        _bluetoothActionAddress = address || "";
+        _bluetoothActionLabel = label || address || "device";
+        _bluetoothActionSuccessMessage = successMessage || "";
+        _bluetoothActionFailureMessage = failureMessage || "Bluetooth action failed";
+        _bluetoothConnectRequestedAfterPair = false;
+        _bluetoothScanStopRequested = false;
+        bluetoothActionTimeout.interval = timeoutMs || 12000;
+        bluetoothActionTimeout.restart();
+        return true;
+    }
+
+    function finishBluetoothActionSuccess(message) {
+        bluetoothActionBusy = false;
+        bluetoothActionMessage = message || _bluetoothActionSuccessMessage || "Bluetooth action complete";
+        resetBluetoothActionState();
+    }
+
+    function finishBluetoothActionFailure(message) {
+        bluetoothActionBusy = false;
+        bluetoothActionMessage = message || _bluetoothActionFailureMessage || "Bluetooth action failed";
+        resetBluetoothActionState();
+    }
+
+    function maybeFinishBluetoothAction() {
+        if (!bluetoothActionBusy || !_bluetoothActionKind) {
+            return;
+        }
+
+        const adapter = root.bluetoothAdapterObject;
+        const device = _bluetoothActionAddress ? findBluetoothDevice(_bluetoothActionAddress) : null;
+        const deviceLabel = _bluetoothActionLabel || _bluetoothActionAddress || "device";
+
+        if (_bluetoothActionKind === "toggle-on") {
+            if (adapter && adapter.enabled) {
+                finishBluetoothActionSuccess();
             }
             return;
         }
-        try {
-            applyBluetoothStatus(JSON.parse(raw));
-        } catch (_) {
-            if (!_bluetoothStatusInitialized) {
-                resetBluetoothStatus();
+
+        if (_bluetoothActionKind === "toggle-off") {
+            if (!adapter || !adapter.enabled) {
+                finishBluetoothActionSuccess();
+            }
+            return;
+        }
+
+        if (_bluetoothActionKind === "scan") {
+            if (adapter && adapter.discovering && !_bluetoothScanStopRequested && !bluetoothScanStopTimer.running) {
+                bluetoothScanStopTimer.restart();
+            }
+            if (_bluetoothScanStopRequested && (!adapter || !adapter.discovering)) {
+                finishBluetoothActionSuccess();
+            }
+            return;
+        }
+
+        if (_bluetoothActionKind === "connect") {
+            if (device && device.connected) {
+                finishBluetoothActionSuccess();
+            }
+            return;
+        }
+
+        if (_bluetoothActionKind === "pair-connect") {
+            if (!device) {
+                return;
+            }
+            if (device.paired) {
+                if (!device.trusted) {
+                    try {
+                        device.trusted = true;
+                    } catch (_) {}
+                }
+                if (!device.connected && !_bluetoothConnectRequestedAfterPair) {
+                    _bluetoothConnectRequestedAfterPair = true;
+                    try {
+                        device.connected = true;
+                    } catch (_) {}
+                }
+            }
+            if (device.connected) {
+                finishBluetoothActionSuccess();
+            }
+            return;
+        }
+
+        if (_bluetoothActionKind === "disconnect") {
+            if (!device || !device.connected) {
+                finishBluetoothActionSuccess();
+            }
+            return;
+        }
+
+        if (_bluetoothActionKind === "remove") {
+            if (!device || (!device.paired && !device.connected)) {
+                finishBluetoothActionSuccess("Removed " + deviceLabel);
             }
         }
     }
@@ -1952,7 +2153,7 @@ ShellRoot {
     }
 
     function refreshBluetoothStatus() {
-        bluetoothStatusPoll.refresh();
+        syncBluetoothStatusFromModel();
     }
 
     function startWifiAction(command, pendingMessage, successMessage) {
@@ -1964,17 +2165,6 @@ ShellRoot {
         _wifiActionSuccessMessage = successMessage || "";
         wifiActionRunner.command = command;
         wifiActionRunner.running = true;
-    }
-
-    function startBluetoothAction(command, pendingMessage, successMessage) {
-        if (!command || command.length === 0 || bluetoothActionRunner.running) {
-            return;
-        }
-        bluetoothActionBusy = true;
-        bluetoothActionMessage = pendingMessage || "";
-        _bluetoothActionSuccessMessage = successMessage || "";
-        bluetoothActionRunner.command = command;
-        bluetoothActionRunner.running = true;
     }
 
     function wifiSetRadio(enabled) {
@@ -1995,29 +2185,126 @@ ShellRoot {
     }
 
     function bluetoothSetPower(enabled) {
-        startBluetoothAction(["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "toggle", enabled ? "on" : "off"], enabled ? "Turning Bluetooth on..." : "Turning Bluetooth off...", enabled ? "Bluetooth enabled" : "Bluetooth disabled");
+        const adapter = root.bluetoothAdapterObject;
+        if (!adapter) {
+            bluetoothActionMessage = "No Bluetooth controller found";
+            return;
+        }
+        if (!!adapter.enabled === enabled) {
+            bluetoothActionMessage = enabled ? "Bluetooth already enabled" : "Bluetooth already disabled";
+            syncBluetoothStatusFromModel();
+            return;
+        }
+        if (!beginBluetoothAction(enabled ? "toggle-on" : "toggle-off", "", "", enabled ? "Turning Bluetooth on..." : "Turning Bluetooth off...", enabled ? "Bluetooth enabled" : "Bluetooth disabled", "Failed to change Bluetooth power state", 8000)) {
+            return;
+        }
+        try {
+            adapter.enabled = enabled;
+            syncBluetoothStatusFromModel();
+        } catch (error) {
+            finishBluetoothActionFailure(String(error));
+        }
     }
 
     function bluetoothScan() {
-        startBluetoothAction(["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "scan"], "Scanning for Bluetooth devices...", "Bluetooth scan complete");
+        const adapter = root.bluetoothAdapterObject;
+        if (!adapter) {
+            bluetoothActionMessage = "No Bluetooth controller found";
+            return;
+        }
+        if (!adapter.enabled) {
+            bluetoothActionMessage = "Bluetooth is turned off";
+            return;
+        }
+        if (adapter.discovering) {
+            bluetoothActionMessage = "Bluetooth scan already running";
+            return;
+        }
+        if (!beginBluetoothAction("scan", "", "", "Scanning for Bluetooth devices...", "Bluetooth scan complete", "Bluetooth scan failed", 12000)) {
+            return;
+        }
+        try {
+            adapter.discovering = true;
+            syncBluetoothStatusFromModel();
+            maybeFinishBluetoothAction();
+        } catch (error) {
+            finishBluetoothActionFailure(String(error));
+        }
     }
 
     function bluetoothConnect(address, paired, label) {
-        const command = ["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "connect", address || "", paired ? "true" : "false"];
-        const name = label || address || "device";
-        startBluetoothAction(command, "Connecting to " + name + "...", "Connection requested for " + name);
+        const device = findBluetoothDevice(address);
+        const name = label || bluetoothDeviceName(device) || address || "device";
+        if (!device) {
+            bluetoothActionMessage = "Bluetooth device not found";
+            syncBluetoothStatusFromModel();
+            return;
+        }
+        if (device.connected) {
+            bluetoothActionMessage = name + " is already connected";
+            syncBluetoothStatusFromModel();
+            return;
+        }
+        const needsPairing = !device.paired;
+        if (!beginBluetoothAction(needsPairing ? "pair-connect" : "connect", address || "", name, "Connecting to " + name + "...", needsPairing ? "Paired and connected " + name : "Connected to " + name, "Failed to connect " + name, needsPairing ? 45000 : 15000)) {
+            return;
+        }
+        try {
+            if (needsPairing) {
+                device.pair();
+            } else {
+                device.connected = true;
+            }
+            syncBluetoothStatusFromModel();
+            maybeFinishBluetoothAction();
+        } catch (error) {
+            finishBluetoothActionFailure(String(error));
+        }
     }
 
     function bluetoothDisconnect(address, label) {
-        const command = ["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "disconnect", address || ""];
-        const name = label || address || "device";
-        startBluetoothAction(command, "Disconnecting " + name + "...", "Disconnected " + name);
+        const device = findBluetoothDevice(address);
+        const name = label || bluetoothDeviceName(device) || address || "device";
+        if (!device) {
+            bluetoothActionMessage = "Bluetooth device not found";
+            syncBluetoothStatusFromModel();
+            return;
+        }
+        if (!device.connected) {
+            bluetoothActionMessage = name + " is already disconnected";
+            syncBluetoothStatusFromModel();
+            return;
+        }
+        if (!beginBluetoothAction("disconnect", address || "", name, "Disconnecting " + name + "...", "Disconnected " + name, "Failed to disconnect " + name, 12000)) {
+            return;
+        }
+        try {
+            device.connected = false;
+            syncBluetoothStatusFromModel();
+            maybeFinishBluetoothAction();
+        } catch (error) {
+            finishBluetoothActionFailure(String(error));
+        }
     }
 
     function bluetoothRemove(address, label) {
-        const command = ["sh", root.configDir + "/quickshell/scripts/bluetooth-action.sh", "remove", address || ""];
-        const name = label || address || "device";
-        startBluetoothAction(command, "Removing " + name + "...", "Removed " + name);
+        const device = findBluetoothDevice(address);
+        const name = label || bluetoothDeviceName(device) || address || "device";
+        if (!device) {
+            bluetoothActionMessage = "Bluetooth device not found";
+            syncBluetoothStatusFromModel();
+            return;
+        }
+        if (!beginBluetoothAction("remove", address || "", name, "Removing " + name + "...", "Removed " + name, "Failed to remove " + name, 12000)) {
+            return;
+        }
+        try {
+            device.forget();
+            syncBluetoothStatusFromModel();
+            maybeFinishBluetoothAction();
+        } catch (error) {
+            finishBluetoothActionFailure(String(error));
+        }
     }
 
     function runDetached(command) {
@@ -2032,13 +2319,45 @@ ShellRoot {
         controlPanelStatusPoll.refresh();
     }
 
+    function clampBrightnessPercent(value) {
+        return Math.max(0, Math.min(100, Math.round(value)));
+    }
+
+    function snapBrightnessPercent(value) {
+        return clampBrightnessPercent(Math.round(clampBrightnessPercent(value) / brightnessUiStepPercent) * brightnessUiStepPercent);
+    }
+
+    function updateBrightnessPercentLocally(value) {
+        const nextValue = snapBrightnessPercent(value);
+        brightnessPercent = nextValue;
+        return nextValue;
+    }
+
+    function applyBrightnessPercent(value) {
+        const nextValue = updateBrightnessPercentLocally(value);
+        _pendingBrightnessPercent = nextValue;
+        if (!brightnessApplyTimer.running) {
+            brightnessApplyTimer.start();
+        }
+        brightnessProbeDebounce.restart();
+    }
+
+    function previewBrightnessDelta(delta) {
+        const nextValue = updateBrightnessPercentLocally(brightnessPercent + delta);
+        quickAdjustPopup.show("brightness");
+        brightnessProbeDebounce.restart();
+        return nextValue;
+    }
+
     function refreshBrightnessStatus(showQuickAdjust) {
         if (showQuickAdjust) {
             _showQuickAdjustAfterBrightnessProbe = true;
         }
-        if (!quickAdjustBrightnessProbe.running) {
-            quickAdjustBrightnessProbe.running = true;
+        if (quickAdjustBrightnessProbe.running) {
+            _brightnessProbeQueued = true;
+            return;
         }
+        quickAdjustBrightnessProbe.running = true;
     }
 
     function refreshAudioStatus() {
@@ -2119,36 +2438,10 @@ ShellRoot {
     }
 
     Process {
-        id: bluetoothActionRunner
-
-        running: false
-        stdout: StdioCollector {
-            id: bluetoothActionStdout
-        }
-        stderr: StdioCollector {
-            id: bluetoothActionStderr
-        }
-
-        onExited: function(exitCode) {
-            const stdout = (bluetoothActionStdout.text || "").trim();
-            const stderr = (bluetoothActionStderr.text || "").trim();
-            bluetoothActionBusy = false;
-            if (exitCode === 0) {
-                bluetoothActionMessage = stdout.length > 0 ? stdout : _bluetoothActionSuccessMessage;
-            } else {
-                bluetoothActionMessage = stderr.length > 0 ? stderr : (stdout.length > 0 ? stdout : "Bluetooth action failed");
-            }
-            bluetoothStatusPoll.refresh();
-            bluetoothFollowupRefresh.restart();
-            controlPanelStatusPoll.refresh();
-        }
-    }
-
-    Process {
         id: quickAdjustBrightnessProbe
 
         running: false
-        command: ["sh", "-lc", "brightnessctl -m 2>/dev/null | awk -F, '{gsub(/%/,\"\",$4); print $4}'"]
+        command: [root.brightnessScriptPath, "--get-level"]
         stdout: StdioCollector {
             id: quickAdjustBrightnessProbeStdout
         }
@@ -2156,14 +2449,40 @@ ShellRoot {
         onExited: function(exitCode) {
             const parsed = Number((quickAdjustBrightnessProbeStdout.text || "").trim());
             if (exitCode === 0 && isFinite(parsed)) {
-                root.brightnessPercent = Math.max(0, Math.min(100, Math.round(parsed)));
+                root.brightnessPercent = root.snapBrightnessPercent(parsed);
             }
             if (root._showQuickAdjustAfterBrightnessProbe) {
                 root._showQuickAdjustAfterBrightnessProbe = false;
                 quickAdjustPopup.show("brightness");
             }
             root.refreshControlPanelStatus();
+            if (root._brightnessProbeQueued) {
+                root._brightnessProbeQueued = false;
+                quickAdjustBrightnessProbe.running = true;
+            }
         }
+    }
+
+    Timer {
+        id: brightnessApplyTimer
+
+        interval: 35
+        repeat: false
+        onTriggered: {
+            if (root._pendingBrightnessPercent < 0) {
+                return;
+            }
+            root.runDetached([root.brightnessScriptPath, "--set-level", String(root._pendingBrightnessPercent)]);
+            root._pendingBrightnessPercent = -1;
+        }
+    }
+
+    Timer {
+        id: brightnessProbeDebounce
+
+        interval: 90
+        repeat: false
+        onTriggered: root.refreshBrightnessStatus(false)
     }
 
     Timer {
@@ -2175,11 +2494,27 @@ ShellRoot {
     }
 
     Timer {
-        id: bluetoothFollowupRefresh
+        id: bluetoothActionTimeout
 
-        interval: 1500
+        interval: 12000
         repeat: false
-        onTriggered: bluetoothStatusPoll.refresh()
+        onTriggered: finishBluetoothActionFailure()
+    }
+
+    Timer {
+        id: bluetoothScanStopTimer
+
+        interval: 4000
+        repeat: false
+        onTriggered: {
+            root._bluetoothScanStopRequested = true;
+            if (root.bluetoothAdapterObject) {
+                try {
+                    root.bluetoothAdapterObject.discovering = false;
+                } catch (_) {}
+            }
+            root.syncBluetoothStatusFromModel();
+        }
     }
 
     Timer {
@@ -2188,6 +2523,80 @@ ShellRoot {
         interval: 150
         repeat: false
         onTriggered: audioStatusPoll.refresh()
+    }
+
+    Connections {
+        target: root.bluetoothAdapterObject
+        ignoreUnknownSignals: true
+
+        function onEnabledChanged() {
+            root.syncBluetoothStatusFromModel();
+        }
+
+        function onDiscoveringChanged() {
+            root.syncBluetoothStatusFromModel();
+        }
+
+        function onPairableChanged() {
+            root.syncBluetoothStatusFromModel();
+        }
+
+        function onStateChanged() {
+            root.syncBluetoothStatusFromModel();
+        }
+    }
+
+    Instantiator {
+        id: bluetoothDeviceSignalInstantiator
+
+        model: root.bluetoothDeviceObjects
+
+        delegate: Connections {
+            required property var modelData
+
+            target: modelData
+            ignoreUnknownSignals: true
+
+            function onConnectedChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+
+            function onPairedChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+
+            function onTrustedChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+
+            function onBlockedChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+
+            function onNameChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+
+            function onDeviceNameChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+
+            function onIconChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+
+            function onStateChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+
+            function onPairingChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+
+            function onBondedChanged() {
+                root.syncBluetoothStatusFromModel();
+            }
+        }
     }
 
     Timer {
@@ -2230,18 +2639,6 @@ ShellRoot {
         onUpdated: function(output, exitCode) {
             if (exitCode === 0) {
                 root.updateWifiStatus(output);
-            }
-        }
-    }
-
-    PollCommand {
-        id: bluetoothStatusPoll
-
-        interval: controlPanelPopup.popupRequested && controlPanelPopup.bluetoothExpanded ? 4000 : 15000
-        command: ["sh", root.configDir + "/quickshell/scripts/bluetooth-status.sh"]
-        onUpdated: function(output, exitCode) {
-            if (exitCode === 0) {
-                root.updateBluetoothStatus(output);
             }
         }
     }
@@ -2371,11 +2768,26 @@ ShellRoot {
         enabled: true
 
         function showBrightness() {
-            root._showQuickAdjustAfterBrightnessProbe = true;
-            if (quickAdjustPopup.mode === "brightness" && quickAdjustPopup.shellRoot && quickAdjustPopup.shellRoot.primaryBarWindow) {
-                quickAdjustPopup.restartAutoHide();
+            quickAdjustPopup.show("brightness");
+            root.refreshBrightnessStatus(false);
+        }
+
+        function showBrightnessLevel(level) {
+            const parsed = Number(level);
+            if (isFinite(parsed)) {
+                root.updateBrightnessPercentLocally(parsed);
             }
-            root.refreshBrightnessStatus(true);
+            quickAdjustPopup.show("brightness");
+            root.refreshControlPanelStatus();
+            brightnessProbeDebounce.restart();
+        }
+
+        function showBrightnessIncrease() {
+            root.previewBrightnessDelta(root.brightnessUiStepPercent);
+        }
+
+        function showBrightnessDecrease() {
+            root.previewBrightnessDelta(-root.brightnessUiStepPercent);
         }
 
         function showVolume() {

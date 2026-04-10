@@ -9,7 +9,8 @@ PREV_WS_FILE="$STATE_DIR/dropdown.prev_ws"
 
 APP_CLASS='alacritty-dropdown'
 HIDDEN_WORKSPACE='special:dropdown_hidden'
-DEFAULT_VISIBLE_OFFSET=59
+# Keep the dropdown 1px below the bar's current top reserved area.
+DEFAULT_VISIBLE_OFFSET=60
 LOCK_TIMEOUT_SECONDS=5
 WINDOW_WIDTH=1080
 PIN_WHEN_VISIBLE=on

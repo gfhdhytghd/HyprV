@@ -9,6 +9,148 @@ ensure_parent() {
     mkdir -p "$(dirname -- "$1")"
 }
 
+set_ini_value() {
+    local file section key value tmp
+    file="$1"
+    section="$2"
+    key="$3"
+    value="$4"
+
+    ensure_parent "$file"
+    touch "$file"
+    tmp="$(mktemp)"
+
+    awk -v section="$section" -v key="$key" -v value="$value" '
+        BEGIN {
+            target = "[" section "]"
+            in_target = 0
+            written = 0
+        }
+        $0 == target {
+            if (in_target && !written) {
+                print key "=" value
+                written = 1
+            }
+            in_target = 1
+            print
+            next
+        }
+        /^\[/ {
+            if (in_target && !written) {
+                print key "=" value
+                written = 1
+            }
+            in_target = 0
+            print
+            next
+        }
+        {
+            if (in_target && index($0, key "=") == 1) {
+                if (!written) {
+                    print key "=" value
+                    written = 1
+                }
+                next
+            }
+            print
+        }
+        END {
+            if (NR == 0) {
+                print target
+                print key "=" value
+            } else if (in_target && !written) {
+                print key "=" value
+            } else if (!written) {
+                print ""
+                print target
+                print key "=" value
+            }
+        }
+    ' "$file" > "$tmp"
+
+    mv "$tmp" "$file"
+}
+
+set_assignment() {
+    local file key value tmp
+    file="$1"
+    key="$2"
+    value="$3"
+
+    ensure_parent "$file"
+    touch "$file"
+    tmp="$(mktemp)"
+
+    awk -v key="$key" -v value="$value" '
+        BEGIN {
+            written = 0
+        }
+        index($0, key "=") == 1 {
+            if (!written) {
+                print key "=" value
+                written = 1
+            }
+            next
+        }
+        {
+            print
+        }
+        END {
+            if (!written) {
+                print key "=" value
+            }
+        }
+    ' "$file" > "$tmp"
+
+    mv "$tmp" "$file"
+}
+
+set_xsettings_value() {
+    local file key value tmp
+    file="$1"
+    key="$2"
+    value="$3"
+
+    ensure_parent "$file"
+    touch "$file"
+    tmp="$(mktemp)"
+
+    awk -v key="$key" -v value="$value" '
+        BEGIN {
+            written = 0
+        }
+        $1 == key {
+            if (!written) {
+                print key " " value
+                written = 1
+            }
+            next
+        }
+        {
+            print
+        }
+        END {
+            if (!written) {
+                print key " " value
+            }
+        }
+    ' "$file" > "$tmp"
+
+    mv "$tmp" "$file"
+}
+
+restart_xsettingsd() {
+    if ! command -v xsettingsd >/dev/null 2>&1; then
+        return 0
+    fi
+
+    pkill -x xsettingsd >/dev/null 2>&1 || true
+
+    if [[ -n "${DISPLAY:-}" ]]; then
+        nohup xsettingsd >/dev/null 2>&1 &
+    fi
+}
+
 theme_suffix() {
     case "${1:-}" in
         dark)
@@ -74,6 +216,18 @@ notify_ui_state() {
     fi
 }
 
+run_with_timeout() {
+    local seconds
+    seconds="$1"
+    shift
+
+    if command -v timeout >/dev/null 2>&1; then
+        timeout "$seconds" "$@" >/dev/null 2>&1 || true
+    else
+        "$@" >/dev/null 2>&1 || true
+    fi
+}
+
 load_current_state() {
     theme="$("$state_script" get-theme)"
     variant="$("$state_script" get-variant)"
@@ -84,7 +238,10 @@ load_current_state() {
 
 apply_links_and_theme() {
     local wofi_target background_target rofi_target alacritty_target ghostty_target swaync_target
-    local orchis_suffix color_scheme_suffix
+    local orchis_suffix color_scheme_suffix prefer_dark
+    local gtk_theme_name icon_theme_name kvantum_theme
+    local qt6_color_scheme qt5_color_scheme
+    local hypr_clients_json
 
     wofi_target="$HOME/.config/HyprV/wofi/style/${variant_name}-style${suffix}.css"
     background_target="$HOME/.config/HyprV/backgrounds/${variant_name}-background${suffix}.jpg"
@@ -118,25 +275,38 @@ apply_links_and_theme() {
     if [[ -f "$swaync_target" ]]; then
         ln -sfn "$swaync_target" "$HOME/.config/swaync/style.css"
         if command -v swaync-client >/dev/null 2>&1; then
-            swaync-client -rs >/dev/null 2>&1 || true
+            run_with_timeout 2 swaync-client -rs
         fi
     fi
 
     if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
-        hyprctl clients -j 2>/dev/null | jq -r '
-            .[] | select((.class // "" | ascii_downcase) | contains("ghostty")) | .address
-        ' | while read -r addr; do
-            [[ -n "$addr" ]] || continue
-            hyprctl dispatch sendshortcut "CTRL SHIFT, comma, address:$addr" >/dev/null 2>&1 || true
-        done
+        hypr_clients_json="$(hyprctl clients -j 2>/dev/null || true)"
+        if [[ -n "$hypr_clients_json" ]] && printf '%s' "$hypr_clients_json" | jq -e . >/dev/null 2>&1; then
+            printf '%s' "$hypr_clients_json" | jq -r '
+                .[] | select((.class // "" | ascii_downcase) | contains("ghostty")) | .address
+            ' | while read -r addr; do
+                [[ -n "$addr" ]] || continue
+                hyprctl dispatch sendshortcut "CTRL SHIFT, comma, address:$addr" >/dev/null 2>&1 || true
+            done
+        fi
     fi
 
     orchis_suffix=""
     color_scheme_suffix="-light"
+    prefer_dark="false"
+    qt6_color_scheme="/usr/share/qt6ct/colors/simple.conf"
+    qt5_color_scheme="/usr/share/qt5ct/colors/simple.conf"
     if [[ "$theme" == "dark" ]]; then
         orchis_suffix="Dark"
         color_scheme_suffix="-dark"
+        prefer_dark="true"
+        qt6_color_scheme="/usr/share/qt6ct/colors/darker.conf"
+        qt5_color_scheme="/usr/share/qt5ct/colors/darker.conf"
     fi
+
+    gtk_theme_name="Orchis-${mode_label}-Compact"
+    icon_theme_name="Fluent${color_scheme_suffix}"
+    kvantum_theme="Orchis${orchis_suffix}"
 
     if command -v xfconf-query >/dev/null 2>&1; then
         xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita${suffix}" >/dev/null 2>&1 || true
@@ -144,14 +314,33 @@ apply_links_and_theme() {
     fi
 
     if command -v gsettings >/dev/null 2>&1; then
-        gsettings set org.gnome.desktop.interface gtk-theme "Orchis-${mode_label}-Compact" >/dev/null 2>&1 || true
-        gsettings set org.gnome.desktop.interface icon-theme "Fluent${color_scheme_suffix}" >/dev/null 2>&1 || true
+        gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme_name" >/dev/null 2>&1 || true
+        gsettings set org.gnome.desktop.interface icon-theme "$icon_theme_name" >/dev/null 2>&1 || true
         gsettings set org.gnome.desktop.interface color-scheme "prefer${color_scheme_suffix}" >/dev/null 2>&1 || true
     fi
 
-    if command -v kvantummanager >/dev/null 2>&1; then
-        kvantummanager --set "Orchis${orchis_suffix}" >/dev/null 2>&1 || true
-    fi
+    set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-theme-name "$gtk_theme_name"
+    set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-icon-theme-name "$icon_theme_name"
+    set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-application-prefer-dark-theme "$prefer_dark"
+    set_ini_value "$HOME/.config/gtk-4.0/settings.ini" Settings gtk-theme-name "$gtk_theme_name"
+    set_ini_value "$HOME/.config/gtk-4.0/settings.ini" Settings gtk-icon-theme-name "$icon_theme_name"
+    set_ini_value "$HOME/.config/gtk-4.0/settings.ini" Settings gtk-application-prefer-dark-theme "$prefer_dark"
+    set_assignment "$HOME/.gtkrc-2.0" gtk-theme-name "\"$gtk_theme_name\""
+    set_assignment "$HOME/.gtkrc-2.0" gtk-icon-theme-name "\"$icon_theme_name\""
+    set_assignment "$HOME/.config/gtkrc-2.0" gtk-theme-name "\"$gtk_theme_name\""
+    set_assignment "$HOME/.config/gtkrc-2.0" gtk-icon-theme-name "\"$icon_theme_name\""
+
+    set_xsettings_value "$HOME/.config/xsettingsd/xsettingsd.conf" Net/ThemeName "\"$gtk_theme_name\""
+    set_xsettings_value "$HOME/.config/xsettingsd/xsettingsd.conf" Net/IconThemeName "\"$icon_theme_name\""
+    restart_xsettingsd
+
+    set_ini_value "$HOME/.config/qt6ct/qt6ct.conf" Appearance style "kvantum"
+    set_ini_value "$HOME/.config/qt6ct/qt6ct.conf" Appearance icon_theme "$icon_theme_name"
+    set_ini_value "$HOME/.config/qt6ct/qt6ct.conf" Appearance color_scheme_path "$qt6_color_scheme"
+    set_ini_value "$HOME/.config/qt5ct/qt5ct.conf" Appearance style "kvantum"
+    set_ini_value "$HOME/.config/qt5ct/qt5ct.conf" Appearance icon_theme "$icon_theme_name"
+    set_ini_value "$HOME/.config/qt5ct/qt5ct.conf" Appearance color_scheme_path "$qt5_color_scheme"
+    set_ini_value "$HOME/.config/Kvantum/kvantum.kvconfig" General theme "$kvantum_theme"
 
     if [[ -f "$background_target" ]] && command -v awww >/dev/null 2>&1; then
         if ! pgrep -x awww-daemon >/dev/null 2>&1; then

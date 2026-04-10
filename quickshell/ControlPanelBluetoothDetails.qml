@@ -12,8 +12,11 @@ Rectangle {
     readonly property bool bluetoothEnabled: shellRoot ? shellRoot.bluetoothEnabled : false
     readonly property bool bluetoothDiscovering: shellRoot ? shellRoot.bluetoothDiscovering : false
     readonly property bool bluetoothPairable: shellRoot ? shellRoot.bluetoothPairable : false
+    readonly property bool showUnnamedDevices: shellRoot ? shellRoot.bluetoothShowUnnamedDevices : true
     readonly property bool busy: shellRoot ? shellRoot.bluetoothActionBusy : false
     readonly property var devices: shellRoot && Array.isArray(shellRoot.bluetoothDevices) ? shellRoot.bluetoothDevices : []
+    readonly property var visibleDevices: devices.filter(device => showUnnamedDevices || !!device.hasName)
+    readonly property int hiddenUnnamedCount: Math.max(0, devices.length - visibleDevices.length)
     readonly property var connectedDevices: devices.filter(device => !!device.connected)
     readonly property int connectedCount: connectedDevices.length
     readonly property int pairedCount: devices.filter(device => !!device.paired).length
@@ -25,6 +28,12 @@ Rectangle {
     readonly property color mutedText: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, 0.68) : "#b0b0b0"
     readonly property color panelFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#101214" : "#ffffff", shellRoot.darkMode ? 0.42 : 0.28) : "#202020"
     readonly property color panelStroke: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, shellRoot.darkMode ? 0.14 : 0.1) : "#3a3a3a"
+    readonly property color powerToggleOnFill: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#7f99bd" : "#8faad1", shellRoot.darkMode ? 0.94 : 0.9) : "#8faad1"
+    readonly property color powerToggleOnStroke: shellRoot ? shellRoot.withAlpha(shellRoot.darkMode ? "#98b2d8" : "#7f9ec8", shellRoot.darkMode ? 0.84 : 0.62) : "#7f9ec8"
+    readonly property color powerToggleOffFill: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, shellRoot.darkMode ? 0.16 : 0.14) : "#d1d1d6"
+    readonly property color powerToggleOffStroke: shellRoot ? shellRoot.withAlpha(shellRoot.primaryText, shellRoot.darkMode ? 0.18 : 0.12) : "#b8b8be"
+    readonly property color powerToggleKnob: shellRoot ? (shellRoot.darkMode ? "#f7f7fa" : "#ffffff") : "#ffffff"
+    readonly property color powerToggleKnobStroke: shellRoot ? shellRoot.withAlpha("#000000", shellRoot.darkMode ? 0.18 : 0.1) : "#d0d0d0"
     readonly property real panelSurfaceOpacity: 0.82
     readonly property int pageSpacing: 10
     readonly property int panelPadding: 10
@@ -57,7 +66,7 @@ Rectangle {
             return connectedCount + " Bluetooth devices connected";
         }
         if (connectedCount === 1) {
-            return connectedDevices[0].name || connectedDevices[0].address || "Bluetooth connected";
+            return connectedDevices[0].displayName || connectedDevices[0].address || "Bluetooth connected";
         }
         if (bluetoothDiscovering) {
             return "Scanning nearby Bluetooth devices";
@@ -86,6 +95,21 @@ Rectangle {
             return pairedCount + " saved devices available";
         }
         return bluetoothPairable ? "Pairable and ready for nearby devices" : "Bluetooth adapter available";
+    }
+    readonly property string emptyStateText: {
+        if (!bluetoothPresent) {
+            return "No Bluetooth adapter detected.";
+        }
+        if (!bluetoothEnabled) {
+            return "Turn Bluetooth on to scan for nearby devices.";
+        }
+        if (hiddenUnnamedCount > 0 && !showUnnamedDevices) {
+            return "Only unnamed Bluetooth devices are hidden right now. Tap \"Show Unnamed\" to reveal them.";
+        }
+        if (bluetoothDiscovering) {
+            return "Searching for nearby devices...";
+        }
+        return "No nearby or paired Bluetooth devices right now.";
     }
 
     radius: 19
@@ -134,6 +158,9 @@ Rectangle {
         } else {
             parts.push("Available");
         }
+        if (!device.hasName) {
+            parts.push("Unnamed");
+        }
         if (device.trusted) {
             parts.push("Trusted");
         }
@@ -158,10 +185,10 @@ Rectangle {
             return;
         }
         if (device.connected) {
-            shellRoot.bluetoothDisconnect(device.address, device.name || "");
+            shellRoot.bluetoothDisconnect(device.address, device.displayName || device.name || "");
             return;
         }
-        shellRoot.bluetoothConnect(device.address, !!device.paired, device.name || "");
+        shellRoot.bluetoothConnect(device.address, !!device.paired, device.displayName || device.name || "");
     }
 
     Column {
@@ -175,17 +202,79 @@ Rectangle {
 
         Item {
             width: parent.width
-            height: 36
+            height: 40
 
-            Text {
+            Row {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Bluetooth"
-                color: root.shellRoot ? root.shellRoot.primaryText : "white"
-                font.family: root.shellRoot ? root.shellRoot.baseFont : "JetBrainsMono Nerd Font"
-                font.pixelSize: 17
-                font.weight: Font.Bold
-                renderType: Text.NativeRendering
+                spacing: 12
+
+                Text {
+                    id: titleLabel
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "Bluetooth"
+                    color: root.shellRoot ? root.shellRoot.primaryText : "white"
+                    font.family: root.shellRoot ? root.shellRoot.baseFont : "JetBrainsMono Nerd Font"
+                    font.pixelSize: 17
+                    font.weight: Font.Bold
+                    renderType: Text.NativeRendering
+                }
+
+                Rectangle {
+                    id: bluetoothPowerToggle
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 48
+                    height: 28
+                    radius: height / 2
+                    color: root.bluetoothEnabled ? root.powerToggleOnFill : root.powerToggleOffFill
+                    border.width: 1
+                    border.color: root.bluetoothEnabled ? root.powerToggleOnStroke : root.powerToggleOffStroke
+                    opacity: !root.bluetoothPresent || root.busy ? 0.58 : 1
+                    antialiasing: true
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 140
+                        }
+                    }
+
+                    Behavior on border.color {
+                        ColorAnimation {
+                            duration: 140
+                        }
+                    }
+
+                    Rectangle {
+                        id: bluetoothPowerKnob
+
+                        width: 22
+                        height: 22
+                        radius: width / 2
+                        x: root.bluetoothEnabled ? parent.width - width - 3 : 3
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: root.powerToggleKnob
+                        border.width: 1
+                        border.color: root.powerToggleKnobStroke
+                        antialiasing: true
+
+                        Behavior on x {
+                            NumberAnimation {
+                                duration: 160
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        enabled: !!root.shellRoot && root.bluetoothPresent && !root.busy
+                        hoverEnabled: true
+                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        onClicked: root.shellRoot.bluetoothSetPower(!root.bluetoothEnabled)
+                    }
+                }
             }
 
             WifiActionChip {
@@ -284,21 +373,9 @@ Rectangle {
             }
         }
 
-        Row {
+        Flow {
             width: parent.width
             spacing: 10
-
-            WifiActionChip {
-                shellRoot: root.shellRoot
-                cornerRadius: root.innerRadius
-                label: root.bluetoothEnabled ? "Turn Off" : "Turn On"
-                minimumWidth: 96
-                disabled: !root.shellRoot || !root.bluetoothPresent || root.busy
-                fillColor: root.cardStrongFill
-                foregroundColor: root.shellRoot ? root.shellRoot.launchColor : "white"
-                strokeColor: root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.launchColor, 0.18) : "#5176d2"
-                onClicked: root.shellRoot.bluetoothSetPower(!root.bluetoothEnabled)
-            }
 
             WifiActionChip {
                 shellRoot: root.shellRoot
@@ -309,6 +386,22 @@ Rectangle {
                 fillColor: root.cardFill
                 strokeColor: root.cardStroke
                 onClicked: root.shellRoot.bluetoothScan()
+            }
+
+            WifiActionChip {
+                shellRoot: root.shellRoot
+                cornerRadius: root.innerRadius
+                label: root.showUnnamedDevices ? "Hide Unnamed" : "Show Unnamed"
+                minimumWidth: 132
+                disabled: !root.shellRoot
+                fillColor: root.showUnnamedDevices ? root.cardStrongFill : root.cardFill
+                foregroundColor: root.showUnnamedDevices
+                    ? (root.shellRoot ? root.shellRoot.launchColor : "white")
+                    : (root.shellRoot ? root.shellRoot.primaryText : "white")
+                strokeColor: root.showUnnamedDevices
+                    ? (root.shellRoot ? root.shellRoot.withAlpha(root.shellRoot.launchColor, 0.18) : "#5176d2")
+                    : root.cardStroke
+                onClicked: root.shellRoot.bluetoothShowUnnamedDevices = !root.shellRoot.bluetoothShowUnnamedDevices
             }
 
             WifiActionChip {
@@ -350,7 +443,7 @@ Rectangle {
 
         Rectangle {
             width: parent.width
-            visible: root.devices.length === 0
+            visible: root.visibleDevices.length === 0
             implicitHeight: emptyState.implicitHeight + 26
             radius: root.innerRadius
             color: root.panelColor(root.cardFill)
@@ -363,13 +456,7 @@ Rectangle {
                 anchors.centerIn: parent
                 width: parent.width - 28
                 horizontalAlignment: Text.AlignHCenter
-                text: !root.bluetoothPresent
-                    ? "No Bluetooth adapter detected."
-                    : (!root.bluetoothEnabled
-                        ? "Turn Bluetooth on to scan for nearby devices."
-                        : (root.bluetoothDiscovering
-                            ? "Searching for nearby devices..."
-                            : "No nearby or paired Bluetooth devices right now."))
+                text: root.emptyStateText
                 color: root.mutedText
                 font.family: root.shellRoot ? root.shellRoot.baseFont : "JetBrainsMono Nerd Font"
                 font.pixelSize: 13
@@ -384,7 +471,7 @@ Rectangle {
             width: parent.width
             height: visible ? Math.min(contentHeight, root.maxDeviceListHeight) : 0
             contentHeight: deviceColumn.implicitHeight
-            visible: root.devices.length > 0
+            visible: root.visibleDevices.length > 0
             clip: true
             interactive: contentHeight > height
             boundsBehavior: Flickable.StopAtBounds
@@ -396,7 +483,7 @@ Rectangle {
                 spacing: 10
 
                 Repeater {
-                    model: root.devices
+                    model: root.visibleDevices
 
                     delegate: Rectangle {
                         id: deviceCard
@@ -469,7 +556,7 @@ Rectangle {
 
                                     Text {
                                         width: parent.width
-                                        text: modelData.name || modelData.address
+                                        text: modelData.displayName || modelData.address
                                         elide: Text.ElideRight
                                         color: root.shellRoot ? root.shellRoot.primaryText : "white"
                                         font.family: root.shellRoot ? root.shellRoot.baseFont : "JetBrainsMono Nerd Font"
