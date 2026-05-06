@@ -9,6 +9,7 @@ PREV_WS=/dev/shm/sidechat.prev_ws
 HIDDEN_WS='special:sidechat_hidden'
 DEBOUNCE_MS=300
 TRACE_FILE=/tmp/sidechat.trace
+APP_LAUNCH_LOG=/tmp/sidechat-ai-hub.log
 
 SIDECHAT_WIDTH=360
 SIDECHAT_RIGHT_MARGIN=10
@@ -17,6 +18,8 @@ SIDECHAT_TOP_MARGIN=60
 SIDECHAT_HEIGHT_TRIM=72
 
 APP_CLASS_REGEX='^ai-hub$'
+APP_FALLBACK_CLASS_REGEX='^electron$'
+APP_TITLE_REGEX='^AI Hub$'
 
 log_trace() {
   local msg=$1
@@ -80,14 +83,30 @@ jq_raw_quiet() {
 
 get_sidechat_status() {
   hyprctl_json clients | \
-    jq -e --arg re "$APP_CLASS_REGEX" 'any(.[]; .class | test($re))' >/dev/null 2>&1
+    jq -e \
+      --arg class_re "$APP_CLASS_REGEX" \
+      --arg fallback_class_re "$APP_FALLBACK_CLASS_REGEX" \
+      --arg title_re "$APP_TITLE_REGEX" \
+      'def is_sidechat:
+        (((.class // "") | test($class_re)) or
+         (((.class // "") | test($fallback_class_re)) and
+          ((((.title // "") | test($title_re)) or ((.initialTitle // "") | test($title_re))))));
+       any(.[]; is_sidechat)' >/dev/null 2>&1
 }
 
 get_sidechat_address() {
   hyprctl_json clients | \
-    jq_raw_quiet --arg re "$APP_CLASS_REGEX" --arg hidden "$HIDDEN_WS" \
-      '(first(.[] | select((.class | test($re)) and .workspace.name != $hidden) | .address) //
-        first(.[] | select(.class | test($re)) | .address)) // empty'
+    jq_raw_quiet \
+      --arg class_re "$APP_CLASS_REGEX" \
+      --arg fallback_class_re "$APP_FALLBACK_CLASS_REGEX" \
+      --arg title_re "$APP_TITLE_REGEX" \
+      --arg hidden "$HIDDEN_WS" \
+      'def is_sidechat:
+        (((.class // "") | test($class_re)) or
+         (((.class // "") | test($fallback_class_re)) and
+          ((((.title // "") | test($title_re)) or ((.initialTitle // "") | test($title_re))))));
+       (first(.[] | select(is_sidechat and .workspace.name != $hidden) | .address) //
+        first(.[] | select(is_sidechat) | .address)) // empty'
 }
 
 cleanup_duplicate_sidechat_windows() {
@@ -101,8 +120,16 @@ cleanup_duplicate_sidechat_windows() {
     safe_hyprctl dispatch closewindow "address:${addr}" || true
   done < <(
     hyprctl_json clients | \
-      jq_raw_quiet --arg re "$APP_CLASS_REGEX" --arg keep "$keep_addr" \
-        '.[] | select((.class | test($re)) and .address != $keep) | .address'
+      jq_raw_quiet \
+        --arg class_re "$APP_CLASS_REGEX" \
+        --arg fallback_class_re "$APP_FALLBACK_CLASS_REGEX" \
+        --arg title_re "$APP_TITLE_REGEX" \
+        --arg keep "$keep_addr" \
+        'def is_sidechat:
+          (((.class // "") | test($class_re)) or
+           (((.class // "") | test($fallback_class_re)) and
+            ((((.title // "") | test($title_re)) or ((.initialTitle // "") | test($title_re))))));
+         .[] | select(is_sidechat and .address != $keep) | .address'
   )
 }
 
@@ -251,6 +278,24 @@ is_window_pinned_by_address() {
   hyprctl_json clients | \
     jq -e --arg addr "$addr" \
       'any(.[]; .address == $addr and .pinned == true)' >/dev/null 2>&1
+}
+
+is_window_floating_by_address() {
+  local addr=$1
+  [[ -n "$addr" ]] || return 1
+
+  hyprctl_json clients | \
+    jq -e --arg addr "$addr" \
+      'any(.[]; .address == $addr and .floating == true)' >/dev/null 2>&1
+}
+
+ensure_window_floating() {
+  local addr=$1
+  [[ -n "$addr" ]] || return 1
+
+  if ! is_window_floating_by_address "$addr"; then
+    safe_hyprctl dispatch setfloating "address:${addr}" || return 1
+  fi
 }
 
 ensure_window_pinned_state() {
@@ -492,6 +537,7 @@ showchat() {
     ensure_window_pinned_state "$addr" "off" || true
     if safe_hyprctl dispatch movetoworkspacesilent "${current_ws},address:${addr}" && \
        safe_hyprctl dispatch focuswindow "address:${addr}"; then
+      ensure_window_floating "$addr" || true
       if is_integer "$target_mon"; then
         if ! apply_sidechat_geometry_on_monitor_id "$addr" "$target_mon"; then
           apply_sidechat_geometry_on_own_monitor "$addr" || true
@@ -563,7 +609,7 @@ main() {
       target_ws="$(get_monitor_active_workspace_by_id "$target_mon" || true)"
     fi
     nohup ai-hub \
-      >/dev/null 2>&1 &
+      >>"$APP_LAUNCH_LOG" 2>&1 &
     local chrome_pid=$!
 
     if wait_for_window "true"; then
@@ -574,6 +620,7 @@ main() {
           safe_hyprctl dispatch movetoworkspacesilent "${target_ws},address:${addr}" || true
         fi
         safe_hyprctl dispatch focuswindow "address:${addr}" || true
+        ensure_window_floating "$addr" || true
         if is_integer "$target_mon"; then
           if ! apply_sidechat_geometry_on_monitor_id "$addr" "$target_mon"; then
             apply_sidechat_geometry_on_own_monitor "$addr" || true

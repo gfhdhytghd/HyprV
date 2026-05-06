@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 
 Rectangle {
     id: card
@@ -112,6 +113,16 @@ Rectangle {
             border.width: 0
             border.color: "transparent"
             clip: true
+            antialiasing: true
+
+            Rectangle {
+                id: albumArtMask
+
+                anchors.fill: parent
+                radius: artFrame.radius
+                visible: false
+                layer.enabled: true
+            }
 
             Image {
                 id: albumArt
@@ -123,6 +134,13 @@ Rectangle {
                 smooth: true
                 mipmap: true
                 visible: status === Image.Ready && source.toString().length > 0
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    maskEnabled: true
+                    maskSource: albumArtMask
+                    maskThresholdMin: 0.5
+                    maskSpreadAtMin: 1
+                }
             }
 
             Text {

@@ -151,6 +151,19 @@ restart_xsettingsd() {
     fi
 }
 
+sync_activation_environment() {
+    local gtk_theme_name
+    gtk_theme_name="$1"
+
+    if command -v dbus-update-activation-environment >/dev/null 2>&1; then
+        dbus-update-activation-environment --systemd \
+            "GTK_THEME=$gtk_theme_name" \
+            "QT_QPA_PLATFORMTHEME=qt6ct" \
+            "XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-Hyprland}" \
+            "XDG_SESSION_DESKTOP=${XDG_SESSION_DESKTOP:-Hyprland}" >/dev/null 2>&1 || true
+    fi
+}
+
 theme_suffix() {
     case "${1:-}" in
         dark)
@@ -240,6 +253,7 @@ apply_links_and_theme() {
     local wofi_target background_target rofi_target alacritty_target ghostty_target swaync_target
     local orchis_suffix color_scheme_suffix prefer_dark
     local gtk_theme_name icon_theme_name kvantum_theme
+    local kde_color_scheme kde_look_and_feel
     local qt6_color_scheme qt5_color_scheme
     local hypr_clients_json
 
@@ -296,12 +310,16 @@ apply_links_and_theme() {
     prefer_dark="false"
     qt6_color_scheme="/usr/share/qt6ct/colors/simple.conf"
     qt5_color_scheme="/usr/share/qt5ct/colors/simple.conf"
+    kde_color_scheme="Orchis"
+    kde_look_and_feel="com.github.vinceliuice.Orchis"
     if [[ "$theme" == "dark" ]]; then
         orchis_suffix="Dark"
         color_scheme_suffix="-dark"
         prefer_dark="true"
         qt6_color_scheme="/usr/share/qt6ct/colors/darker.conf"
         qt5_color_scheme="/usr/share/qt5ct/colors/darker.conf"
+        kde_color_scheme="OrchisDark"
+        kde_look_and_feel="com.github.vinceliuice.Orchis-dark"
     fi
 
     gtk_theme_name="Orchis-${mode_label}-Compact"
@@ -318,6 +336,7 @@ apply_links_and_theme() {
         gsettings set org.gnome.desktop.interface icon-theme "$icon_theme_name" >/dev/null 2>&1 || true
         gsettings set org.gnome.desktop.interface color-scheme "prefer${color_scheme_suffix}" >/dev/null 2>&1 || true
     fi
+    sync_activation_environment "$gtk_theme_name"
 
     set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-theme-name "$gtk_theme_name"
     set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-icon-theme-name "$icon_theme_name"
@@ -341,6 +360,18 @@ apply_links_and_theme() {
     set_ini_value "$HOME/.config/qt5ct/qt5ct.conf" Appearance icon_theme "$icon_theme_name"
     set_ini_value "$HOME/.config/qt5ct/qt5ct.conf" Appearance color_scheme_path "$qt5_color_scheme"
     set_ini_value "$HOME/.config/Kvantum/kvantum.kvconfig" General theme "$kvantum_theme"
+
+    if command -v plasma-apply-colorscheme >/dev/null 2>&1; then
+        run_with_timeout 5 plasma-apply-colorscheme "$kde_color_scheme"
+    fi
+
+    if command -v kwriteconfig6 >/dev/null 2>&1; then
+        kwriteconfig6 --file "$HOME/.config/kdeglobals" --group KDE --key LookAndFeelPackage "$kde_look_and_feel" >/dev/null 2>&1 || true
+        kwriteconfig6 --file "$HOME/.config/kdeglobals" --group KDE --key DefaultLightLookAndFeel "com.github.vinceliuice.Orchis" >/dev/null 2>&1 || true
+        kwriteconfig6 --file "$HOME/.config/kdeglobals" --group KDE --key DefaultDarkLookAndFeel "com.github.vinceliuice.Orchis-dark" >/dev/null 2>&1 || true
+        kwriteconfig6 --file "$HOME/.config/kdeglobals" --group Icons --key Theme "$icon_theme_name" >/dev/null 2>&1 || true
+        kwriteconfig6 --file "$HOME/.config/kdeglobals" --group KDE --key widgetStyle "qt6ct-style" >/dev/null 2>&1 || true
+    fi
 
     if [[ -f "$background_target" ]] && command -v awww >/dev/null 2>&1; then
         if ! pgrep -x awww-daemon >/dev/null 2>&1; then

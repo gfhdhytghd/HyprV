@@ -78,6 +78,15 @@ ShellRoot {
     property string mediaArtist: ""
     property string mediaPlayerName: ""
     property string mediaArtUrl: ""
+    property real mediaPositionSeconds: 0
+    property real mediaLengthSeconds: 0
+    property bool audioSpectrumCavaAvailable: false
+    property var audioSpectrumValues: []
+    property bool agentIslandActive: false
+    property int agentIslandCount: 0
+    property int agentIslandPendingCount: 0
+    property var agentIslandSessions: []
+    property var agentIslandPending: null
     property var primaryBarWindow: null
     property var quickAdjustAnchorItem: null
     property var wifiPanelController: null
@@ -127,6 +136,11 @@ ShellRoot {
     readonly property string baseFont: "JetBrainsMono Nerd Font"
     readonly property string iconFont: "JetBrainsMono Nerd Font"
     readonly property int trayMenuTextPixelSize: 14
+    readonly property int trayButtonWidth: 18
+    readonly property int trayButtonHeight: 38
+    readonly property int trayButtonSpacing: 7
+    readonly property int trayMinButtonSpacing: 3
+    readonly property int trayOverflowButtonWidth: 22
     readonly property int statsHistoryLimit: 120
 
     readonly property var hyprWorkspaces: {
@@ -299,6 +313,8 @@ ShellRoot {
         root.mediaArtist = "";
         root.mediaPlayerName = "";
         root.mediaArtUrl = "";
+        root.mediaPositionSeconds = 0;
+        root.mediaLengthSeconds = 0;
     }
     function updateMediaState(output) {
         let available = false;
@@ -307,6 +323,8 @@ ShellRoot {
         let artist = "";
         let player = "";
         let artUrl = "";
+        let positionSeconds = 0;
+        let lengthSeconds = 0;
         const lines = (output || "").split("\n");
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
@@ -322,14 +340,59 @@ ShellRoot {
                 player = line.slice(7).trim();
             } else if (line.startsWith("art_url=")) {
                 artUrl = line.slice(8).trim();
+            } else if (line.startsWith("position=")) {
+                const parsed = Number(line.slice(9).trim());
+                positionSeconds = isFinite(parsed) ? parsed : 0;
+            } else if (line.startsWith("length=")) {
+                const parsed = Number(line.slice(7).trim());
+                lengthSeconds = isFinite(parsed) ? parsed : 0;
             }
         }
         root.mediaAvailable = available;
         root.mediaPlaying = playing;
+        const hasIncomingContent = title.length > 0 || artist.length > 0 || artUrl.length > 0;
+        const hasCachedContent = root.mediaTitle.length > 0 || root.mediaArtist.length > 0 || root.mediaArtUrl.length > 0;
+        const samePlayer = player.length > 0 && player === root.mediaPlayerName;
+        if (available && !playing && !hasIncomingContent && samePlayer && hasCachedContent) {
+            title = root.mediaTitle;
+            artist = root.mediaArtist;
+            artUrl = root.mediaArtUrl;
+            if (lengthSeconds <= 0 && root.mediaLengthSeconds > 0) {
+                lengthSeconds = root.mediaLengthSeconds;
+            }
+            if (positionSeconds <= 0 && root.mediaPositionSeconds > 0) {
+                positionSeconds = root.mediaPositionSeconds;
+            }
+        }
         root.mediaTitle = title;
         root.mediaArtist = artist;
         root.mediaPlayerName = player;
         root.mediaArtUrl = artUrl;
+        root.mediaPositionSeconds = Math.max(0, positionSeconds);
+        root.mediaLengthSeconds = Math.max(0, lengthSeconds);
+    }
+    function resetAgentIslandState() {
+        root.agentIslandActive = false;
+        root.agentIslandCount = 0;
+        root.agentIslandPendingCount = 0;
+        root.agentIslandSessions = [];
+        root.agentIslandPending = null;
+    }
+    function updateAgentIslandState(raw) {
+        if (!raw) {
+            resetAgentIslandState();
+            return;
+        }
+        try {
+            const data = JSON.parse(raw);
+            root.agentIslandActive = !!data.active;
+            root.agentIslandCount = Number(data.count) || 0;
+            root.agentIslandPendingCount = Number(data.pending_count) || 0;
+            root.agentIslandSessions = Array.isArray(data.sessions) ? data.sessions : [];
+            root.agentIslandPending = data.pending || null;
+        } catch (_) {
+            resetAgentIslandState();
+        }
     }
     function isWifiInterfaceName(name) {
         const iface = (name || "").toLowerCase();
@@ -989,6 +1052,174 @@ ShellRoot {
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    component TrayOverflowPopup: Item {
+        id: overflowPopupRoot
+
+        property var sourceItem: null
+        property var parentWindow: null
+        property var trayItems: []
+        property bool popupRequested: false
+        readonly property int popupPadding: 8
+        readonly property int maxColumns: 6
+        readonly property int columnCount: Math.max(1, Math.min(maxColumns, trayItems.length))
+        readonly property int rowCount: Math.max(1, Math.ceil(trayItems.length / columnCount))
+        readonly property int popupWidth: popupPadding * 2 + columnCount * root.trayButtonWidth + Math.max(0, columnCount - 1) * root.trayButtonSpacing
+        readonly property int popupHeight: popupPadding * 2 + rowCount * root.trayButtonHeight
+        readonly property color glassFill: withAlpha(root.darkMode ? "#101214" : "#ffffff", root.darkMode ? 0.42 : 0.28)
+        readonly property color glassStroke: withAlpha(root.primaryText, root.darkMode ? 0.14 : 0.10)
+
+        function openFor(source, window, items) {
+            const nextItems = Array.isArray(items) ? items : [];
+            if (!source || !window || nextItems.length <= 0) {
+                return;
+            }
+            sourceItem = source;
+            parentWindow = window;
+            trayItems = nextItems;
+            popupRequested = true;
+            positionTimer.restart();
+            if (overflowWindow.visible) {
+                overflowWindow.updatePopupPosition();
+            } else {
+                overflowWindow.visible = true;
+            }
+        }
+
+        function closePopup() {
+            popupRequested = false;
+            overflowWindow.visible = false;
+        }
+
+        function toggleFor(source, window, items) {
+            if (overflowWindow.visible && sourceItem === source && parentWindow === window) {
+                closePopup();
+                return;
+            }
+            openFor(source, window, items);
+        }
+
+        onTrayItemsChanged: if (overflowWindow.visible) {
+            if (!trayItems || trayItems.length <= 0) {
+                closePopup();
+            } else {
+                positionTimer.restart();
+            }
+        }
+
+        Timer {
+            id: positionTimer
+
+            interval: 0
+            repeat: false
+            onTriggered: overflowWindow.updatePopupPosition()
+        }
+
+        PanelWindow {
+            id: overflowWindow
+
+            screen: overflowPopupRoot.parentWindow?.screen || null
+            visible: false
+            color: "transparent"
+            aboveWindows: true
+            focusable: visible
+            exclusiveZone: -1
+
+            WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            WlrLayershell.namespace: "shell:hyprv-tray-overflow"
+
+            anchors.top: true
+            anchors.left: true
+            anchors.right: true
+            anchors.bottom: true
+
+            onWidthChanged: if (visible) {
+                updatePopupPosition();
+            }
+            onHeightChanged: if (visible) {
+                updatePopupPosition();
+            }
+            onVisibleChanged: {
+                if (visible) {
+                    overflowFocus.forceActiveFocus();
+                    updatePopupPosition();
+                } else {
+                    overflowPopupRoot.sourceItem = null;
+                    overflowPopupRoot.parentWindow = null;
+                    overflowPopupRoot.popupRequested = false;
+                }
+            }
+
+            function updatePopupPosition() {
+                if (!visible || !overflowPopupRoot.sourceItem || !screen) {
+                    return;
+                }
+
+                const point = overflowPopupRoot.sourceItem.mapToGlobal(Math.round(overflowPopupRoot.sourceItem.width / 2), overflowPopupRoot.sourceItem.height);
+                const relativeX = point.x - screen.x;
+                const relativeY = point.y - screen.y;
+                const maxX = Math.max(8, width - overflowChrome.width - 8);
+                const desiredX = Math.round(relativeX - overflowChrome.width / 2);
+                overflowChrome.x = Math.max(8, Math.min(maxX, desiredX));
+
+                const belowY = Math.round(relativeY + 10);
+                const aboveY = Math.round(relativeY - overflowChrome.height - 10);
+                const fitsBelow = belowY + overflowChrome.height <= height - 8;
+                const fitsAbove = aboveY >= 8;
+                overflowChrome.y = fitsBelow || !fitsAbove
+                    ? Math.max(8, Math.min(height - overflowChrome.height - 8, belowY))
+                    : Math.max(8, aboveY);
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                onClicked: overflowPopupRoot.closePopup()
+            }
+
+            FocusScope {
+                id: overflowFocus
+
+                anchors.fill: parent
+                focus: overflowWindow.visible
+                Keys.onEscapePressed: overflowPopupRoot.closePopup()
+            }
+
+            Rectangle {
+                id: overflowChrome
+
+                width: overflowPopupRoot.popupWidth
+                height: overflowPopupRoot.popupHeight
+                radius: 18
+                color: overflowPopupRoot.glassFill
+                border.width: 1
+                border.color: overflowPopupRoot.glassStroke
+
+                Grid {
+                    anchors.fill: parent
+                    anchors.margins: overflowPopupRoot.popupPadding
+                    columns: overflowPopupRoot.columnCount
+                    columnSpacing: root.trayButtonSpacing
+                    rowSpacing: 0
+
+                    Repeater {
+                        model: overflowPopupRoot.trayItems
+
+                        delegate: TrayButton {
+                            required property var modelData
+
+                            width: root.trayButtonWidth
+                            height: root.trayButtonHeight
+                            shellRoot: root
+                            trayItem: modelData
+                            parentWindow: overflowWindow
                         }
                     }
                 }
@@ -2102,6 +2333,60 @@ ShellRoot {
         return 100;
     }
 
+    function traySlotCount(visibleCount, totalCount) {
+        const total = Math.max(0, Math.floor(Number(totalCount) || 0));
+        const visible = Math.max(0, Math.min(total, Math.floor(Number(visibleCount) || 0)));
+        return visible + (total > visible ? 1 : 0);
+    }
+
+    function trayFixedButtonWidth(visibleCount, totalCount) {
+        const total = Math.max(0, Math.floor(Number(totalCount) || 0));
+        const visible = Math.max(0, Math.min(total, Math.floor(Number(visibleCount) || 0)));
+        return visible * trayButtonWidth + (total > visible ? trayOverflowButtonWidth : 0);
+    }
+
+    function trayItemsWidth(count) {
+        return collapsedTrayWidthForSpacing(count, count, trayButtonSpacing);
+    }
+
+    function collapsedTrayWidthForSpacing(visibleCount, totalCount, spacing) {
+        const slots = traySlotCount(visibleCount, totalCount);
+        const gaps = Math.max(0, slots - 1);
+        return trayFixedButtonWidth(visibleCount, totalCount) + gaps * Math.max(0, Number(spacing) || 0);
+    }
+
+    function collapsedTrayWidth(visibleCount, totalCount) {
+        return collapsedTrayWidthForSpacing(visibleCount, totalCount, trayButtonSpacing);
+    }
+
+    function collapsedTrayMinWidth(visibleCount, totalCount) {
+        return collapsedTrayWidthForSpacing(visibleCount, totalCount, trayMinButtonSpacing);
+    }
+
+    function traySpacingForWidth(visibleCount, totalCount, width) {
+        const gaps = Math.max(0, traySlotCount(visibleCount, totalCount) - 1);
+        if (gaps <= 0) {
+            return 0;
+        }
+        return Math.max(0, ((Number(width) || 0) - trayFixedButtonWidth(visibleCount, totalCount)) / gaps);
+    }
+
+    function trayVisibleCountForBudget(totalCount, budget) {
+        const total = Math.max(0, Math.floor(Number(totalCount) || 0));
+        if (total <= 0) {
+            return 0;
+        }
+
+        const usable = Math.max(0, Number(budget) || 0);
+        for (let count = total; count >= 0; count--) {
+            if (collapsedTrayMinWidth(count, total) <= usable) {
+                return count;
+            }
+        }
+
+        return 0;
+    }
+
     function trayIconSource(item) {
         let icon = item?.icon || "";
         if (!icon) {
@@ -2373,6 +2658,79 @@ ShellRoot {
         mediaStatusPoll.refresh();
     }
 
+    function seekMedia(positionSeconds) {
+        const rawTarget = Number(positionSeconds);
+        if (!isFinite(rawTarget)) {
+            return;
+        }
+        const lengthSeconds = Number(mediaLengthSeconds);
+        const target = lengthSeconds > 0 ? Math.max(0, Math.min(lengthSeconds, rawTarget)) : Math.max(0, rawTarget);
+        const positionArgument = target.toFixed(3);
+        const playerName = (mediaPlayerName || "").trim();
+        const command = playerName.length > 0
+            ? ["playerctl", "-p", playerName, "position", positionArgument]
+            : ["playerctl", "position", positionArgument];
+
+        mediaPositionSeconds = target;
+        runDetached(command);
+        mediaFollowupRefresh.restart();
+    }
+
+    function focusMediaApp() {
+        const playerName = (mediaPlayerName || "").trim();
+        if (playerName.length === 0) {
+            return;
+        }
+
+        const focusScript =
+            "player=$1\n"
+            + "pid=\n"
+            + "if command -v busctl >/dev/null 2>&1; then\n"
+            + "    pid=$(busctl --user status \"org.mpris.MediaPlayer2.${player}\" 2>/dev/null | sed -n 's/^PID=//p' | head -n 1)\n"
+            + "fi\n"
+            + "case \"$pid\" in ''|*[!0-9]*) pid= ;; esac\n"
+            + "if [ -z \"$pid\" ]; then\n"
+            + "    case \"$player\" in *instance[0-9]*) pid=${player##*instance} ;; esac\n"
+            + "    case \"$pid\" in ''|*[!0-9]*) pid= ;; esac\n"
+            + "fi\n"
+            + "addr=\n"
+            + "if [ -n \"$pid\" ] && command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then\n"
+            + "    addr=$(hyprctl clients -j | jq -r --arg pid \"$pid\" '.[] | select((.pid | tostring) == $pid) | .address' | head -n 1)\n"
+            + "fi\n"
+            + "if [ -n \"$addr\" ] && [ \"$addr\" != null ]; then\n"
+            + "    hyprctl dispatch focuswindow \"address:$addr\" >/dev/null\n"
+            + "    exit 0\n"
+            + "fi\n"
+            + "case \"$player\" in\n"
+            + "    *cider*|*Cider*) hyprctl dispatch focuswindow 'class:^(Cider)$' >/dev/null ;;\n"
+            + "    *spotify*|*Spotify*) hyprctl dispatch focuswindow 'class:^(Spotify)$' >/dev/null ;;\n"
+            + "    *) exit 1 ;;\n"
+            + "esac\n";
+
+        runDetached(["sh", "-lc", focusScript, "focus-media-app", playerName]);
+    }
+
+    function agentIslandAction(action, requestId, value) {
+        const command = ["/usr/bin/python3", root.configDir + "/quickshell/scripts/agent-island-action.py", action || "approve"];
+        if (requestId && String(requestId).length > 0) {
+            command.push(String(requestId));
+        } else {
+            command.push("current");
+        }
+        if (value && String(value).length > 0) {
+            command.push(String(value));
+        }
+        runDetached(command);
+        agentIslandFollowupRefresh.restart();
+    }
+
+    function focusAgentIslandSession(sessionId) {
+        if (!sessionId || String(sessionId).length === 0) {
+            return;
+        }
+        runDetached(["/usr/bin/python3", root.configDir + "/quickshell/scripts/agent-island-action.py", "focus", String(sessionId)]);
+    }
+
     function refreshPowerProfileStatus() {
         powerProfilePoll.refresh();
     }
@@ -2526,6 +2884,22 @@ ShellRoot {
         onTriggered: audioStatusPoll.refresh()
     }
 
+    Timer {
+        id: mediaFollowupRefresh
+
+        interval: 180
+        repeat: false
+        onTriggered: mediaStatusPoll.refresh()
+    }
+
+    Timer {
+        id: agentIslandFollowupRefresh
+
+        interval: 220
+        repeat: false
+        onTriggered: agentIslandStatusPoll.refresh()
+    }
+
     Connections {
         target: root.bluetoothAdapterObject
         ignoreUnknownSignals: true
@@ -2632,6 +3006,64 @@ ShellRoot {
         }
     }
 
+    Process {
+        id: cavaAvailabilityProbe
+
+        running: true
+        command: ["sh", "-lc", "command -v cava >/dev/null 2>&1"]
+        onExited: function(exitCode) {
+            root.audioSpectrumCavaAvailable = exitCode === 0;
+        }
+    }
+
+    Process {
+        id: audioSpectrumProcess
+
+        running: root.audioSpectrumCavaAvailable && root.mediaAvailable && root.mediaPlaying
+        command: [root.configDir + "/quickshell/scripts/audio-spectrum.sh"]
+
+        onRunningChanged: {
+            if (!running) {
+                root.audioSpectrumValues = [];
+            }
+        }
+
+        onExited: function(exitCode) {
+            if (exitCode !== 0) {
+                root.audioSpectrumValues = [];
+            }
+        }
+
+        stdout: SplitParser {
+            splitMarker: "\n"
+            onRead: function(data) {
+                const parts = (data || "").split(";");
+                const values = [];
+                for (let i = 0; i < parts.length; i++) {
+                    const part = parts[i].trim();
+                    if (part.length === 0) {
+                        continue;
+                    }
+                    const parsed = Number(part);
+                    values.push(isFinite(parsed) ? Math.max(0, parsed) : 0);
+                }
+                if (values.length > 0) {
+                    root.audioSpectrumValues = values;
+                }
+            }
+        }
+
+        stderr: StdioCollector {}
+    }
+
+    Process {
+        id: codexAppServerWatcher
+
+        running: true
+        command: ["/usr/bin/python3", root.configDir + "/quickshell/scripts/agent-island-codex-appserver.py"]
+        stderr: StdioCollector {}
+    }
+
     PollCommand {
         id: wifiStatusPoll
 
@@ -2673,7 +3105,6 @@ ShellRoot {
     PollCommand {
         id: mediaStatusPoll
 
-        active: controlPanelPopup.popupRequested
         interval: 1000
         command: ["sh", root.configDir + "/quickshell/scripts/media-status.sh"]
         onUpdated: function(output, exitCode) {
@@ -2681,6 +3112,20 @@ ShellRoot {
                 root.updateMediaState(output);
             } else {
                 root.resetMediaState();
+            }
+        }
+    }
+
+    PollCommand {
+        id: agentIslandStatusPoll
+
+        interval: root.agentIslandActive ? 650 : 1200
+        command: ["/usr/bin/python3", root.configDir + "/quickshell/scripts/agent-island-status.py", "--json"]
+        onUpdated: function(output, exitCode) {
+            if (exitCode === 0) {
+                root.updateAgentIslandState(output);
+            } else {
+                root.resetAgentIslandState();
             }
         }
     }
@@ -2719,6 +3164,10 @@ ShellRoot {
         Component.onDestruction: if (root.trayMenuController === this) {
             root.trayMenuController = null;
         }
+    }
+
+    TrayOverflowPopup {
+        id: trayOverflowPopup
     }
 
     BatteryInfoPopup {
@@ -2885,6 +3334,8 @@ ShellRoot {
             id: barWindow
 
             required property var modelData
+            property bool islandExpanded: false
+            property real islandCurrentHeight: 38
 
             screen: modelData
 
@@ -2895,10 +3346,18 @@ ShellRoot {
             anchors.left: true
             anchors.right: true
 
-            implicitHeight: 48
-            exclusiveZone: implicitHeight + 10
+            implicitHeight: 500
+            exclusiveZone: 58
             color: "transparent"
+            surfaceFormat.opaque: false
             margins.bottom: 10
+            mask: Region {
+                item: topBarMask
+
+                Region {
+                    item: centerSection
+                }
+            }
 
             Component.onCompleted: {
                 if (!root.primaryBarWindow) {
@@ -2906,10 +3365,27 @@ ShellRoot {
                 }
             }
 
+            Timer {
+                id: islandCollapseTimer
+
+                interval: 230
+                repeat: false
+                onTriggered: barWindow.islandExpanded = false
+            }
+
             Item {
                 id: contentRoot
 
                 anchors.fill: parent
+
+                Item {
+                    id: topBarMask
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    height: 58
+                }
 
                 Row {
                     id: leftSection
@@ -2931,7 +3407,7 @@ ShellRoot {
                             interactive: true
                             paddingLeft: 7
                             paddingRight: 4
-                            onLeftClicked: root.runDetached(["rofi", "-show", "drun"])
+                            onLeftClicked: root.runDetached(["rofi-wayland", "-show", "drun"])
                         }
 
                         Item {
@@ -3007,34 +3483,63 @@ ShellRoot {
 
                 }
 
-                GroupPill {
+                DynamicIsland {
                     id: centerSection
                     shellRoot: root
                     anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.horizontalCenterOffset: centerSection.attachedCenterOffset
                     anchors.top: parent.top
                     anchors.topMargin: 10
+                    now: root.now
+                    mediaAvailable: root.mediaAvailable
+                    mediaPlaying: root.mediaPlaying
+                    mediaTitle: root.mediaTitle
+                    mediaArtist: root.mediaArtist
+                    mediaPlayerName: root.mediaPlayerName
+                    mediaArtUrl: root.mediaArtUrl
+                    mediaPositionSeconds: root.mediaPositionSeconds
+                    mediaLengthSeconds: root.mediaLengthSeconds
+                    spectrumValues: root.audioSpectrumValues
+                    agentSessions: root.agentIslandSessions
+                    agentPending: root.agentIslandPending
+                    agentPendingCount: root.agentIslandPendingCount
 
-                    TextModule {
-                        label: ""
-                        interactive: true
-                        paddingLeft: 11
-                        paddingRight: 12
-                        onLeftClicked: root.runDetached(["hyprlock"])
+                    onExpandedChanged: {
+                        if (expanded) {
+                            islandCollapseTimer.stop();
+                            barWindow.islandExpanded = true;
+                        } else {
+                            islandCollapseTimer.restart();
+                        }
                     }
-
-                    TextModule {
-                        label: Qt.formatTime(root.now, "hh:mm")
-                        paddingLeft: 0
-                        paddingRight: 0
+                    onHeightChanged: barWindow.islandCurrentHeight = height
+                    onLockClicked: root.runDetached(["hyprlock"])
+                    onPowerClicked: root.runDetached(["wlogout", "--protocol", "layer-shell", "-b", "5"])
+                    onSeekRequested: function(positionSeconds) {
+                        root.seekMedia(positionSeconds);
                     }
-
-                    TextModule {
-                        label: ""
-                        interactive: true
-                        paddingLeft: 10
-                        paddingRight: 13
-                        onLeftClicked: root.runDetached(["wlogout", "--protocol", "layer-shell", "-b", "5"])
+                    onAppFocusRequested: root.focusMediaApp()
+                    onAgentFocusRequested: function(sessionId) {
+                        root.focusAgentIslandSession(sessionId);
                     }
+                    onAgentApproveRequested: function(requestId) {
+                        root.agentIslandAction("approve", requestId, "");
+                    }
+                    onAgentDenyRequested: function(requestId) {
+                        root.agentIslandAction("deny", requestId, "");
+                    }
+                    onAgentReplyRequested: function(requestId) {
+                        root.agentIslandAction("reply", requestId, "");
+                    }
+                    onAgentAnswerRequested: function(requestId, answer) {
+                        root.agentIslandAction("answer", requestId, answer);
+                    }
+                    onPreviousClicked: root.runDetached(["playerctl", "previous"])
+                    onPlayPauseClicked: {
+                        root.mediaPlaying = !root.mediaPlaying;
+                        root.runDetached(["playerctl", "play-pause"]);
+                    }
+                    onNextClicked: root.runDetached(["playerctl", "next"])
                 }
 
                 Rectangle {
@@ -3073,13 +3578,18 @@ ShellRoot {
                 Row {
                     id: rightSection
 
+                    readonly property real edgeMargin: 9.5
+                    readonly property real centerGap: 9.5
+
                     anchors.right: parent.right
-                    anchors.rightMargin: 9.5
+                    anchors.rightMargin: edgeMargin
                     anchors.top: parent.top
                     anchors.topMargin: 10
                     spacing: 9.5
 
                     GroupPill {
+                        id: rightStatusPill
+
                         shellRoot: root
                         TextModule {
                             label: (root.temperatureC >= 70 ? " " : " ") + Math.round(root.temperatureC) + "°C"
@@ -3113,6 +3623,8 @@ ShellRoot {
                     }
 
                     GroupPill {
+                        id: rightMediaPill
+
                         shellRoot: root
                         TextModule {
                             label: ""
@@ -3177,11 +3689,15 @@ ShellRoot {
                         }
 
                         Item {
+                            id: systemLeadingSpacer
+
                             implicitWidth: 4
                             implicitHeight: 38
                         }
 
                         Item {
+                            id: wifiTraySlot
+
                             implicitWidth: wifiTrayLoader.item && wifiTrayLoader.item.available ? wifiTrayLoader.item.implicitWidth : 0
                             implicitHeight: 38
                             visible: implicitWidth > 0
@@ -3205,26 +3721,87 @@ ShellRoot {
                         }
 
                         Item {
-                            implicitWidth: trayRow.implicitWidth > 0 ? trayRow.implicitWidth +2 : 0
+                            id: trayContainer
+
+                            readonly property int totalTrayCount: root.sortedTrayItems.length
+                            readonly property real availableRightWidth: Math.max(0, contentRoot.width - rightSection.edgeMargin - (centerSection.x + centerSection.width) - rightSection.centerGap)
+                            readonly property real fixedRightWidth: rightStatusPill.implicitWidth
+                                + rightMediaPill.implicitWidth
+                                + rightSection.spacing * 2
+                                + systemLeadingSpacer.implicitWidth
+                                + wifiTraySlot.implicitWidth
+                                + controlPanelTrigger.implicitWidth
+                                + notificationTrigger.implicitWidth
+                                + systemTrailingSpacer.implicitWidth
+                            readonly property real trayBudget: Math.max(0, availableRightWidth - fixedRightWidth)
+                            readonly property int visibleTrayCount: root.trayVisibleCountForBudget(totalTrayCount, trayBudget)
+                            readonly property int overflowTrayCount: Math.max(0, totalTrayCount - visibleTrayCount)
+                            readonly property var visibleTrayItems: root.sortedTrayItems.slice(0, visibleTrayCount)
+                            readonly property var overflowTrayItems: root.sortedTrayItems.slice(visibleTrayCount)
+                            readonly property real minimumTrayWidth: root.collapsedTrayMinWidth(visibleTrayCount, totalTrayCount)
+                            readonly property real preferredTrayWidth: root.collapsedTrayWidth(visibleTrayCount, totalTrayCount)
+                            readonly property real requestedTrayWidth: {
+                                if (totalTrayCount <= 0) {
+                                    return 0;
+                                }
+                                if (overflowTrayCount > 0 || preferredTrayWidth > trayBudget) {
+                                    return Math.max(minimumTrayWidth, trayBudget);
+                                }
+                                return preferredTrayWidth;
+                            }
+                            readonly property real distributedTraySpacing: root.traySpacingForWidth(visibleTrayCount, totalTrayCount, requestedTrayWidth)
+
+                            implicitWidth: totalTrayCount > 0 ? requestedTrayWidth + 2 : 0
                             implicitHeight: 38
-                            visible: trayRow.implicitWidth > 0
+                            visible: totalTrayCount > 0
+
+                            onOverflowTrayCountChanged: if (overflowTrayCount <= 0) {
+                                trayOverflowPopup.closePopup();
+                            }
 
                             Row {
                                 id: trayRow
 
                                 x: 1
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: 7
+                                spacing: trayContainer.distributedTraySpacing
 
                                 Repeater {
-                                    model: root.sortedTrayItems
+                                    model: trayContainer.visibleTrayItems
 
                                     delegate: TrayButton {
                                         required property var modelData
 
+                                        width: root.trayButtonWidth
+                                        height: root.trayButtonHeight
                                         shellRoot: root
                                         trayItem: modelData
                                         parentWindow: barWindow
+                                    }
+                                }
+
+                                Item {
+                                    id: trayOverflowTrigger
+
+                                    width: root.trayOverflowButtonWidth
+                                    height: root.trayButtonHeight
+                                    visible: trayContainer.overflowTrayCount > 0
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "⋯"
+                                        color: root.primaryText
+                                        font.family: root.baseFont
+                                        font.pixelSize: 18
+                                        font.weight: Font.Bold
+                                        renderType: Text.NativeRendering
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        acceptedButtons: Qt.LeftButton
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: trayOverflowPopup.toggleFor(trayOverflowTrigger, barWindow, trayContainer.overflowTrayItems)
                                     }
                                 }
                             }
@@ -3260,6 +3837,8 @@ ShellRoot {
                         }
 
                         Item {
+                            id: notificationTrigger
+
                             implicitWidth: notificationGlyph.implicitWidth + 10
                             implicitHeight: 38
 
@@ -3306,6 +3885,8 @@ ShellRoot {
                         }
 
                         Item {
+                            id: systemTrailingSpacer
+
                             implicitWidth: 6
                             implicitHeight: 38
                         }

@@ -38,7 +38,7 @@
 
   "custom/launch_wofi": {
     "format": "",
-    "on-click": "sh -c '(rofi -show drun)' & disown",
+    "on-click": "sh -c '(rofi-wayland -show drun)' & disown",
     "tooltip": false,
   },
 
