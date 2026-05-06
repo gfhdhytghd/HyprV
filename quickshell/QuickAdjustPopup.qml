@@ -151,11 +151,24 @@ Item {
             if (!visible || !screen) {
                 return;
             }
-            const barBottom = popupRoot.shellRoot && popupRoot.shellRoot.primaryBarWindow
-                ? popupRoot.shellRoot.primaryBarWindow.implicitHeight
-                : 0;
+            const anchor = popupRoot.shellRoot ? popupRoot.shellRoot.quickAdjustAnchorItem : null;
+            if (anchor) {
+                const point = anchor.mapToGlobal(anchor.width, anchor.height);
+                const anchorRight = Math.round(point.x - screen.x);
+                const anchorBottom = Math.round(point.y - screen.y);
+                popupBounds.x = Math.max(
+                    popupRoot.popupScreenMargin,
+                    Math.min(width - popupBounds.width - popupRoot.popupScreenMargin, anchorRight - popupBounds.width)
+                );
+                popupBounds.y = anchorBottom + 10;
+                return;
+            }
+
             popupBounds.x = Math.max(popupRoot.popupScreenMargin, width - popupBounds.width - popupRoot.popupScreenMargin);
-            popupBounds.y = barBottom + popupRoot.popupScreenMargin;
+            const barBottom = popupRoot.shellRoot && popupRoot.shellRoot.primaryBarWindow
+                ? Math.max(0, popupRoot.shellRoot.primaryBarWindow.exclusiveZone || 58)
+                : 58;
+            popupBounds.y = barBottom + 10;
         }
 
         Item {

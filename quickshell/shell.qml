@@ -79,6 +79,7 @@ ShellRoot {
     property string mediaPlayerName: ""
     property string mediaArtUrl: ""
     property var primaryBarWindow: null
+    property var quickAdjustAnchorItem: null
     property var wifiPanelController: null
 
     property real _previousCpuTotal: -1
@@ -3165,7 +3166,16 @@ ShellRoot {
                     }
 
                     GroupPill {
+                        id: rightTrayPill
+
                         shellRoot: root
+                        Component.onCompleted: if (barWindow === root.primaryBarWindow) {
+                            root.quickAdjustAnchorItem = rightTrayPill;
+                        }
+                        Component.onDestruction: if (root.quickAdjustAnchorItem === rightTrayPill) {
+                            root.quickAdjustAnchorItem = null;
+                        }
+
                         Item {
                             implicitWidth: 4
                             implicitHeight: 38
