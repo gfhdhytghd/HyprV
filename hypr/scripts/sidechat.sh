@@ -17,9 +17,51 @@ SIDECHAT_RIGHT_MARGIN=10
 SIDECHAT_TOP_MARGIN=60
 SIDECHAT_HEIGHT_TRIM=72
 
-APP_CLASS_REGEX='^ai-hub$'
-APP_FALLBACK_CLASS_REGEX='^electron$'
-APP_TITLE_REGEX='^AI Hub$'
+APP_CLASS_REGEX='^ai-hub-firefox$'
+APP_FALLBACK_CLASS_REGEX='a^'
+APP_TITLE_REGEX='.*Mozilla Firefox$'
+
+find_ai_hub_checkout() {
+  local candidate
+  for candidate in \
+    "${AI_HUB_REPO:-}" \
+    "$HOME/data/AIHub" \
+    "$HOME/AIHub" \
+    "$HOME/src/AIHub"; do
+    [[ -n "$candidate" ]] || continue
+    if [[ -f "$candidate/scripts/aihub-firefox.js" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
+start_sidechat_app() {
+  local checkout
+
+  if [[ -n "${AI_HUB_COMMAND:-}" ]]; then
+    nohup bash -lc "$AI_HUB_COMMAND" >>"$APP_LAUNCH_LOG" 2>&1 &
+    printf '%s\n' "$!"
+    return 0
+  fi
+
+  checkout="$(find_ai_hub_checkout || true)"
+  if [[ -n "$checkout" ]]; then
+    nohup node "$checkout/scripts/aihub-firefox.js" >>"$APP_LAUNCH_LOG" 2>&1 &
+    printf '%s\n' "$!"
+    return 0
+  fi
+
+  if command -v ai-hub >/dev/null 2>&1; then
+    nohup ai-hub >>"$APP_LAUNCH_LOG" 2>&1 &
+    printf '%s\n' "$!"
+    return 0
+  fi
+
+  echo "Cannot find AI Hub launcher. Set AI_HUB_COMMAND or install ai-hub." >&2
+  return 1
+}
 
 log_trace() {
   local msg=$1
@@ -190,11 +232,112 @@ wait_for_window() {
   return 1
 }
 
+lua_quote() {
+  [[ ${1:-} != *"'"* ]] || return 1
+  printf "'%s'" "$1"
+}
+
+lua_dispatch_expr() {
+  hyprctl dispatch "$1" >/dev/null 2>&1
+}
+
+try_lua_dispatch_compat() {
+  local dispatcher=${1:-}
+  local args=${2:-}
+  local window
+  local window_q
+  local ws
+  local ws_q
+  local mode
+  local mode_q
+  local spec
+  local x
+  local y
+  local rel
+
+  case "$dispatcher" in
+    closewindow)
+      window_q="$(lua_quote "$args")" || return 1
+      lua_dispatch_expr "hl.dsp.window.close({ window = ${window_q} })"
+      ;;
+    setfloating)
+      window_q="$(lua_quote "$args")" || return 1
+      lua_dispatch_expr "hl.dsp.window.float({ action = 'enable', window = ${window_q} })"
+      ;;
+    focuswindow)
+      window_q="$(lua_quote "$args")" || return 1
+      lua_dispatch_expr "hl.dsp.focus({ window = ${window_q} })"
+      ;;
+    pin)
+      window_q="$(lua_quote "$args")" || return 1
+      lua_dispatch_expr "hl.dsp.window.pin({ window = ${window_q} })"
+      ;;
+    movetoworkspacesilent)
+      [[ "$args" == *,address:* ]] || return 1
+      ws="${args%,address:*}"
+      window="address:${args##*,address:}"
+      ws_q="$(lua_quote "$ws")" || return 1
+      window_q="$(lua_quote "$window")" || return 1
+      lua_dispatch_expr "hl.dsp.window.move({ workspace = ${ws_q}, window = ${window_q}, follow = false })"
+      ;;
+    movewindowpixel)
+      [[ "$args" == *,* ]] || return 1
+      spec="${args%,*}"
+      window="${args##*,}"
+      if [[ "$spec" == exact\ * ]]; then
+        read -r _ x y _ <<< "$spec"
+        rel=false
+      else
+        read -r x y _ <<< "$spec"
+        rel=true
+      fi
+      [[ "$x" =~ ^-?[0-9]+$ && "$y" =~ ^-?[0-9]+$ ]] || return 1
+      window_q="$(lua_quote "$window")" || return 1
+      lua_dispatch_expr "hl.dsp.window.move({ x = ${x}, y = ${y}, relative = ${rel}, window = ${window_q} })"
+      ;;
+    resizewindowpixel)
+      [[ "$args" == exact\ *,* ]] || return 1
+      spec="${args%,*}"
+      window="${args##*,}"
+      read -r _ x y _ <<< "$spec"
+      [[ "$x" =~ ^-?[0-9]+$ && "$y" =~ ^-?[0-9]+$ ]] || return 1
+      window_q="$(lua_quote "$window")" || return 1
+      lua_dispatch_expr "hl.dsp.window.resize({ x = ${x}, y = ${y}, window = ${window_q} })"
+      ;;
+    alterzorder)
+      [[ "$args" == *,* ]] || return 1
+      mode="${args%%,*}"
+      window="${args#*,}"
+      mode_q="$(lua_quote "$mode")" || return 1
+      window_q="$(lua_quote "$window")" || return 1
+      lua_dispatch_expr "hl.dsp.window.alter_zorder({ mode = ${mode_q}, window = ${window_q} })"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 safe_hyprctl() {
   local max_retries=3
   local retry=0
 
   while [[ $retry -lt $max_retries ]]; do
+    if [[ ${1:-} == "dispatch" ]]; then
+      local dispatcher
+      local args
+      shift
+      if [[ ${1:-} == "--" ]]; then
+        shift
+      fi
+      dispatcher=${1:-}
+      args=${2:-}
+      if try_lua_dispatch_compat "$dispatcher" "$args"; then
+        return 0
+      fi
+      set -- dispatch "$dispatcher" "$args"
+    fi
+
     if hyprctl "$@" 2>/dev/null; then
       return 0
     fi
@@ -608,9 +751,8 @@ main() {
     else
       target_ws="$(get_monitor_active_workspace_by_id "$target_mon" || true)"
     fi
-    nohup ai-hub \
-      >>"$APP_LAUNCH_LOG" 2>&1 &
-    local chrome_pid=$!
+    local chrome_pid
+    chrome_pid="$(start_sidechat_app)"
 
     if wait_for_window "true"; then
       addr="$(get_sidechat_address)"

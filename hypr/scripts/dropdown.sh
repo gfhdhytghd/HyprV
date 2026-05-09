@@ -13,6 +13,7 @@ HIDDEN_WORKSPACE='special:dropdown_hidden'
 DEFAULT_VISIBLE_OFFSET=60
 LOCK_TIMEOUT_SECONDS=5
 WINDOW_WIDTH=1080
+WINDOW_HEIGHT=225
 PIN_WHEN_VISIBLE=on
 
 cleanup() {
@@ -56,10 +57,97 @@ is_integer() {
   [[ ${1:-} =~ ^-?[0-9]+$ ]]
 }
 
+lua_quote() {
+  [[ ${1:-} != *"'"* ]] || return 1
+  printf "'%s'" "$1"
+}
+
+lua_dispatch_expr() {
+  hyprctl dispatch "$1" >/dev/null 2>&1
+}
+
+try_lua_dispatch_compat() {
+  local dispatcher=${1:-}
+  local args=${2:-}
+  local window
+  local window_q
+  local ws
+  local ws_q
+  local spec
+  local x
+  local y
+  local rel
+
+  case "$dispatcher" in
+    focuswindow)
+      window_q="$(lua_quote "$args")" || return 1
+      lua_dispatch_expr "hl.dsp.focus({ window = ${window_q} })"
+      ;;
+    pin)
+      window_q="$(lua_quote "$args")" || return 1
+      lua_dispatch_expr "hl.dsp.window.pin({ window = ${window_q} })"
+      ;;
+    setfloating)
+      window_q="$(lua_quote "$args")" || return 1
+      lua_dispatch_expr "hl.dsp.window.float({ action = 'enable', window = ${window_q} })"
+      ;;
+    movetoworkspacesilent)
+      [[ "$args" == *,address:* ]] || return 1
+      ws="${args%,address:*}"
+      window="address:${args##*,address:}"
+      ws_q="$(lua_quote "$ws")" || return 1
+      window_q="$(lua_quote "$window")" || return 1
+      lua_dispatch_expr "hl.dsp.window.move({ workspace = ${ws_q}, window = ${window_q}, follow = false })"
+      ;;
+    movewindowpixel)
+      [[ "$args" == *,* ]] || return 1
+      spec="${args%,*}"
+      window="${args##*,}"
+      if [[ "$spec" == exact\ * ]]; then
+        read -r _ x y _ <<< "$spec"
+        rel=false
+      else
+        read -r x y _ <<< "$spec"
+        rel=true
+      fi
+      [[ "$x" =~ ^-?[0-9]+$ && "$y" =~ ^-?[0-9]+$ ]] || return 1
+      window_q="$(lua_quote "$window")" || return 1
+      lua_dispatch_expr "hl.dsp.window.move({ x = ${x}, y = ${y}, relative = ${rel}, window = ${window_q} })"
+      ;;
+    resizewindowpixel)
+      [[ "$args" == exact\ *,* ]] || return 1
+      spec="${args%,*}"
+      window="${args##*,}"
+      read -r _ x y _ <<< "$spec"
+      [[ "$x" =~ ^-?[0-9]+$ && "$y" =~ ^-?[0-9]+$ ]] || return 1
+      window_q="$(lua_quote "$window")" || return 1
+      lua_dispatch_expr "hl.dsp.window.resize({ x = ${x}, y = ${y}, window = ${window_q} })"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 safe_hyprctl() {
   local attempt
 
   for attempt in 1 2 3; do
+    if [[ ${1:-} == "dispatch" ]]; then
+      local dispatcher
+      local args
+      shift
+      if [[ ${1:-} == "--" ]]; then
+        shift
+      fi
+      dispatcher=${1:-}
+      args=${2:-}
+      if try_lua_dispatch_compat "$dispatcher" "$args"; then
+        return 0
+      fi
+      set -- dispatch "$dispatcher" "$args"
+    fi
+
     if hyprctl "$@" >/dev/null 2>&1; then
       return 0
     fi
@@ -138,6 +226,18 @@ is_window_pinned() {
   hyprctl clients -j 2>/dev/null | jq -e \
     --arg addr "$addr" \
     'any(.[]; .address == $addr and .pinned == true)' >/dev/null 2>&1
+}
+
+ensure_window_floating() {
+  local addr=$1
+  [[ -n "$addr" ]] || return 1
+  safe_hyprctl dispatch setfloating "address:${addr}"
+}
+
+ensure_window_size() {
+  local addr=$1
+  [[ -n "$addr" ]] || return 1
+  safe_hyprctl dispatch -- resizewindowpixel "exact ${WINDOW_WIDTH} ${WINDOW_HEIGHT},address:${addr}"
 }
 
 ensure_window_pinned_state() {
@@ -285,6 +385,8 @@ show_dropdown() {
   save_previous_focus
   ensure_window_pinned_state "$addr" "off" || true
   safe_hyprctl dispatch movetoworkspacesilent "${current_ws},address:${addr}"
+  ensure_window_floating "$addr" || true
+  ensure_window_size "$addr" || true
   focus_and_move_to_target "$addr" "$mon_x" "$mon_y" "$mon_w" || true
   ensure_window_pinned_state "$addr" "$PIN_WHEN_VISIBLE" || true
   touch "$TOGGLE_FILE"
@@ -329,6 +431,8 @@ spawn_dropdown() {
   }
 
   ensure_window_pinned_state "$addr" "off" || true
+  ensure_window_floating "$addr" || true
+  ensure_window_size "$addr" || true
   focus_and_move_to_target "$addr" "$mon_x" "$mon_y" "$mon_w" || true
   ensure_window_pinned_state "$addr" "$PIN_WHEN_VISIBLE" || true
   touch "$TOGGLE_FILE"

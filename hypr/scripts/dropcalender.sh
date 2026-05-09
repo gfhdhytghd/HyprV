@@ -80,11 +80,85 @@ wait_for_window() {
 }
 
 # 安全执行hyprctl命令
+lua_quote() {
+  [[ ${1:-} != *"'"* ]] || return 1
+  printf "'%s'" "$1"
+}
+
+lua_dispatch_expr() {
+  hyprctl dispatch "$1" >/dev/null 2>&1
+}
+
+try_lua_dispatch_compat() {
+  local dispatcher=${1:-}
+  local args=${2:-}
+  local window
+  local window_q
+  local ws
+  local ws_q
+  local spec
+  local x
+  local y
+  local rel
+
+  case "$dispatcher" in
+    focuswindow)
+      window_q="$(lua_quote "$args")" || return 1
+      lua_dispatch_expr "hl.dsp.focus({ window = ${window_q} })"
+      ;;
+    pin)
+      window_q="$(lua_quote "$args")" || return 1
+      lua_dispatch_expr "hl.dsp.window.pin({ window = ${window_q} })"
+      ;;
+    movetoworkspacesilent)
+      [[ "$args" == *,address:* ]] || return 1
+      ws="${args%,address:*}"
+      window="address:${args##*,address:}"
+      ws_q="$(lua_quote "$ws")" || return 1
+      window_q="$(lua_quote "$window")" || return 1
+      lua_dispatch_expr "hl.dsp.window.move({ workspace = ${ws_q}, window = ${window_q}, follow = false })"
+      ;;
+    movewindowpixel)
+      [[ "$args" == *,* ]] || return 1
+      spec="${args%,*}"
+      window="${args##*,}"
+      if [[ "$spec" == exact\ * ]]; then
+        read -r _ x y _ <<< "$spec"
+        rel=false
+      else
+        read -r x y _ <<< "$spec"
+        rel=true
+      fi
+      [[ "$x" =~ ^-?[0-9]+$ && "$y" =~ ^-?[0-9]+$ ]] || return 1
+      window_q="$(lua_quote "$window")" || return 1
+      lua_dispatch_expr "hl.dsp.window.move({ x = ${x}, y = ${y}, relative = ${rel}, window = ${window_q} })"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 safe_hyprctl() {
   local max_retries=3
   local retry=0
   
   while [[ $retry -lt $max_retries ]]; do
+    if [[ ${1:-} == "dispatch" ]]; then
+      local dispatcher
+      local args
+      shift
+      if [[ ${1:-} == "--" ]]; then
+        shift
+      fi
+      dispatcher=${1:-}
+      args=${2:-}
+      if try_lua_dispatch_compat "$dispatcher" "$args"; then
+        return 0
+      fi
+      set -- dispatch "$dispatcher" "$args"
+    fi
+
     if hyprctl "$@" 2>/dev/null; then
       return 0
     fi
@@ -137,6 +211,34 @@ get_window_monitor_y() {
   mon_y="$(get_monitor_y_by_id "$mon_id")"
   is_integer "$mon_y" || return 1
   printf '%s\n' "$mon_y"
+}
+
+get_client_workspace_name() {
+  local addr=$1
+  hyprctl clients -j 2>/dev/null | \
+    jq -r --arg addr "$addr" 'first(.[] | select(.address == $addr) | .workspace.name) // empty' 2>/dev/null
+}
+
+get_visible_workspace_id() {
+  local ws_id
+  ws_id="$(hyprctl monitors -j 2>/dev/null | \
+    jq -r 'first(.[] | select(.focused == true) | .activeWorkspace.id) // empty' 2>/dev/null)"
+  if is_integer "$ws_id" && [[ $ws_id -gt 0 ]]; then
+    printf '%s\n' "$ws_id"
+    return 0
+  fi
+
+  ws_id="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null)"
+  if is_integer "$ws_id" && [[ $ws_id -gt 0 ]]; then
+    printf '%s\n' "$ws_id"
+    return 0
+  fi
+
+  return 1
+}
+
+is_special_workspace_name() {
+  [[ ${1:-} == special:* ]]
 }
 
 is_window_pinned() {
@@ -240,9 +342,11 @@ restore_visible_position() {
 save_prev_focus() {
   local current_focus
   local current_ws
+  local focus_ws
   current_focus="$(hyprctl activewindow -j 2>/dev/null | jq -r '.address // empty' 2>/dev/null)"
-  current_ws="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null)"
-  if [[ -n "$current_focus" ]]; then
+  current_ws="$(get_visible_workspace_id || true)"
+  focus_ws="$(get_client_workspace_name "$current_focus")"
+  if [[ -n "$current_focus" ]] && ! is_special_workspace_name "$focus_ws"; then
     printf '%s\n' "$current_focus" > "$PREV_FOCUS"
   else
     rm -f "$PREV_FOCUS"
@@ -259,6 +363,7 @@ restore_prev_focus() {
   local prev_focus
   local prev_ws
   local current_ws
+  local focus_ws
 
   if [[ ! -f "$PREV_FOCUS" ]]; then
     rm -f "$PREV_WS"
@@ -274,7 +379,7 @@ restore_prev_focus() {
 
   if [[ -f "$PREV_WS" ]]; then
     prev_ws="$(cat "$PREV_WS")"
-    current_ws="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null)"
+    current_ws="$(get_visible_workspace_id || true)"
     if [[ -n "$prev_ws" && -n "$current_ws" && "$prev_ws" != "$current_ws" ]]; then
       rm -f "$PREV_FOCUS" "$PREV_WS"
       return 0
@@ -282,6 +387,11 @@ restore_prev_focus() {
   fi
 
   if hyprctl clients -j 2>/dev/null | jq -e --arg addr "$prev_focus" 'any(.[]; .address == $addr)' >/dev/null 2>&1; then
+    focus_ws="$(get_client_workspace_name "$prev_focus")"
+    if is_special_workspace_name "$focus_ws"; then
+      rm -f "$PREV_FOCUS" "$PREV_WS"
+      return 0
+    fi
     safe_hyprctl dispatch focuswindow "address:$prev_focus" || true
   fi
 
@@ -308,7 +418,7 @@ showcalendar() {
   if is_hidden_in_special; then
     # 已隐藏 → 显示到当前工作区，再下移回可见位置
     save_prev_focus
-    current_ws="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null)"
+    current_ws="$(get_visible_workspace_id || true)"
     if [[ -z "$current_ws" ]]; then
       echo "无法获取当前工作区" >&2
       return 1

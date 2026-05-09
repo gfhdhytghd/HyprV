@@ -26,11 +26,9 @@
 
 {
     "label" : "logout",
-    "action" : "hyprctl dispatch exit 0",
+    "action" : "/home/wilf/.config/HyprV/hypr/scripts/logout-session.sh",
     "text" : "        "     
 }
-
-
 
 
 
