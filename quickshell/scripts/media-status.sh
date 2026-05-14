@@ -70,11 +70,44 @@ if [[ "$selected_player" == chromium.instance* ]] && command -v busctl >/dev/nul
     player_comm="$(busctl --user status "org.mpris.MediaPlayer2.${selected_player}" 2>/dev/null | sed -n 's/^Comm=//p' | head -n 1 || true)"
 fi
 
-if [[ "$player_comm" == "Cider" && "$length" != "0" && -n "$album" ]]; then
+if [[ "$player_comm" == "Cider" && "$length" != "0" ]]; then
     script_dir="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-    fallback_title="$("$script_dir/cider-metadata-fallback.py" --artist "$artist" --album "$album" --length "$length" --current-title "$title" 2>/dev/null || true)"
-    if [[ -n "$fallback_title" ]]; then
+    fallback_output="$("$script_dir/cider-metadata-fallback.py" --artist "$artist" --album "$album" --length "$length" --current-title "$title" --shell 2>/dev/null || true)"
+    fallback_title=""
+    fallback_artist=""
+    fallback_album=""
+    fallback_art_url=""
+    fallback_source=""
+
+    while IFS= read -r line; do
+        [[ "$line" == *=* ]] || continue
+        key="${line%%=*}"
+        value="${line#*=}"
+        case "$key" in
+            title) fallback_title="$value" ;;
+            artist) fallback_artist="$value" ;;
+            album) fallback_album="$value" ;;
+            art_url) fallback_art_url="$value" ;;
+            source) fallback_source="$value" ;;
+        esac
+    done <<< "$fallback_output"
+
+    if [[ "$fallback_source" == "api" ]]; then
+        [[ -n "$fallback_title" ]] && title="$fallback_title"
+        [[ -n "$fallback_artist" ]] && artist="$fallback_artist"
+        [[ -n "$fallback_album" ]] && album="$fallback_album"
+        [[ -n "$fallback_art_url" ]] && art_url="$fallback_art_url"
+    elif [[ -n "$fallback_title" && ( -z "$title" || "$title" == "Cider" || "$title" == "Chromium" ) ]]; then
         title="$fallback_title"
+    fi
+    if [[ "$fallback_source" != "api" && -n "$fallback_artist" && -z "$artist" ]]; then
+        artist="$fallback_artist"
+    fi
+    if [[ "$fallback_source" != "api" && -n "$fallback_album" && -z "$album" ]]; then
+        album="$fallback_album"
+    fi
+    if [[ "$fallback_source" != "api" && -n "$fallback_art_url" && -z "$art_url" ]]; then
+        art_url="$fallback_art_url"
     fi
 fi
 

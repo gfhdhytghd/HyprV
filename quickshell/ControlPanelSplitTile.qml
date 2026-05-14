@@ -94,6 +94,7 @@ Item {
             spacing: subtitle.length > 0 ? 2 : 0
 
             Text {
+                width: parent.width
                 text: tile.title
                 color: tile.active ? "#ffffff" : tile.textColor
                 font.family: tile.shellRoot ? tile.shellRoot.baseFont : "JetBrainsMono Nerd Font"
@@ -104,6 +105,7 @@ Item {
             }
 
             Text {
+                width: parent.width
                 visible: tile.subtitle.length > 0
                 text: tile.subtitle
                 color: tile.active ? Qt.rgba(1, 1, 1, 0.82) : tile.mutedTextColor

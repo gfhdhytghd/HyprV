@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 state_script="$script_dir/ui-state.sh"
 
 ensure_parent() {
@@ -241,6 +241,19 @@ run_with_timeout() {
     fi
 }
 
+send_ghostty_reload_shortcut() {
+    local addr
+    addr="$1"
+
+    [[ "$addr" =~ ^0x[0-9A-Fa-f]+$ ]] || return 0
+
+    if command -v hyprctl >/dev/null 2>&1; then
+        hyprctl eval "hl.dispatch(hl.dsp.send_shortcut({ mods = 'CTRL SHIFT', key = 'comma', window = 'address:$addr' }))" >/dev/null 2>&1 \
+            || hyprctl dispatch sendshortcut "CTRL SHIFT, comma, address:$addr" >/dev/null 2>&1 \
+            || true
+    fi
+}
+
 load_current_state() {
     theme="$("$state_script" get-theme)"
     variant="$("$state_script" get-variant)"
@@ -297,10 +310,15 @@ apply_links_and_theme() {
         hypr_clients_json="$(hyprctl clients -j 2>/dev/null || true)"
         if [[ -n "$hypr_clients_json" ]] && printf '%s' "$hypr_clients_json" | jq -e . >/dev/null 2>&1; then
             printf '%s' "$hypr_clients_json" | jq -r '
-                .[] | select((.class // "" | ascii_downcase) | contains("ghostty")) | .address
+                .[]
+                | select(
+                    ((.class // "") | ascii_downcase | contains("ghostty"))
+                    or ((.initialClass // "") | ascii_downcase | contains("ghostty"))
+                )
+                | .address
             ' | while read -r addr; do
                 [[ -n "$addr" ]] || continue
-                hyprctl dispatch sendshortcut "CTRL SHIFT, comma, address:$addr" >/dev/null 2>&1 || true
+                send_ghostty_reload_shortcut "$addr"
             done
         fi
     fi

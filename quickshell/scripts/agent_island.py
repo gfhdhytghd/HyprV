@@ -497,7 +497,27 @@ def is_codex_native_process(cmdline: list[str]) -> bool:
         return False
     executable = cmdline[0]
     name = Path(executable).name
-    return name == "codex" and ("/codex/codex" in executable or "@openai/codex" in executable)
+    return name == "codex"
+
+
+def is_claude_native_process(cmdline: list[str]) -> bool:
+    if not cmdline:
+        return False
+    if Path(cmdline[0]).name != "claude":
+        return False
+    ignored_commands = {
+        "--help",
+        "-h",
+        "--version",
+        "-v",
+        "help",
+        "config",
+        "doctor",
+        "install",
+        "mcp",
+        "update",
+    }
+    return not any(arg in ignored_commands for arg in cmdline[1:3])
 
 
 def is_codex_active_inhibitor(cmdline: list[str]) -> bool:
@@ -540,12 +560,12 @@ def session_pid(session: dict[str, Any]) -> int | None:
     return int_value(terminal.get("pid"))
 
 
-def find_session_for_pid(sessions: dict[str, Any], pid: int) -> str | None:
+def find_session_for_pid(sessions: dict[str, Any], pid: int, source: str = "codex") -> str | None:
     matched: str | None = None
     for sid, session in sessions.items():
         if not isinstance(session, dict):
             continue
-        if session.get("source") != "codex":
+        if session.get("source") != source:
             continue
         terminal = session.get("terminal")
         if isinstance(terminal, dict) and int_value(terminal.get("pid")) == pid:
@@ -586,7 +606,7 @@ def sync_codex_process_sessions(state: dict[str, Any]) -> None:
         process = processes.get(pid) or {}
         start_ticks = int(process.get("start_ticks") or 0)
         cwd = proc_cwd(pid)
-        existing_sid = find_session_for_pid(sessions, pid)
+        existing_sid = find_session_for_pid(sessions, pid, "codex")
         sid = existing_sid or f"codexproc-{pid}-{start_ticks}"
         session = sessions.get(sid) if isinstance(sessions.get(sid), dict) else {}
 
@@ -622,6 +642,51 @@ def sync_codex_process_sessions(state: dict[str, Any]) -> None:
         session["terminal"] = clean_for_json(terminal)
         sessions[sid] = clean_for_json(session)
 
+    claude_pids = {
+        pid
+        for pid, process in processes.items()
+        if is_claude_native_process(process.get("cmdline") or [])
+    }
+    for pid in sorted(claude_pids):
+        process = processes.get(pid) or {}
+        start_ticks = int(process.get("start_ticks") or 0)
+        cwd = proc_cwd(pid)
+        existing_sid = find_session_for_pid(sessions, pid, "claude")
+        sid = existing_sid or f"claudeproc-{pid}-{start_ticks}"
+        session = sessions.get(sid) if isinstance(sessions.get(sid), dict) else {}
+
+        session.setdefault("id", sid)
+        session["source"] = "claude"
+        session["source_label"] = source_label("claude")
+        session["title"] = session.get("title") or f"Claude {pid}"
+        session["cwd"] = cwd or session.get("cwd") or ""
+        session["project"] = project_name(session.get("cwd"))
+        session["event"] = "ProcessScan"
+        session["status"] = "running"
+        session["detail"] = session.get("detail") or "Claude Code"
+        session["current_tool"] = session.get("current_tool") or "Claude Code"
+        session["had_activity"] = True
+        session.pop("completed_at", None)
+        try:
+            existing_progress = float(session.get("progress") or 0)
+        except (TypeError, ValueError):
+            existing_progress = 0
+        session["progress"] = max(existing_progress, 0.38)
+        session["last_activity"] = now
+        session.setdefault("started_at", now)
+        session["process_scan_seen_at"] = now
+        session["process_scan_active_seen_at"] = now
+        session["process_start_ticks"] = start_ticks
+        if existing_sid is None:
+            session["provider"] = "process-scan"
+        if session.get("provider") == "process-scan":
+            seen_synthetic.add(sid)
+
+        terminal = session.get("terminal") if isinstance(session.get("terminal"), dict) else {}
+        terminal["pid"] = pid
+        session["terminal"] = clean_for_json(terminal)
+        sessions[sid] = clean_for_json(session)
+
     for sid, session in list(sessions.items()):
         if not isinstance(session, dict):
             continue
@@ -631,7 +696,13 @@ def sync_codex_process_sessions(state: dict[str, Any]) -> None:
                 sessions.pop(sid, None)
                 continue
         pid_value = session_pid(session)
-        if session.get("event") == "ProcessScan" and pid_value not in active_pids:
+        source = session.get("source")
+        process_scan_active = (
+            source == "codex" and pid_value in active_pids
+        ) or (
+            source == "claude" and pid_value in claude_pids
+        )
+        if session.get("event") == "ProcessScan" and not process_scan_active:
             session["current_tool"] = ""
             if process_exists(pid_value, processes) and session.get("had_activity"):
                 session["status"] = "completed"
