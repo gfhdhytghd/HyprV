@@ -36,7 +36,7 @@ WifiIndicator {
     readonly property int popupPanelWidth: 384
     readonly property int popupRightMargin: 10
     readonly property int popupScreenMargin: 8
-    readonly property int panelMaxHeight: 960
+    readonly property int panelMaxHeight: 500
     readonly property int panelVerticalPadding: 20
     readonly property int panelSectionSpacing: 10
     readonly property int panelPadding: 10
