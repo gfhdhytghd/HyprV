@@ -152,13 +152,17 @@ restart_xsettingsd() {
 }
 
 sync_activation_environment() {
-    local gtk_theme_name
+    local gtk_theme_name cursor_theme_name cursor_size
     gtk_theme_name="$1"
+    cursor_theme_name="$2"
+    cursor_size="$3"
 
     if command -v dbus-update-activation-environment >/dev/null 2>&1; then
         dbus-update-activation-environment --systemd \
             "GTK_THEME=$gtk_theme_name" \
             "QT_QPA_PLATFORMTHEME=qt6ct" \
+            "XCURSOR_THEME=$cursor_theme_name" \
+            "XCURSOR_SIZE=$cursor_size" \
             "XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-Hyprland}" \
             "XDG_SESSION_DESKTOP=${XDG_SESSION_DESKTOP:-Hyprland}" >/dev/null 2>&1 || true
     fi
@@ -266,6 +270,7 @@ apply_links_and_theme() {
     local wofi_target background_target rofi_target alacritty_target ghostty_target swaync_target
     local orchis_suffix color_scheme_suffix prefer_dark
     local gtk_theme_name icon_theme_name kvantum_theme
+    local cursor_theme_name cursor_size
     local kde_color_scheme kde_look_and_feel
     local qt6_color_scheme qt5_color_scheme
     local hypr_clients_json
@@ -343,32 +348,51 @@ apply_links_and_theme() {
     gtk_theme_name="Orchis-${mode_label}-Compact"
     icon_theme_name="Fluent${color_scheme_suffix}"
     kvantum_theme="Orchis${orchis_suffix}"
+    cursor_theme_name="Adwaita"
+    cursor_size="24"
 
     if command -v xfconf-query >/dev/null 2>&1; then
         xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita${suffix}" >/dev/null 2>&1 || true
         xfconf-query -c xsettings -p /Net/IconThemeName -s "Adwaita${suffix}" >/dev/null 2>&1 || true
+        xfconf-query -c xsettings -p /Gtk/CursorThemeName -s "$cursor_theme_name" >/dev/null 2>&1 || true
+        xfconf-query -c xsettings -p /Gtk/CursorThemeSize -s "$cursor_size" >/dev/null 2>&1 || true
     fi
 
     if command -v gsettings >/dev/null 2>&1; then
         gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme_name" >/dev/null 2>&1 || true
         gsettings set org.gnome.desktop.interface icon-theme "$icon_theme_name" >/dev/null 2>&1 || true
+        gsettings set org.gnome.desktop.interface cursor-theme "$cursor_theme_name" >/dev/null 2>&1 || true
+        gsettings set org.gnome.desktop.interface cursor-size "$cursor_size" >/dev/null 2>&1 || true
         gsettings set org.gnome.desktop.interface color-scheme "prefer${color_scheme_suffix}" >/dev/null 2>&1 || true
     fi
-    sync_activation_environment "$gtk_theme_name"
+    sync_activation_environment "$gtk_theme_name" "$cursor_theme_name" "$cursor_size"
+    if command -v hyprctl >/dev/null 2>&1; then
+        hyprctl setcursor "$cursor_theme_name" "$cursor_size" >/dev/null 2>&1 || true
+    fi
 
     set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-theme-name "$gtk_theme_name"
     set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-icon-theme-name "$icon_theme_name"
+    set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-cursor-theme-name "$cursor_theme_name"
+    set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-cursor-theme-size "$cursor_size"
     set_ini_value "$HOME/.config/gtk-3.0/settings.ini" Settings gtk-application-prefer-dark-theme "$prefer_dark"
     set_ini_value "$HOME/.config/gtk-4.0/settings.ini" Settings gtk-theme-name "$gtk_theme_name"
     set_ini_value "$HOME/.config/gtk-4.0/settings.ini" Settings gtk-icon-theme-name "$icon_theme_name"
+    set_ini_value "$HOME/.config/gtk-4.0/settings.ini" Settings gtk-cursor-theme-name "$cursor_theme_name"
+    set_ini_value "$HOME/.config/gtk-4.0/settings.ini" Settings gtk-cursor-theme-size "$cursor_size"
     set_ini_value "$HOME/.config/gtk-4.0/settings.ini" Settings gtk-application-prefer-dark-theme "$prefer_dark"
     set_assignment "$HOME/.gtkrc-2.0" gtk-theme-name "\"$gtk_theme_name\""
     set_assignment "$HOME/.gtkrc-2.0" gtk-icon-theme-name "\"$icon_theme_name\""
+    set_assignment "$HOME/.gtkrc-2.0" gtk-cursor-theme-name "\"$cursor_theme_name\""
+    set_assignment "$HOME/.gtkrc-2.0" gtk-cursor-theme-size "$cursor_size"
     set_assignment "$HOME/.config/gtkrc-2.0" gtk-theme-name "\"$gtk_theme_name\""
     set_assignment "$HOME/.config/gtkrc-2.0" gtk-icon-theme-name "\"$icon_theme_name\""
+    set_assignment "$HOME/.config/gtkrc-2.0" gtk-cursor-theme-name "\"$cursor_theme_name\""
+    set_assignment "$HOME/.config/gtkrc-2.0" gtk-cursor-theme-size "$cursor_size"
 
     set_xsettings_value "$HOME/.config/xsettingsd/xsettingsd.conf" Net/ThemeName "\"$gtk_theme_name\""
     set_xsettings_value "$HOME/.config/xsettingsd/xsettingsd.conf" Net/IconThemeName "\"$icon_theme_name\""
+    set_xsettings_value "$HOME/.config/xsettingsd/xsettingsd.conf" Net/CursorThemeName "\"$cursor_theme_name\""
+    set_xsettings_value "$HOME/.config/xsettingsd/xsettingsd.conf" Net/CursorThemeSize "$cursor_size"
     restart_xsettingsd
 
     set_ini_value "$HOME/.config/qt6ct/qt6ct.conf" Appearance style "kvantum"
