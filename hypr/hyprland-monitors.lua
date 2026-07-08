@@ -1,0 +1,1 @@
+/home/wilf/.config/HyprV/hypr/hyprland-monitors-1.lua

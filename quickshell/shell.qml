@@ -7,7 +7,6 @@ import Quickshell.Bluetooth
 import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Services.SystemTray
-import Quickshell.Services.UPower
 import Quickshell.Wayland
 
 ShellRoot {
@@ -160,23 +159,26 @@ ShellRoot {
     property bool audioAvailable: false
     property bool audioMuted: false
     property int audioVolumePercent: 0
-    readonly property var batteryDevice: UPower.displayDevice
+    readonly property bool batteryAvailable: batteryInfo?.available === true
     readonly property real batteryPercent: {
-        const percent = batteryDevice?.percentage;
-        if (percent === undefined || percent === null || isNaN(percent)) {
-            return 0;
+        if (batteryInfo?.available === true) {
+            const capacity = Number(batteryInfo?.capacity);
+            if (!isNaN(capacity)) {
+                return Math.max(0, Math.min(100, capacity));
+            }
         }
-        return Math.max(0, Math.min(100, percent * 100));
+        return 0;
     }
-    readonly property bool batteryCharging: batteryDevice?.state === UPowerDeviceState.Charging || batteryDevice?.state === UPowerDeviceState.PendingCharge
-    readonly property bool batteryPlugged: batteryCharging || batteryDevice?.state === UPowerDeviceState.FullyCharged
-    readonly property bool batteryCritical: batteryPercent <= 20
+    readonly property string batteryMode: batteryInfo?.available === true ? (batteryInfo?.mode || "") : ""
+    readonly property bool batteryCharging: batteryMode === "charging"
+    readonly property bool batteryPlugged: batteryMode === "charging" || batteryMode === "plugged" || batteryMode === "full"
+    readonly property bool batteryCritical: batteryAvailable && batteryPercent <= 20
     readonly property string batteryText: {
-        if (!batteryDevice) {
+        if (!batteryAvailable) {
             return "";
         }
         const rounded = Math.round(batteryPercent);
-        if (batteryCharging || batteryPlugged) {
+        if (batteryPlugged) {
             return " " + rounded + "%";
         }
         return batteryGlyph(rounded) + " " + rounded + "%";
@@ -3613,7 +3615,7 @@ ShellRoot {
 
                                 anchors.fill: parent
                                 label: root.batteryText
-                                textColor: root.batteryCritical && !root.batteryCharging ? root.criticalColor : root.batteryColor
+                                textColor: root.batteryCritical && !root.batteryPlugged ? root.criticalColor : root.batteryColor
                                 interactive: root.batteryText.length > 0
                                 paddingLeft: 5
                                 paddingRight: 12
