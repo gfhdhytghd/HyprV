@@ -34,9 +34,10 @@ CODEX_EVENTS = {
     "UserPromptSubmit": 5,
     "PreToolUse": 5,
     "PostToolUse": 5,
-    "PermissionRequest": 86400,
     "Stop": 5,
 }
+
+CODEX_PASSTHROUGH_EVENTS = ("PermissionRequest",)
 
 
 def load_json(path: Path) -> dict:
@@ -109,6 +110,12 @@ def install_codex_hooks() -> None:
     hooks = data.get("hooks")
     if not isinstance(hooks, dict):
         hooks = {}
+    for event in CODEX_PASSTHROUGH_EVENTS:
+        entries = remove_managed(hooks.get(event, []) if isinstance(hooks.get(event), list) else [])
+        if entries:
+            hooks[event] = entries
+        else:
+            hooks.pop(event, None)
     for event, timeout in CODEX_EVENTS.items():
         entries = remove_managed(hooks.get(event, []) if isinstance(hooks.get(event), list) else [])
         entries.append({
@@ -144,16 +151,16 @@ def enable_codex_hooks_feature() -> None:
     if features_start is None:
         if lines and lines[-1].strip():
             lines.append("")
-        lines.extend(["[features]", "codex_hooks = true"])
+        lines.extend(["[features]", "hooks = true"])
     else:
         replaced = False
         for idx in range(features_start + 1, features_end):
-            if re.match(r"^\s*codex_hooks\s*=", lines[idx]):
-                lines[idx] = "codex_hooks = true"
+            if re.match(r"^\s*(?:hooks|codex_hooks)\s*=", lines[idx]):
+                lines[idx] = "hooks = true"
                 replaced = True
                 break
         if not replaced:
-            lines.insert(features_end, "codex_hooks = true")
+            lines.insert(features_end, "hooks = true")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

@@ -1,0 +1,15 @@
+[Unit]
+Description=Publish CPU package power for HyprV
+After=systemd-modules-load.service
+ConditionPathExists=/usr/bin/turbostat
+
+[Service]
+Type=simple
+ExecStart=/usr/local/libexec/hyprv-cpu-power-sampler
+Restart=on-failure
+RestartSec=2
+RuntimeDirectory=hyprv
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target

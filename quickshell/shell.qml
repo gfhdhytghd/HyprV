@@ -20,6 +20,8 @@ ShellRoot {
     property real cpuUsage: 0
     property real memoryUsage: 0
     property real temperatureC: 0
+    property bool cpuPackagePowerAvailable: false
+    property real cpuPackagePowerW: 0
     property string defaultInterface: ""
     property real networkRxRate: 0
     property real networkTxRate: 0
@@ -65,12 +67,19 @@ ShellRoot {
         ? Array.from(bluetoothAdapterObject.devices.values || [])
         : []
     readonly property string brightnessScriptPath: configDir + "/hypr/scripts/brightness"
+    readonly property string fanControlHelperPath: "/usr/local/libexec/hyprv-fanctl"
     readonly property int brightnessUiStepPercent: 2
     property int brightnessPercent: 50
+    property bool fanControlAvailable: false
+    property int chassisFanPercent: 0
+    property int chassisFanRpm: 0
+    property int pumpFanPercent: 0
+    property int pumpFanRpm: 0
     property bool dndEnabled: false
     property bool screenRecording: false
     property string powerProfile: "balanced"
     property bool preventSleepEnabled: false
+    property bool demoModeEnabled: false
     property bool mediaAvailable: false
     property bool mediaPlaying: false
     property string mediaTitle: ""
@@ -100,6 +109,9 @@ ShellRoot {
     property bool _showQuickAdjustAfterBrightnessProbe: false
     property bool _brightnessProbeQueued: false
     property int _pendingBrightnessPercent: -1
+    property int _pendingChassisFanPercent: -1
+    property int _pendingPumpFanPercent: -1
+    property double _lastFanInteractionTimestamp: 0
     property string _bluetoothActionKind: ""
     property string _bluetoothActionAddress: ""
     property string _bluetoothActionLabel: ""
@@ -183,6 +195,10 @@ ShellRoot {
         }
         return batteryGlyph(rounded) + " " + rounded + "%";
     }
+    readonly property string cpuPackagePowerText: cpuPackagePowerAvailable
+        ? (cpuPackagePowerW >= 100 ? cpuPackagePowerW.toFixed(0) : cpuPackagePowerW.toFixed(1)) + " W"
+        : "-- W"
+    readonly property string batteryOrCpuPowerText: batteryAvailable ? batteryText : cpuPackagePowerText
     property var batteryInfo: ({
         available: false,
         status: "",
@@ -461,18 +477,20 @@ ShellRoot {
         property bool wheelInteractive: false
         property bool hoverable: false
         property bool highlighted: false
+        property bool collapseWhenHidden: false
         property color highlightColor: root.activeWorkspaceBackground
         property color highlightedTextColor: root.activeWorkspaceText
         property real highlightInset: 0
         readonly property real effectivePaddingLeft: Math.max(0, paddingLeft)
         readonly property real effectivePaddingRight: Math.max(0, paddingRight)
+        readonly property real naturalImplicitWidth: Math.max(labelText.implicitWidth + effectivePaddingLeft + effectivePaddingRight, minimumWidth)
 
         signal leftClicked()
         signal rightClicked()
         signal wheelUp()
         signal wheelDown()
 
-        implicitWidth: Math.max(labelText.implicitWidth + effectivePaddingLeft + effectivePaddingRight, minimumWidth)
+        implicitWidth: collapseWhenHidden && !visible ? 0 : naturalImplicitWidth
         implicitHeight: module.moduleHeight
 
         Rectangle {
@@ -1561,6 +1579,30 @@ ShellRoot {
                 }
             } else if (line.startsWith("prevent_sleep=")) {
                 root.preventSleepEnabled = line.slice(14).trim() === "true";
+            } else if (line.startsWith("demo_mode=")) {
+                root.demoModeEnabled = line.slice(10).trim() === "true";
+            } else if (line.startsWith("fan_available=")) {
+                root.fanControlAvailable = line.slice(14).trim() === "true";
+            } else if (line.startsWith("fan_chassis_percent=")) {
+                const parsed = Number(line.slice(20).trim());
+                if (isFinite(parsed) && Date.now() - root._lastFanInteractionTimestamp > 300) {
+                    root.chassisFanPercent = root.clampFanPercent(parsed);
+                }
+            } else if (line.startsWith("fan_chassis_rpm=")) {
+                const parsed = Number(line.slice(16).trim());
+                if (isFinite(parsed)) {
+                    root.chassisFanRpm = Math.max(0, Math.round(parsed));
+                }
+            } else if (line.startsWith("fan_pump_percent=")) {
+                const parsed = Number(line.slice(17).trim());
+                if (isFinite(parsed) && Date.now() - root._lastFanInteractionTimestamp > 300) {
+                    root.pumpFanPercent = root.clampFanPercent(parsed);
+                }
+            } else if (line.startsWith("fan_pump_rpm=")) {
+                const parsed = Number(line.slice(13).trim());
+                if (isFinite(parsed)) {
+                    root.pumpFanRpm = Math.max(0, Math.round(parsed));
+                }
             }
         }
     }
@@ -2270,6 +2312,12 @@ ShellRoot {
             temperatureC = tempRaw > 1000 ? tempRaw / 1000 : tempRaw;
         }
 
+        const cpuPowerRaw = parseFloat((sections.__CPU_POWER__ || []).join("\n").trim());
+        cpuPackagePowerAvailable = isFinite(cpuPowerRaw) && cpuPowerRaw >= 0;
+        if (cpuPackagePowerAvailable) {
+            cpuPackagePowerW = cpuPowerRaw;
+        }
+
         const iface = parseDefaultInterface((sections.__ROUTE__ || []).join("\n"));
         defaultInterface = iface;
         const counters = interfaceCounters((sections.__NET__ || []).join("\n"), iface);
@@ -2630,6 +2678,31 @@ ShellRoot {
         brightnessProbeDebounce.restart();
     }
 
+    function clampFanPercent(value) {
+        return Math.max(0, Math.min(100, Math.round(value)));
+    }
+
+    function applyFanPercent(channel, value) {
+        if (!fanControlAvailable) {
+            return;
+        }
+        const nextValue = clampFanPercent(value);
+        _lastFanInteractionTimestamp = Date.now();
+        if (channel === "chassis") {
+            chassisFanPercent = nextValue;
+            _pendingChassisFanPercent = nextValue;
+        } else if (channel === "pump") {
+            pumpFanPercent = nextValue;
+            _pendingPumpFanPercent = nextValue;
+        } else {
+            return;
+        }
+        if (!fanApplyTimer.running) {
+            fanApplyTimer.start();
+        }
+        fanStatusDebounce.restart();
+    }
+
     function previewBrightnessDelta(delta) {
         const nextValue = updateBrightnessPercentLocally(brightnessPercent + delta);
         quickAdjustPopup.show("brightness");
@@ -2847,6 +2920,31 @@ ShellRoot {
     }
 
     Timer {
+        id: fanApplyTimer
+
+        interval: 35
+        repeat: false
+        onTriggered: {
+            if (root._pendingChassisFanPercent >= 0) {
+                root.runDetached([root.fanControlHelperPath, "set", "chassis", String(root._pendingChassisFanPercent)]);
+                root._pendingChassisFanPercent = -1;
+            }
+            if (root._pendingPumpFanPercent >= 0) {
+                root.runDetached([root.fanControlHelperPath, "set", "pump", String(root._pendingPumpFanPercent)]);
+                root._pendingPumpFanPercent = -1;
+            }
+        }
+    }
+
+    Timer {
+        id: fanStatusDebounce
+
+        interval: 250
+        repeat: false
+        onTriggered: root.refreshControlPanelStatus()
+    }
+
+    Timer {
         id: wifiFollowupRefresh
 
         interval: 1500
@@ -2988,7 +3086,7 @@ ShellRoot {
         id: systemSnapshot
 
         interval: 1000
-        command: ["sh", "-lc", "printf '__STAT__\\n'; cat /proc/stat; printf '\\n__MEM__\\n'; cat /proc/meminfo; printf '\\n__TEMP__\\n'; cat /sys/class/thermal/thermal_zone1/temp; printf '\\n__ROUTE__\\n'; cat /proc/net/route; printf '\\n__NET__\\n'; cat /proc/net/dev"]
+        command: [root.configDir + "/quickshell/scripts/system-snapshot.sh"]
         onUpdated: function(output, exitCode) {
             if (exitCode === 0 && output.length > 0) {
                 root.updateSystemStats();
@@ -3338,6 +3436,35 @@ ShellRoot {
             required property var modelData
             property bool islandExpanded: false
             property real islandCurrentHeight: 38
+            readonly property real fullSectionSpacing: 9.5
+            readonly property real compactSectionSpacing: 5
+            readonly property real fullLeftWidth: 10
+                + leftPrimaryPill.implicitWidth
+                + fullSectionSpacing
+                + cpuTrigger.naturalImplicitWidth
+                + memoryTrigger.naturalImplicitWidth
+                + networkTrigger.naturalImplicitWidth
+            readonly property real fullRightWidth: rightSection.edgeMargin
+                + temperatureTrigger.naturalImplicitWidth
+                + batteryTrigger.implicitWidth
+                + fullSectionSpacing
+                + previousMediaButton.naturalImplicitWidth
+                + playPauseMediaButton.naturalImplicitWidth
+                + nextMediaButton.naturalImplicitWidth
+                + volumeButton.naturalImplicitWidth
+                + fullSectionSpacing
+                + systemLeadingSpacer.implicitWidth
+                + wifiTraySlot.implicitWidth
+                + controlPanelTrigger.implicitWidth
+                + notificationTrigger.implicitWidth
+                + systemTrailingSpacer.implicitWidth
+            readonly property bool supplementaryInfoVisible: contentRoot.width
+                >= centerSection.width
+                    + 2 * rightSection.centerGap
+                    + 2 * Math.max(fullLeftWidth, fullRightWidth)
+            readonly property real sectionSpacing: supplementaryInfoVisible
+                ? fullSectionSpacing
+                : compactSectionSpacing
 
             screen: modelData
 
@@ -3396,9 +3523,11 @@ ShellRoot {
                     anchors.leftMargin: 10
                     anchors.top: parent.top
                     anchors.topMargin: 10
-                    spacing: 9.5
+                    spacing: barWindow.sectionSpacing
 
                     GroupPill {
+                        id: leftPrimaryPill
+
                         shellRoot: root
                         TextModule {
                             label: ""
@@ -3449,7 +3578,11 @@ ShellRoot {
                     }
 
                     GroupPill {
+                        id: performancePill
+
                         shellRoot: root
+                        visible: barWindow.supplementaryInfoVisible
+                        width: visible ? implicitWidth : 0
                         TextModule {
                             id: cpuTrigger
 
@@ -3547,17 +3680,19 @@ ShellRoot {
                 Rectangle {
                     id: windowSection
 
-                    readonly property real availableWidth: Math.max(0, centerSection.x - (leftSection.x + leftSection.width) - 19)
+                    readonly property real availableWidth: Math.max(0, centerSection.x - (leftSection.x + leftSection.width) - 2 * barWindow.sectionSpacing)
                     readonly property real minimumWidth: 38
 
                     anchors.top: parent.top
                     anchors.topMargin: 10
-                    x: leftSection.x + leftSection.width + 9.5
-                    width: Math.min(windowSection.availableWidth, Math.max(windowSection.minimumWidth, windowLabel.implicitWidth + 24))
+                    x: leftSection.x + leftSection.width + barWindow.sectionSpacing
+                    width: barWindow.supplementaryInfoVisible
+                        ? Math.min(windowSection.availableWidth, Math.max(windowSection.minimumWidth, windowLabel.implicitWidth + 24))
+                        : 0
                     height: 38 
                     radius: 19
                     color: root.moduleBackground
-                    visible: root.activeWindowTitle.length > 0 && width > 0
+                    visible: barWindow.supplementaryInfoVisible && root.activeWindowTitle.length > 0 && width > 0
 
                     Text {
                         id: windowLabel
@@ -3587,16 +3722,20 @@ ShellRoot {
                     anchors.rightMargin: edgeMargin
                     anchors.top: parent.top
                     anchors.topMargin: 10
-                    spacing: 9.5
+                    spacing: barWindow.sectionSpacing
 
                     GroupPill {
                         id: rightStatusPill
 
                         shellRoot: root
                         TextModule {
+                            id: temperatureTrigger
+
                             label: (root.temperatureC >= 70 ? " " : " ") + Math.round(root.temperatureC) + "°C"
                             textColor: root.temperatureC >= 70 ? root.criticalColor : root.primaryText
                             interactive: true
+                            visible: barWindow.supplementaryInfoVisible
+                            collapseWhenHidden: true
                             paddingLeft: 10
                             paddingRight: 5
                             onLeftClicked: root.runDetached(["alacritty", "-t", "btop", "-o", "window.startup_mode=Fullscreen", "-e", "btop"])
@@ -3614,12 +3753,16 @@ ShellRoot {
                                 id: batteryModule
 
                                 anchors.fill: parent
-                                label: root.batteryText
-                                textColor: root.batteryCritical && !root.batteryPlugged ? root.criticalColor : root.batteryColor
-                                interactive: root.batteryText.length > 0
-                                paddingLeft: 5
+                                label: root.batteryOrCpuPowerText
+                                textColor: root.batteryAvailable
+                                    ? (root.batteryCritical && !root.batteryPlugged ? root.criticalColor : root.batteryColor)
+                                    : root.usageSeverityColor(root.cpuPackagePowerW)
+                                interactive: root.batteryAvailable
+                                paddingLeft: barWindow.supplementaryInfoVisible ? 5 : 12
                                 paddingRight: 12
-                                onLeftClicked: batteryInfoPopup.toggleFor(batteryTrigger, barWindow)
+                                onLeftClicked: if (root.batteryAvailable) {
+                                    batteryInfoPopup.toggleFor(batteryTrigger, barWindow);
+                                }
                             }
                         }
                     }
@@ -3629,14 +3772,18 @@ ShellRoot {
 
                         shellRoot: root
                         TextModule {
+                            id: previousMediaButton
+
                             label: ""
                             interactive: true
-                            paddingLeft: 9
+                            paddingLeft: barWindow.supplementaryInfoVisible ? 9 : 12
                             paddingRight: 5
                             onLeftClicked: root.runDetached(["playerctl", "previous"])
                         }
 
                         TextModule {
+                            id: playPauseMediaButton
+
                             label: root.mediaPlaying ? "" : ""
                             interactive: true
                             paddingLeft: 5
@@ -3648,19 +3795,25 @@ ShellRoot {
                         }
 
                         TextModule {
+                            id: nextMediaButton
+
                             label: ""
                             interactive: true
                             paddingLeft: 5
-                            paddingRight: 0
+                            paddingRight: barWindow.supplementaryInfoVisible ? 0 : 17.5
                             onLeftClicked: root.runDetached(["playerctl", "next"])
                         }
 
                         TextModule {
+                            id: volumeButton
+
                             label: root.volumeIcon
                             textColor: root.launchColor
                             fontFamily: root.iconFont
                             interactive: true
                             wheelInteractive: true
+                            visible: barWindow.supplementaryInfoVisible
+                            collapseWhenHidden: true
                             paddingLeft: 8
                             paddingRight: 12
                             onLeftClicked: {

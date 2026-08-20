@@ -64,3 +64,22 @@ if [[ -x "${HOME}/.config/HyprV/quickshell/scripts/prevent-sleep.sh" ]]; then
     fi
 fi
 printf 'prevent_sleep=%s\n' "$prevent_sleep"
+
+# Demo mode state
+demo_mode=false
+if [[ -x "${HOME}/.config/HyprV/quickshell/scripts/demo-mode.sh" ]]; then
+    demo_status="$("${HOME}/.config/HyprV/quickshell/scripts/demo-mode.sh" status 2>/dev/null || true)"
+    if [[ "$demo_status" == *"enabled=true"* ]]; then
+        demo_mode=true
+    fi
+fi
+printf 'demo_mode=%s\n' "$demo_mode"
+
+# Chassis fan controller state. The helper resolves the dynamic hwmon path by
+# chip name and only reports the two channels exposed by the control panel.
+fan_helper="/usr/local/libexec/hyprv-fanctl"
+if [[ -x "$fan_helper" ]]; then
+    "$fan_helper" status 2>/dev/null || printf 'fan_available=false\n'
+else
+    printf 'fan_available=false\n'
+fi

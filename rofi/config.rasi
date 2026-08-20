@@ -3,7 +3,7 @@ configuration {
     icon-theme: "Papirus-Dark";
     show-icons: true;
     font: "JetBrainsMono NF Bold 12";
-    terminal: "alacritty";
+    terminal: "kitty";
     drun-display-format: "{icon} {name}";
     location: 0;
     disable-history: false;

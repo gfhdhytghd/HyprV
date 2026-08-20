@@ -3,7 +3,7 @@ local lib = require("hypr.lib")
 local main = "SUPER"
 
 lib.bind_exec("SUPER_L", "true")
-lib.bind_exec(main .. " + Q", "ghostty")
+lib.bind_exec(main .. " + Q", "kitty")
 hl.bind(main .. " + W", hl.dsp.window.close())
 lib.bind_exec(main .. " + L", "hyprlock")
 lib.bind_exec(main .. " + M", "wlogout --protocol layer-shell -b 5")
@@ -12,18 +12,30 @@ lib.bind_exec(main .. " + SHIFT + F", "cursor")
 hl.bind(main .. " + SHIFT + M", hl.dsp.exit())
 lib.bind_exec(main .. " + E", "dolphin")
 hl.bind(main .. " + V", hl.dsp.window.float({ action = "toggle" }))
-lib.bind_exec("ALT + SPACE", "rofi-wayland -show drun")
+lib.bind_exec("ALT + SPACE", "rofi -show drun")
 hl.bind("ALT + A", hl.dsp.pass({ window = "class:^(wechat)$" }))
 hl.bind(main .. " + P", hl.dsp.window.pseudo())
 hl.bind(main .. " + J", hl.dsp.layout("togglesplit"))
-hl.bind(main .. " + O", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+lib.bind_plugin_fn_or_exec(
+  main .. " + O",
+  "hymission",
+  "fullscreen",
+  "hyprctl dispatch fullscreen 1 toggle",
+  { mode = "maximized", action = "toggle" }
+)
 hl.bind(main .. " + Y", hl.dsp.window.float({ action = "set" }))
 lib.bind_exec(main .. " + SHIFT + V", "cliphist list | wofi -S dmenu | cliphist decode | wl-copy")
 hl.bind(main .. " + Y", hl.dsp.window.move({ monitor = "1" }))
 hl.bind(main .. " + Y", hl.dsp.window.resize({ x = 1415, y = 2075 }))
 hl.bind(main .. " + Y", hl.dsp.window.move({ x = 1772, y = 861 }))
 lib.bind_exec(main .. " + Y", "quickshell kill -p $HOME/.config/HyprV/quickshell")
-hl.bind(main .. " + SHIFT + O", hl.dsp.window.fullscreen({ action = "toggle" }))
+lib.bind_plugin_fn_or_exec(
+  main .. " + SHIFT + O",
+  "hymission",
+  "fullscreen",
+  "hyprctl dispatch fullscreen 0 toggle",
+  { mode = "fullscreen", action = "toggle" }
+)
 hl.bind(main .. " + D", hl.dsp.focus({ workspace = "100" }))
 hl.bind(main .. " + SHIFT + up", hl.dsp.workspace.move({ monitor = "+1" }))
 hl.bind(main .. " + SHIFT + down", hl.dsp.workspace.move({ monitor = "-1" }))

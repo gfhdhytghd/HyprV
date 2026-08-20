@@ -157,6 +157,13 @@ Item {
         }
     }
 
+    function setFanPercent(channel, value) {
+        if (!shellRoot) {
+            return;
+        }
+        shellRoot.applyFanPercent(channel, clampPercent(value));
+    }
+
     function toggleAudioMute() {
         if (!shellRoot) {
             return;
@@ -219,6 +226,14 @@ Item {
         }
         shellRoot.preventSleepEnabled = !shellRoot.preventSleepEnabled;
         runAndRefresh([shellRoot.configDir + "/quickshell/scripts/prevent-sleep.sh", "toggle"]);
+    }
+
+    function toggleDemoMode() {
+        if (!shellRoot) {
+            return;
+        }
+        shellRoot.demoModeEnabled = !shellRoot.demoModeEnabled;
+        runAndRefresh([shellRoot.configDir + "/quickshell/scripts/demo-mode.sh", "toggle"]);
     }
 
     function toggleWifiExpanded() {
@@ -593,94 +608,41 @@ Item {
                         }
                     }
 
-                    ControlPanelSplitTile {
+                    Row {
                         width: parent.width
-                        height: popupRoot.moduleSize
-                        shellRoot: popupRoot.shellRoot
-                        icon: popupRoot.powerProfileIcon(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
-                        title: "Power"
-                        subtitle: popupRoot.powerProfileLabel(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
-                        active: false
-                        expanded: popupRoot.powerExpanded
-                        onLeftClicked: popupRoot.cyclePowerProfile()
-                        onRightClicked: popupRoot.togglePowerExpanded()
-                    }
+                        spacing: popupRoot.cardSpacing
 
-                    ExpandableSection {
-                        width: parent.width
-                        expanded: popupRoot.powerExpanded
+                        ControlPanelToggle {
+                            width: (parent.width - popupRoot.cardSpacing) / 2
+                            height: popupRoot.moduleSize
+                            shellRoot: popupRoot.shellRoot
+                            icon: "󰍹"
+                            iconOnly: true
+                            active: popupRoot.shellRoot ? popupRoot.shellRoot.demoModeEnabled : false
+                            onClicked: popupRoot.toggleDemoMode()
+                        }
 
-                        Rectangle {
-                            width: parent.width
-                            radius: 19
-                            color: popupRoot.detailFill
-                            border.width: 1
-                            border.color: popupRoot.detailStroke
-                            implicitHeight: powerModes.implicitHeight + 20
-
-                            Column {
-                                id: powerModes
-
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.top: parent.top
-                                anchors.margins: 10
-                                spacing: 6
-
-                                WifiActionChip {
-                                    width: parent.width
-                                    shellRoot: popupRoot.shellRoot
-                                    label: "Saver"
-                                    fillColor: popupRoot.shellRoot && popupRoot.shellRoot.powerProfile === "power-saver"
-                                        ? popupRoot.shellRoot.withAlpha(popupRoot.shellRoot.batteryColor, popupRoot.shellRoot.darkMode ? 0.22 : 0.18)
-                                        : popupRoot.detailFill
-                                    foregroundColor: popupRoot.shellRoot && popupRoot.shellRoot.powerProfile === "power-saver"
-                                        ? popupRoot.shellRoot.batteryColor
-                                        : (popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#5a4030")
-                                    strokeColor: popupRoot.detailStroke
-                                    onClicked: popupRoot.setPowerProfile("power-saver")
-                                }
-
-                                WifiActionChip {
-                                    width: parent.width
-                                    shellRoot: popupRoot.shellRoot
-                                    label: "Balanced"
-                                    fillColor: popupRoot.shellRoot && popupRoot.shellRoot.powerProfile === "balanced"
-                                        ? popupRoot.shellRoot.withAlpha(popupRoot.shellRoot.launchColor, popupRoot.shellRoot.darkMode ? 0.22 : 0.18)
-                                        : popupRoot.detailFill
-                                    foregroundColor: popupRoot.shellRoot && popupRoot.shellRoot.powerProfile === "balanced"
-                                        ? popupRoot.shellRoot.launchColor
-                                        : (popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#5a4030")
-                                    strokeColor: popupRoot.detailStroke
-                                    onClicked: popupRoot.setPowerProfile("balanced")
-                                }
-
-                                WifiActionChip {
-                                    width: parent.width
-                                    shellRoot: popupRoot.shellRoot
-                                    label: "Fast"
-                                    fillColor: popupRoot.shellRoot && popupRoot.shellRoot.powerProfile === "performance"
-                                        ? popupRoot.shellRoot.withAlpha(popupRoot.shellRoot.criticalColor, popupRoot.shellRoot.darkMode ? 0.22 : 0.18)
-                                        : popupRoot.detailFill
-                                    foregroundColor: popupRoot.shellRoot && popupRoot.shellRoot.powerProfile === "performance"
-                                        ? popupRoot.shellRoot.criticalColor
-                                        : (popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#5a4030")
-                                    strokeColor: popupRoot.detailStroke
-                                    onClicked: popupRoot.setPowerProfile("performance")
-                                }
-                            }
+                        ControlPanelToggle {
+                            width: (parent.width - popupRoot.cardSpacing) / 2
+                            height: popupRoot.moduleSize
+                            shellRoot: popupRoot.shellRoot
+                            icon: popupRoot.powerProfileIcon(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
+                            iconOnly: true
+                            active: false
+                            onClicked: popupRoot.cyclePowerProfile()
                         }
                     }
                 }
             }
 
-            Column {
+            Grid {
                 width: parent.width
+                columns: 2
                 spacing: popupRoot.cardSpacing
 
                 ControlPanelSlider {
                     shellRoot: popupRoot.shellRoot
-                    width: parent.width
+                    width: popupRoot.columnWidth
                     height: popupRoot.moduleSize
                     icon: "󰃟"
                     label: "Brightness"
@@ -691,7 +653,7 @@ Item {
 
                 ControlPanelSlider {
                     shellRoot: popupRoot.shellRoot
-                    width: parent.width
+                    width: popupRoot.columnWidth
                     height: popupRoot.moduleSize
                     icon: popupRoot.shellRoot ? popupRoot.shellRoot.volumeIcon : ""
                     iconClickable: true
@@ -700,6 +662,32 @@ Item {
                     accentColor: popupRoot.shellRoot ? popupRoot.shellRoot.launchColor : "#89b4fa"
                     onValueChangeRequested: function(newValue) { popupRoot.setAudioVolumePercent(newValue); }
                     onIconClicked: popupRoot.toggleAudioMute()
+                }
+
+                ControlPanelSlider {
+                    shellRoot: popupRoot.shellRoot
+                    width: popupRoot.columnWidth
+                    height: popupRoot.moduleSize
+                    enabled: popupRoot.shellRoot ? popupRoot.shellRoot.fanControlAvailable : false
+                    opacity: enabled ? 1 : 0.48
+                    icon: "󰈐"
+                    label: "Chassis Fan · " + (popupRoot.shellRoot ? popupRoot.shellRoot.chassisFanRpm : 0) + " RPM"
+                    value: popupRoot.shellRoot ? popupRoot.shellRoot.chassisFanPercent : 0
+                    accentColor: popupRoot.shellRoot ? popupRoot.shellRoot.usageLowColor : "#2f9e44"
+                    onValueChangeRequested: function(newValue) { popupRoot.setFanPercent("chassis", newValue); }
+                }
+
+                ControlPanelSlider {
+                    shellRoot: popupRoot.shellRoot
+                    width: popupRoot.columnWidth
+                    height: popupRoot.moduleSize
+                    enabled: popupRoot.shellRoot ? popupRoot.shellRoot.fanControlAvailable : false
+                    opacity: enabled ? 1 : 0.48
+                    icon: "󰈐"
+                    label: "Pump Fan · " + (popupRoot.shellRoot ? popupRoot.shellRoot.pumpFanRpm : 0) + " RPM"
+                    value: popupRoot.shellRoot ? popupRoot.shellRoot.pumpFanPercent : 0
+                    accentColor: popupRoot.shellRoot ? popupRoot.shellRoot.batteryColor : "#40a37d"
+                    onValueChangeRequested: function(newValue) { popupRoot.setFanPercent("pump", newValue); }
                 }
             }
         }

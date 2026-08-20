@@ -258,6 +258,201 @@ send_ghostty_reload_shortcut() {
     fi
 }
 
+lua_quote() {
+    [[ ${1:-} != *"'"* ]] || return 1
+    printf "'%s'" "$1"
+}
+
+hypr_move_window_hidden() {
+    local addr workspace window_q workspace_q
+    addr="$1"
+    workspace="$2"
+
+    [[ "$addr" =~ ^0x[0-9A-Fa-f]+$ ]] || return 1
+    command -v hyprctl >/dev/null 2>&1 || return 1
+
+    window_q="$(lua_quote "address:$addr")" || return 1
+    workspace_q="$(lua_quote "$workspace")" || return 1
+
+    hyprctl dispatch "hl.dsp.window.move({ workspace = ${workspace_q}, window = ${window_q}, follow = false })" >/dev/null 2>&1 \
+        || hyprctl dispatch movetoworkspacesilent "${workspace},address:${addr}" >/dev/null 2>&1
+}
+
+hypr_focus_window_addr() {
+    local addr window_q
+    addr="$1"
+
+    [[ "$addr" =~ ^0x[0-9A-Fa-f]+$ ]] || return 1
+    command -v hyprctl >/dev/null 2>&1 || return 1
+
+    window_q="$(lua_quote "address:$addr")" || return 1
+    hyprctl dispatch "hl.dsp.focus({ window = ${window_q} })" >/dev/null 2>&1 \
+        || hyprctl dispatch focuswindow "address:$addr" >/dev/null 2>&1
+}
+
+wechat_hypr_client_address_by_title() {
+    local title
+    title="$1"
+
+    hyprctl clients -j 2>/dev/null | jq -r --arg title "$title" '
+        .[]
+        | select((.class // "") == "wechat" and (.title // "") == $title)
+        | .address
+    ' | tail -n 1
+}
+
+wechat_popup_hypr_address() {
+    hyprctl clients -j 2>/dev/null | jq -r '
+        .[]
+        | select(
+            (.class // "") == "wechat"
+            and (.title // "") == "wechat"
+            and (.floating == true)
+            and (.size[0] >= 140 and .size[0] <= 180)
+            and (.size[1] >= 90 and .size[1] <= 130)
+        )
+        | .address
+    ' | tail -n 1
+}
+
+wechat_xwindow_by_title() {
+    local title
+    title="$1"
+
+    xdotool search --class wechat 2>/dev/null | while read -r wid; do
+        [[ "$(xdotool getwindowname "$wid" 2>/dev/null || true)" == "$title" ]] || continue
+        printf '%s\n' "$wid"
+    done | tail -n 1
+}
+
+wechat_popup_xwindow() {
+    local name width height
+
+    xdotool search --class wechat 2>/dev/null | while read -r wid; do
+        name="$(xdotool getwindowname "$wid" 2>/dev/null || true)"
+        [[ "$name" == "wechat" ]] || continue
+        width="$(xwininfo -id "$wid" 2>/dev/null | awk '/Width:/ { print $2; exit }')"
+        height="$(xwininfo -id "$wid" 2>/dev/null | awk '/Height:/ { print $2; exit }')"
+        [[ "$width" =~ ^[0-9]+$ && "$height" =~ ^[0-9]+$ ]] || continue
+        if (( width >= 250 && width <= 420 && height >= 150 && height <= 300 )); then
+            printf '%s\n' "$wid"
+        fi
+    done | tail -n 1
+}
+
+wait_for_wechat_settings() {
+    local i addr
+
+    for i in {1..30}; do
+        addr="$(wechat_hypr_client_address_by_title "设置")"
+        if [[ -n "$addr" ]]; then
+            printf '%s\n' "$addr"
+            return 0
+        fi
+        sleep 0.1
+    done
+
+    return 1
+}
+
+wait_for_wechat_popup() {
+    local i addr
+
+    for i in {1..20}; do
+        addr="$(wechat_popup_hypr_address)"
+        if [[ -n "$addr" ]]; then
+            printf '%s\n' "$addr"
+            return 0
+        fi
+        sleep 0.05
+    done
+
+    return 1
+}
+
+sync_wechat_appearance() {
+    local target_theme hidden_workspace active_addr main_wid settings_wid settings_addr popup_addr popup_wid menu_y
+
+    target_theme="${1:-}"
+    [[ "$target_theme" == "light" || "$target_theme" == "dark" ]] || return 0
+
+    command -v xdotool >/dev/null 2>&1 || return 0
+    command -v xwininfo >/dev/null 2>&1 || return 0
+    command -v hyprctl >/dev/null 2>&1 || return 0
+    command -v jq >/dev/null 2>&1 || return 0
+
+    main_wid="$(wechat_xwindow_by_title "微信")"
+    [[ -n "$main_wid" ]] || return 0
+
+    hidden_workspace="special:wechat-ui"
+    active_addr="$(hyprctl activewindow -j 2>/dev/null | jq -r '.address // empty' || true)"
+
+    settings_wid="$(wechat_xwindow_by_title "设置")"
+    settings_addr="$(wechat_hypr_client_address_by_title "设置")"
+    if [[ -z "$settings_wid" || -z "$settings_addr" ]]; then
+        xdotool key --window "$main_wid" ctrl+comma >/dev/null 2>&1 || return 0
+        settings_addr="$(wait_for_wechat_settings || true)"
+        settings_wid="$(wechat_xwindow_by_title "设置")"
+    fi
+
+    [[ -n "$settings_wid" && -n "$settings_addr" ]] || return 0
+
+    hypr_move_window_hidden "$settings_addr" "$hidden_workspace" || true
+    if [[ -n "$active_addr" ]]; then
+        hypr_focus_window_addr "$active_addr" || true
+    fi
+
+    # Coordinates are XWayland window pixels from the current WeChat settings UI.
+    xdotool mousemove --window "$settings_wid" 120 225 click 1 >/dev/null 2>&1 || true
+    sleep 0.2
+    xdotool mousemove --window "$settings_wid" 910 490 click 1 >/dev/null 2>&1 || true
+
+    popup_addr="$(wait_for_wechat_popup || true)"
+    if [[ -z "$popup_addr" ]]; then
+        cleanup_wechat_settings_window "$active_addr"
+        return 0
+    fi
+
+    if [[ -n "$popup_addr" ]]; then
+        hypr_move_window_hidden "$popup_addr" "$hidden_workspace" || true
+    fi
+    if [[ -n "$active_addr" ]]; then
+        hypr_focus_window_addr "$active_addr" || true
+    fi
+
+    sleep 0.1
+    popup_wid="$(wechat_popup_xwindow)"
+    if [[ -z "$popup_wid" ]]; then
+        cleanup_wechat_settings_window "$active_addr"
+        return 0
+    fi
+
+    if [[ "$target_theme" == "dark" ]]; then
+        menu_y=150
+    else
+        menu_y=80
+    fi
+
+    xdotool mousemove --window "$popup_wid" 150 "$menu_y" click 1 >/dev/null 2>&1 || true
+    sleep 0.3
+
+    # Close the hidden settings window so repeated theme applications start cleanly.
+    cleanup_wechat_settings_window "$active_addr"
+}
+
+cleanup_wechat_settings_window() {
+    local active_addr settings_wid
+    active_addr="${1:-}"
+
+    settings_wid="$(wechat_xwindow_by_title "设置")"
+    if [[ -n "$settings_wid" ]]; then
+        xdotool windowclose "$settings_wid" >/dev/null 2>&1 || true
+    fi
+    if [[ -n "$active_addr" ]]; then
+        hypr_focus_window_addr "$active_addr" || true
+    fi
+}
+
 load_current_state() {
     theme="$("$state_script" get-theme)"
     variant="$("$state_script" get-variant)"
@@ -266,8 +461,28 @@ load_current_state() {
     variant_name="$(variant_prefix "$variant")"
 }
 
+reload_kitty_theme() {
+    # Live-apply colors via remote control sockets, then SIGUSR1 for full reload.
+    local theme_file sock
+    theme_file="$1"
+
+    if command -v kitty >/dev/null 2>&1 && [[ -f "$theme_file" ]]; then
+        shopt -s nullglob
+        # New sockets live in XDG_RUNTIME_DIR; keep /tmp for instances started before the move
+        for sock in "${XDG_RUNTIME_DIR:-/tmp}"/kitty-*.sock "${TEMP:-/tmp}"/kitty-*.sock; do
+            run_with_timeout 2 kitty @ --to "unix:${sock}" set-colors --all --configured "$theme_file" >/dev/null 2>&1 || true
+            run_with_timeout 2 kitty @ --to "unix:${sock}" load-config >/dev/null 2>&1 || true
+        done
+        shopt -u nullglob
+    fi
+
+    if command -v pkill >/dev/null 2>&1; then
+        pkill -USR1 -x kitty >/dev/null 2>&1 || true
+    fi
+}
+
 apply_links_and_theme() {
-    local wofi_target background_target rofi_target alacritty_target ghostty_target swaync_target
+    local wofi_target background_target rofi_target alacritty_target ghostty_target kitty_target kitty_conf_target swaync_target
     local orchis_suffix color_scheme_suffix prefer_dark
     local gtk_theme_name icon_theme_name kvantum_theme
     local cursor_theme_name cursor_size
@@ -280,12 +495,15 @@ apply_links_and_theme() {
     rofi_target="$HOME/.config/HyprV/rofi/colors${suffix}.rasi"
     alacritty_target="$HOME/.config/HyprV/alacritty/alacritty${suffix}.toml"
     ghostty_target="$HOME/.config/HyprV/ghostty/ghostty${suffix}.toml"
+    kitty_target="$HOME/.config/HyprV/kitty/theme${suffix}.conf"
+    kitty_conf_target="$HOME/.config/HyprV/kitty/kitty.conf"
     swaync_target="$HOME/.config/HyprV/swaync/style${suffix}.css"
 
     ensure_parent "$HOME/.config/wofi/style.css"
     ensure_parent "$HOME/.config/rofi/colors.rasi"
     ensure_parent "$HOME/.config/alacritty/alacritty.toml"
     ensure_parent "$HOME/.config/ghostty/config"
+    ensure_parent "$HOME/.config/kitty/kitty.conf"
     ensure_parent "$HOME/.config/swaync/style.css"
 
     if [[ -f "$wofi_target" ]]; then
@@ -302,6 +520,15 @@ apply_links_and_theme() {
 
     if [[ -f "$ghostty_target" ]]; then
         ln -sfn "$ghostty_target" "$HOME/.config/ghostty/config"
+    fi
+
+    if [[ -f "$kitty_conf_target" ]]; then
+        ln -sfn "$kitty_conf_target" "$HOME/.config/kitty/kitty.conf"
+    fi
+
+    if [[ -f "$kitty_target" ]]; then
+        ln -sfn "$kitty_target" "$HOME/.config/kitty/current-theme.conf"
+        reload_kitty_theme "$kitty_target"
     fi
 
     if [[ -f "$swaync_target" ]]; then
@@ -437,6 +664,8 @@ apply_links_and_theme() {
             done
         done
     fi
+
+    sync_wechat_appearance "$theme"
 }
 
 apply_with_state() {

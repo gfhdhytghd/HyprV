@@ -58,6 +58,18 @@ hl.device({
   accel_profile = "flat",
 })
 
+hl.device({
+  name = "elan900c:00-04f3:4216",
+  output = "eDP-1",
+  transform = 0,
+})
+
+hl.device({
+  name = "touch-passthrough",
+  output = "HEADLESS-1",
+  transform = 1,
+})
+
 hl.gesture({ fingers = 4, direction = "vertical", action = "workspace" })
 
 lib.call_plugin_fn("hymission", "gesture", {
@@ -76,6 +88,8 @@ hl.bind("SUPER + SHIFT + left", hl.dsp.layout("swapcol l"))
 hl.bind("SUPER + CTRL + right", hl.dsp.layout("promote"))
 hl.bind("SUPER + SHIFT + code:35", hl.dsp.layout("colresize +0.1"))
 hl.bind("SUPER + SHIFT + code:34", hl.dsp.layout("colresize -0.1"))
+hl.bind("CTRL + ALT + code:35", hl.dsp.exec_raw("ydotool mousemove -- 3000 0"))
+hl.bind("CTRL + ALT + code:34", hl.dsp.exec_raw("ydotool mousemove -- -3000 0"))
 
 hl.animation({ leaf = "workspaces", enabled = true, speed = 8, bezier = "default", style = "slidevert" })
 hl.animation({ leaf = "workspacesIn", enabled = true, speed = 8, bezier = "default", style = "slidevert" })

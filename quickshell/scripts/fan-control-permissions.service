@@ -1,0 +1,11 @@
+[Unit]
+Description=Grant HyprV access to chassis fan controls
+After=systemd-modules-load.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/hyprv-fanctl grant
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
