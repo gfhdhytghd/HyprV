@@ -457,7 +457,6 @@ Item {
                 popupOpenTimer.restart();
                 return;
             }
-            popupRoot.openAnimationPending = false;
             popupWindow.updatePopupPosition();
             popupCard.playOpenAnimation();
         }
@@ -800,7 +799,9 @@ Item {
             onFullPanelHeightChanged: {
                 if (popupRoot.openAnimationPending) {
                     positionTimer.restart();
-                    popupOpenTimer.restart();
+                    if (!popupCard.openAnimationRunning) {
+                        popupOpenTimer.restart();
+                    }
                     return;
                 }
                 if (popupWindow.visible && !popupRoot.animatingClose) {
@@ -822,6 +823,7 @@ Item {
             }
 
             onOpenAnimationFinished: {
+                popupRoot.openAnimationPending = false;
                 if (!popupWindow.visible || popupRoot.animatingClose) {
                     return;
                 }
@@ -854,7 +856,7 @@ Item {
                 anchors.margins: popupRoot.popupPadding
                 implicitHeight: pageLoader.item ? pageLoader.item.implicitHeight : 0
                 onImplicitHeightChanged: {
-                    if (popupRoot.openAnimationPending) {
+                    if (popupRoot.openAnimationPending && !popupCard.openAnimationRunning) {
                         popupOpenTimer.restart();
                     }
                 }

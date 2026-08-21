@@ -2672,10 +2672,9 @@ ShellRoot {
     function applyBrightnessPercent(value) {
         const nextValue = updateBrightnessPercentLocally(value);
         _pendingBrightnessPercent = nextValue;
-        if (!brightnessApplyTimer.running) {
-            brightnessApplyTimer.start();
+        if (!brightnessSetProcess.running) {
+            brightnessApplyTimer.restart();
         }
-        brightnessProbeDebounce.restart();
     }
 
     function clampFanPercent(value) {
@@ -2897,17 +2896,33 @@ ShellRoot {
         }
     }
 
+    Process {
+        id: brightnessSetProcess
+
+        running: false
+
+        onExited: {
+            if (root._pendingBrightnessPercent >= 0) {
+                brightnessApplyTimer.restart();
+            } else {
+                brightnessProbeDebounce.restart();
+            }
+        }
+    }
+
     Timer {
         id: brightnessApplyTimer
 
-        interval: 35
+        interval: 60
         repeat: false
         onTriggered: {
-            if (root._pendingBrightnessPercent < 0) {
+            if (root._pendingBrightnessPercent < 0 || brightnessSetProcess.running) {
                 return;
             }
-            root.runDetached([root.brightnessScriptPath, "--set-level", String(root._pendingBrightnessPercent)]);
+            const nextValue = root._pendingBrightnessPercent;
             root._pendingBrightnessPercent = -1;
+            brightnessSetProcess.command = [root.brightnessScriptPath, "--set-level", String(nextValue)];
+            brightnessSetProcess.running = true;
         }
     }
 

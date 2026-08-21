@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Effects
 
 Item {
     id: slider
@@ -28,8 +27,13 @@ Item {
     readonly property color restingFill: shellRoot
         ? shellRoot.withAlpha(shellRoot.darkMode ? "#ffffff" : "#ffffff", shellRoot.darkMode ? 0.07 : 0.22)
         : "#2a2a2a"
-    readonly property color progressFill: "#D0DDF3"
+    readonly property color progressFill: shellRoot
+        ? shellRoot.withAlpha(shellRoot.launchColor, shellRoot.darkMode ? 0.28 : 0.22)
+        : Qt.rgba(0.54, 0.71, 0.98, 0.22)
     readonly property color iconSolidColor: progressFill
+    readonly property color frameStroke: shellRoot
+        ? shellRoot.withAlpha(shellRoot.primaryText, shellRoot.darkMode ? 0.12 : 0.08)
+        : "#454545"
 
     Rectangle {
         id: frame
@@ -44,14 +48,6 @@ Item {
 
             anchors.fill: parent
             clip: true
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                maskEnabled: true
-                maskInverted: true
-                maskSource: iconMask
-                maskThresholdMin: 0.5
-                maskSpreadAtMin: 1
-            }
 
             Item {
                 width: slider.fillWidth
@@ -69,11 +65,9 @@ Item {
         }
 
         Item {
-            id: iconMask
-
-            anchors.fill: parent
-            visible: false
-            layer.enabled: true
+            width: slider.fillWidth
+            height: parent.height
+            clip: true
 
             Text {
                 x: slider.iconCenterX - width / 2
@@ -103,6 +97,15 @@ Item {
                 font.weight: Font.Bold
                 renderType: Text.NativeRendering
             }
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: slider.frameRadius
+            color: "transparent"
+            border.width: 1
+            border.color: slider.frameStroke
+            antialiasing: true
         }
 
         MouseArea {

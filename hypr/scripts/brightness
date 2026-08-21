@@ -21,6 +21,57 @@ UI_MAX=100
 QS_CONFIG_DIR="$HOME/.config/HyprV/quickshell"
 declare -a STEP_VALUES=()
 
+BACKEND=""
+BACKLIGHT_DEVICE=""
+DDC_BUS=""
+DDC_MAX=""
+DDC_CACHE_FILE="${XDG_RUNTIME_DIR:-/tmp}/hyprv-brightness-ddc-${UID}.cache"
+
+detect_backend() {
+    local path bus values cached_bus cached_max
+
+    for path in /sys/class/backlight/*; do
+        [[ -e "$path" ]] || continue
+        BACKEND="backlight"
+        BACKLIGHT_DEVICE="${path##*/}"
+        MAX=$(brightnessctl --device "$BACKLIGHT_DEVICE" max)
+        return 0
+    done
+
+    if command -v ddcutil >/dev/null 2>&1; then
+        if read -r cached_bus cached_max < "$DDC_CACHE_FILE" 2>/dev/null \
+            && [[ "$cached_bus" =~ ^[0-9]+$ && "$cached_max" =~ ^[1-9][0-9]*$ ]] \
+            && [[ -e "/dev/i2c-$cached_bus" ]]; then
+            BACKEND="ddc"
+            DDC_BUS="$cached_bus"
+            DDC_MAX="$cached_max"
+            return 0
+        fi
+
+        while read -r bus; do
+            [[ -n "$bus" ]] || continue
+            values=$(ddcutil --bus "$bus" getvcp 10 --terse 2>/dev/null) || continue
+            if [[ "$values" =~ ^VCP[[:space:]]+10[[:space:]]+C[[:space:]]+[0-9]+[[:space:]]+[0-9]+ ]]; then
+                BACKEND="ddc"
+                DDC_BUS="$bus"
+                DDC_MAX=$(awk '$1 == "VCP" && $2 == "10" && $3 == "C" { print $5; exit }' <<< "$values")
+                printf '%s %s\n' "$DDC_BUS" "$DDC_MAX" > "$DDC_CACHE_FILE"
+                return 0
+            fi
+        done < <(ddcutil detect --brief 2>/dev/null | awk '/I2C bus:/ { sub("/dev/i2c-", "", $3); print $3 }')
+    fi
+
+    echo "No controllable backlight or DDC/CI display found" >&2
+    return 1
+}
+
+ddc_values() {
+    ddcutil --bus "$DDC_BUS" getvcp 10 --terse 2>/dev/null \
+        | awk '$1 == "VCP" && $2 == "10" && $3 == "C" { print $4, $5; exit }'
+}
+
+detect_backend || exit 1
+
 # 启动时预先计算 log(MAX)
 #   使用 bc -l 计算自然对数：
 MAX_LOG=$(echo "l($MAX)" | bc -l)
@@ -63,7 +114,12 @@ init_step_table() {
 #     返回当前亮度（raw value），即 brightnessctl g 的输出。
 ###########################################################
 get_current() {
-    brightnessctl g
+    if [[ "$BACKEND" == "backlight" ]]; then
+        brightnessctl --device "$BACKLIGHT_DEVICE" get
+        return
+    fi
+
+    ddc_values | awk '{ print $1 }'
 }
 
 init_step_table
@@ -209,16 +265,10 @@ notify_user() {
 #     将当前亮度对应的 level + 1，然后写回实际值并通知。
 ###########################################################
 inc_brightness() {
-    local cur_val step new_step new_val ui_level
-    cur_val=$(get_current)
-    step=$(step_from_value "$cur_val")
-    new_step=$(( step + 1 ))
-    if (( new_step > STEP_MAX )); then
-        new_step=$STEP_MAX
-    fi
-    new_val=$(value_from_step "$new_step")
-    ui_level=$(ui_level_from_step "$new_step")
-    brightnessctl set "${new_val}raw"
+    local ui_level
+    ui_level=$(( $(get_level) + 2 ))
+    (( ui_level > UI_MAX )) && ui_level=$UI_MAX
+    set_level "$ui_level"
     notify_user showBrightnessLevel "$ui_level"
 }
 
@@ -228,16 +278,10 @@ inc_brightness() {
 #     将当前亮度对应的 level - 1，然后写回实际值并通知。
 ###########################################################
 dec_brightness() {
-    local cur_val step new_step new_val ui_level
-    cur_val=$(get_current)
-    step=$(step_from_value "$cur_val")
-    new_step=$(( step - 1 ))
-    if (( new_step < 0 )); then
-        new_step=0
-    fi
-    new_val=$(value_from_step "$new_step")
-    ui_level=$(ui_level_from_step "$new_step")
-    brightnessctl set "${new_val}raw"
+    local ui_level
+    ui_level=$(( $(get_level) - 2 ))
+    (( ui_level < 0 )) && ui_level=0
+    set_level "$ui_level"
     notify_user showBrightnessLevel "$ui_level"
 }
 
@@ -246,7 +290,7 @@ dec_brightness() {
 #     直接读取并打印当前亮度（raw value）。
 ###########################################################
 get_direct() {
-    brightnessctl g
+    get_current
 }
 
 ###########################################################
@@ -254,7 +298,15 @@ get_direct() {
 #     返回当前亮度对应的 UI 百分比（0～100）。
 ###########################################################
 get_level() {
-    local cur_val step
+    local cur_val max_val step
+
+    if [[ "$BACKEND" == "ddc" ]]; then
+        read -r cur_val max_val < <(ddc_values)
+        [[ "$cur_val" =~ ^[0-9]+$ && "$max_val" =~ ^[1-9][0-9]*$ ]] || return 1
+        echo $(( (cur_val * UI_MAX + max_val / 2) / max_val ))
+        return
+    fi
+
     cur_val=$(get_current)
     step=$(step_from_value "$cur_val")
     ui_level_from_step "$step"
@@ -274,7 +326,7 @@ get_ui_level() {
 ###########################################################
 set_level() {
     local level="${1:-}"
-    local step new_val
+    local step new_val cur_val max_val
 
     if [[ -z "$level" || ! "$level" =~ ^-?[0-9]+$ ]]; then
         echo "Invalid level: $level" >&2
@@ -287,9 +339,20 @@ set_level() {
         level=$UI_MAX
     fi
 
+    if [[ "$BACKEND" == "ddc" ]]; then
+        max_val="$DDC_MAX"
+        [[ "$max_val" =~ ^[1-9][0-9]*$ ]] || return 1
+        new_val=$(( (level * max_val + UI_MAX / 2) / UI_MAX ))
+        if ! ddcutil --bus "$DDC_BUS" setvcp 10 "$new_val"; then
+            rm -f "$DDC_CACHE_FILE"
+            return 1
+        fi
+        return
+    fi
+
     step=$(step_from_ui_level "$level")
     new_val=$(value_from_step "$step")
-    brightnessctl set "${new_val}raw"
+    brightnessctl --device "$BACKLIGHT_DEVICE" set "${new_val}raw"
 }
 
 ###########################################################
