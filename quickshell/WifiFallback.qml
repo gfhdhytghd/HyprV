@@ -36,23 +36,12 @@ WifiIndicator {
     readonly property int popupPanelWidth: 384
     readonly property int popupRightMargin: 10
     readonly property int popupScreenMargin: 8
-    readonly property int panelMaxHeight: 500
+    readonly property int maxVisibleNetworks: 5
     readonly property int panelVerticalPadding: 20
     readonly property int panelSectionSpacing: 10
     readonly property int panelPadding: 10
     readonly property int innerPadding: 10
     readonly property int innerRadius: 9
-    readonly property real fixedSectionHeight: headerRow.height
-        + statusCard.implicitHeight
-        + actionRow.implicitHeight
-        + (messageCard.visible ? messageCard.implicitHeight : 0)
-        + (emptyStateCard.visible ? emptyStateCard.implicitHeight : 0)
-    readonly property int fixedSectionCount: 3
-        + (messageCard.visible ? 1 : 0)
-        + (emptyStateCard.visible ? 1 : 0)
-    readonly property real fixedSpacingHeight: Math.max(0, fixedSectionCount - 1) * panelSectionSpacing
-    readonly property real networkListTopSpacing: root.networks.length > 0 ? panelSectionSpacing : 0
-    readonly property real maxNetworkListHeight: Math.max(0, panelMaxHeight - panelVerticalPadding - fixedSectionHeight - fixedSpacingHeight - networkListTopSpacing)
     readonly property string trayIconUrl: shellRoot ? shellRoot.networkTrayIconSource() : ""
     readonly property string connectionSummary: {
         if (!shellRoot) {
@@ -382,7 +371,7 @@ WifiIndicator {
                 id: popupChrome
 
                 width: root.popupPanelWidth
-                fullPanelHeight: Math.min(root.panelMaxHeight, panelColumn.implicitHeight + root.panelVerticalPadding)
+                fullPanelHeight: panelColumn.implicitHeight + root.panelVerticalPadding
                 fillColor: root.glassFill
                 strokeColor: root.glassStroke
                 shadowColor: "transparent"
@@ -672,8 +661,22 @@ WifiIndicator {
                 Flickable {
                     id: networkList
 
+                    readonly property real cappedContentHeight: {
+                        // Keep the binding current when a password section changes a card's height.
+                        const layoutHeight = networkColumn.implicitHeight;
+                        const visibleCount = Math.min(root.maxVisibleNetworks, networkRepeater.count);
+                        let cardsHeight = 0;
+                        for (let i = 0; i < visibleCount; ++i) {
+                            const card = networkRepeater.itemAt(i);
+                            if (card) {
+                                cardsHeight += card.height;
+                            }
+                        }
+                        return cardsHeight + Math.max(0, visibleCount - 1) * networkColumn.spacing;
+                    }
+
                     width: parent.width
-                    height: visible ? Math.min(contentHeight, root.maxNetworkListHeight) : 0
+                    height: visible ? Math.min(contentHeight, cappedContentHeight) : 0
                     contentHeight: networkColumn.implicitHeight
                     visible: root.networks.length > 0
                     clip: true
@@ -687,6 +690,8 @@ WifiIndicator {
                         spacing: 10
 
                         Repeater {
+                            id: networkRepeater
+
                             model: root.networks
 
                             delegate: Rectangle {

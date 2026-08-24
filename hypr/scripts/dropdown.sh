@@ -7,7 +7,7 @@ LOCK_DIR="$STATE_DIR/dropdown.lock"
 PREV_FOCUS_FILE="$STATE_DIR/dropdown.prev_focus"
 PREV_WS_FILE="$STATE_DIR/dropdown.prev_ws"
 
-APP_CLASS='alacritty-dropdown'
+APP_CLASS='kitty-dropdown'
 HIDDEN_WORKSPACE='special:dropdown_hidden'
 # Keep the dropdown 1px below the bar's current top reserved area.
 DEFAULT_VISIBLE_OFFSET=60
@@ -415,12 +415,12 @@ spawn_dropdown() {
   mon_y="$(focused_monitor_prop '.y')"
   mon_w="$(focused_monitor_prop '.width')"
 
-  nohup alacritty --class "${APP_CLASS},${APP_CLASS}" >/dev/null 2>&1 &
+  nohup kitty --class "${APP_CLASS}" >/dev/null 2>&1 &
   pid=$!
 
   if ! wait_for_dropdown; then
     kill "$pid" 2>/dev/null || true
-    echo "等待 Alacritty 窗口出现超时" >&2
+    echo "等待 Kitty 窗口出现超时" >&2
     return 1
   fi
 

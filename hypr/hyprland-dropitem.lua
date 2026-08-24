@@ -2,7 +2,7 @@ local lib = require("hypr.lib")
 
 hl.window_rule({
   name = "dropdown-terminal",
-  match = { class = "^(alacritty-dropdown)$" },
+  match = { class = "^(kitty-dropdown)$" },
   size = "1080 225",
   float = true,
   move = "monitor_w*0.125 60",

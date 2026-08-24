@@ -41,7 +41,6 @@ lib.plugin_config_if_available("plugin.hymission.niri_mode", {
       toggle_switch_mode = 1,
       switch_release_key = "Super_L",
       switch_toggle_auto_next = 1,
-      selected_expand_scale = 1.18,
       hover_expand_scale = 1.18,
       multi_workspace_sort_recent_first = 1,
       one_workspace_per_row = 0,
