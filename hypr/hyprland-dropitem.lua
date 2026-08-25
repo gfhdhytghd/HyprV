@@ -26,7 +26,10 @@ hl.window_rule({
   pin = true,
 })
 
-lib.bind_exec("SUPER + C", "~/.config/HyprV/hypr/scripts/dropcalender.sh")
+lib.bind_exec(
+  "SUPER + C",
+  "quickshell ipc -p $HOME/.config/HyprV/quickshell call calendar toggle"
+)
 hl.window_rule({
   name = "dropdown-calendar",
   match = { class = "^(chrome-calendar\\.google\\.com.*Default)$" },

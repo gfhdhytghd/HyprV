@@ -42,7 +42,6 @@ hl.bind(main .. " + SHIFT + down", hl.dsp.workspace.move({ monitor = "-1" }))
 
 lib.bind_exec(main .. " + I", "zen-browser")
 lib.bind_exec(main .. " + B", "~/.config/HyprV/hypr/scripts/toggle-battery-mode.sh")
-lib.bind_exec(main .. " + T", "pkill awww && toggle rotatescreen \"ln -sfn $HOME/.config/HyprV/hypr/hyprland-monitors-1.lua $HOME/.config/HyprV/hypr/hyprland-monitors.lua\" \"ln -sfn $HOME/.config/HyprV/hypr/hyprland-monitors-2.lua $HOME/.config/HyprV/hypr/hyprland-monitors.lua\" && awww-daemon && hyprctl reload")
 lib.bind_exec(main .. " + R", "~/.config/hypr/scripts/record-script.sh --fullscreen-sound")
 lib.bind_exec(main .. " + SHIFT + R", "~/.config/HyprV/quickshell/scripts/reload.sh && fcitx5")
 lib.bind_exec(main .. " + SHIFT + S", "~/.config/hypr/scripts/ocr.sh")

@@ -3369,6 +3369,17 @@ ShellRoot {
     }
 
     IpcHandler {
+        target: "calendar"
+        enabled: true
+
+        function toggle() {
+            if (root.primaryBarWindow) {
+                root.toggleCalendar(root.primaryBarWindow.modelData);
+            }
+        }
+    }
+
+    IpcHandler {
         target: "quickAdjust"
         enabled: true
 

@@ -29,6 +29,7 @@ lib.exec_once("sleep 5 && keepassxc --minimized")
 lib.exec_once("sleep 5 && $HOME/data/model/local_ai_service/launch.sh --tray-only")
 lib.exec_once("sleep 2 && $HOME/.local/share/lzc-client-desktop/lzc-client-desktop --password-store=gnome-libsecret --ozone-platform-hint=wayland --gtk-version=4 --ignore-gpu-blocklist --enable-features=TouchpadOverscrollHistoryNavigation --enable-wayland-ime")
 lib.exec_once("~/.config/HyprV/hypr/scripts/battery-notify.sh &")
+lib.exec_once("~/.config/HyprV/hypr/scripts/restore-session-layout.sh")
 
 hl.env("trashAppUnsafe", "1")
 hl.env("QT_QPA_PLATFORM", "wayland")

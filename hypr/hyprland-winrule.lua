@@ -42,6 +42,35 @@ wr({
 wr({ name = "tile-warp", match = { class = "dev.warp.Warp" }, tile = true })
 wr({ name = "pip-float", match = { title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$" }, float = true })
 
+-- Restore the desktop application layout without leaving the scrolling layout.
+local function session_slot(name, match, workspace, scrolling_width)
+  wr({
+    name = "session-" .. name,
+    match = match,
+    workspace = workspace .. " silent",
+    no_initial_focus = true,
+    tile = true,
+    scrolling_width = scrolling_width,
+  })
+end
+
+-- Workspace 2: Discord / Telegram over QQ / WeChat.
+session_slot("discord", { class = "^(discord)$" }, "2", 0.5)
+session_slot("qq", { class = "^(QQ)$" }, "2", 0.5)
+session_slot("telegram", { class = "^(org\\.telegram\\.desktop)$" }, "2", 0.5)
+session_slot("wechat", { class = "^(wechat)$" }, "2", 0.5)
+
+-- Workspace 3: Gmail / Outlook / Feishu in three horizontal columns.
+session_slot("gmail", { class = "^(chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default)$" }, "3", 0.45)
+session_slot("outlook", { class = "^(msedge-_faolnafnngnfdaknnbpnkhgohbobgegn-Profile_1)$" }, "3", 0.45)
+session_slot("feishu", { title = "^(飞书)$" }, "3", 0.45)
+
+-- Workspaces 4-6: one or two full-height application columns.
+session_slot("zen", { class = "^(zen)$" }, "4", 0.85)
+session_slot("chatgpt", { class = "^(Chatgpt)$" }, "5", 0.85)
+session_slot("code-oss", { class = "^(code-oss)$" }, "5", 0.85)
+session_slot("cider", { class = "^(Cider)$" }, "6", 0.85)
+
 wr({ name = "dialog-open-file", match = { title = "^(Open File)(.*)$" }, float = true })
 wr({ name = "dialog-open-cn", match = { title = "^(打开)(.*)$" }, float = true })
 wr({ name = "dialog-select-file", match = { title = "^(Select a File)(.*)$" }, float = true })

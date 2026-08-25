@@ -58,18 +58,6 @@ hl.device({
   accel_profile = "flat",
 })
 
-hl.device({
-  name = "elan900c:00-04f3:4216",
-  output = "eDP-1",
-  transform = 0,
-})
-
-hl.device({
-  name = "touch-passthrough",
-  output = "HEADLESS-1",
-  transform = 1,
-})
-
 hl.gesture({ fingers = 4, direction = "vertical", action = "workspace" })
 
 lib.call_plugin_fn("hymission", "gesture", {
