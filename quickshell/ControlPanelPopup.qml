@@ -16,6 +16,7 @@ Item {
     property string pendingPage: ""
     readonly property bool wifiExpanded: currentPage === "wifi"
     readonly property bool bluetoothExpanded: currentPage === "bluetooth"
+    readonly property bool mihomoExpanded: currentPage === "mihomo"
     property bool powerExpanded: false
 
     readonly property int popupScreenMargin: 10
@@ -258,6 +259,14 @@ Item {
         switchPageWithAnimation("bluetooth");
     }
 
+    function toggleMihomoExpanded() {
+        if (mihomoExpanded) {
+            showMainPage();
+            return;
+        }
+        switchPageWithAnimation("mihomo");
+    }
+
     function showMainPage() {
         powerExpanded = false;
         switchPageWithAnimation("main");
@@ -479,6 +488,22 @@ Item {
     }
 
     Component {
+        id: mihomoPageComponent
+
+        Column {
+            width: popupContent.width
+            spacing: popupRoot.cardSpacing
+
+            MihomoControlPanel {
+                width: parent.width
+                shellRoot: popupRoot.shellRoot
+                useExternalPanelBackground: true
+                onCloseRequested: popupRoot.showMainPage()
+            }
+        }
+    }
+
+    Component {
         id: mainPageComponent
 
         Column {
@@ -519,18 +544,12 @@ Item {
                         onRightClicked: popupRoot.toggleBluetoothExpanded()
                     }
 
-                    ControlPanelSplitTile {
+                    MihomoControlTile {
                         width: parent.width
                         height: popupRoot.moduleSize
-                   shellRoot: popupRoot.shellRoot
-                        icon: "󰐥"
-                        title: popupRoot.egpuConfirmPending ? "Confirm?" : "eGPU"
-                        subtitle: popupRoot.egpuConfirmPending ? "Tap again" : ""
-                        active: popupRoot.egpuConfirmPending
-                        destructive: true
-                        expandIndicatorVisible: false
-                        rightEnabled: false
-                        onLeftClicked: popupRoot.confirmEgpuAction()
+                        shellRoot: popupRoot.shellRoot
+                        expanded: popupRoot.mihomoExpanded
+                        onDetailsClicked: popupRoot.toggleMihomoExpanded()
                     }
 
                     Row {
@@ -779,11 +798,11 @@ Item {
 
             width: popupRoot.popupWidth
             fullPanelHeight: popupContent.implicitHeight + popupRoot.popupPadding * 2
-            fillColor: popupRoot.currentPage === "bluetooth" ? popupRoot.glassFill : "transparent"
-            strokeColor: popupRoot.currentPage === "bluetooth" ? popupRoot.glassStroke : "transparent"
+            fillColor: popupRoot.currentPage !== "main" ? popupRoot.glassFill : "transparent"
+            strokeColor: popupRoot.currentPage !== "main" ? popupRoot.glassStroke : "transparent"
             shadowColor: "transparent"
             devicePixelRatio: popupWindow.devicePixelRatio
-            surfaceOpacity: popupRoot.currentPage === "bluetooth" ? 0.82 : 0
+            surfaceOpacity: popupRoot.currentPage !== "main" ? 0.82 : 0
             openRevealPause: popupRoot.currentPage === "bluetooth" ? 85 : 20
             openRevealDuration: popupRoot.currentPage === "bluetooth" ? 280 : 200
             openContentDelay: popupRoot.currentPage === "bluetooth" ? 60 : 20
@@ -869,7 +888,7 @@ Item {
                     anchors.top: parent.top
                     sourceComponent: popupRoot.currentPage === "bluetooth"
                         ? bluetoothPageComponent
-                        : mainPageComponent
+                        : (popupRoot.currentPage === "mihomo" ? mihomoPageComponent : mainPageComponent)
                 }
             }
         }

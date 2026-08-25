@@ -58,6 +58,12 @@ ShellRoot {
     property string fluentDarkIconDir: ""
     property string fluentBaseIconDir: ""
     property var trayMenuController: null
+    property bool calendarOpen: false
+    property var calendarScreen: null
+    property bool calendarChildOpening: false
+    property bool calendarChildActive: false
+
+    signal calendarChildReleased()
 
     property bool wifiEnabled: true
     property bool bluetoothEnabled: false
@@ -2651,6 +2657,40 @@ ShellRoot {
         detachedRunner.startDetached();
     }
 
+    function hasDankCalendarWindow() {
+        const model = ToplevelManager.toplevels;
+        if (!model || !model.values)
+            return false;
+        for (const toplevel of model.values) {
+            if (toplevel.appId === "com.danklinux.dankcalendar")
+                return true;
+        }
+        return false;
+    }
+
+    function toggleCalendar(screen) {
+        if (calendarOpen && calendarScreen === screen) {
+            requestCalendarClose();
+            return;
+        }
+        calendarScreen = screen;
+        calendarOpen = true;
+    }
+
+    function requestCalendarClose(force) {
+        if (!force && (calendarChildOpening || calendarChildActive))
+            return false;
+        calendarOpen = false;
+        calendarScreen = null;
+        return true;
+    }
+
+    function beginCalendarChild() {
+        calendarChildOpening = true;
+        calendarChildLaunchTimeout.restart();
+        requestCalendarClose(true);
+    }
+
     function refreshControlPanelStatus() {
         controlPanelStatusPoll.refresh();
     }
@@ -3451,6 +3491,9 @@ ShellRoot {
             required property var modelData
             property bool islandExpanded: false
             property real islandCurrentHeight: 38
+            readonly property bool calendarVisible: root.calendarOpen && root.calendarScreen === modelData
+            property bool calendarPanelPresented: false
+            property real calendarProgress: 0
             readonly property real fullSectionSpacing: 9.5
             readonly property real compactSectionSpacing: 5
             readonly property real fullLeftWidth: 10
@@ -3474,12 +3517,30 @@ ShellRoot {
                 + notificationTrigger.implicitWidth
                 + systemTrailingSpacer.implicitWidth
             readonly property bool supplementaryInfoVisible: contentRoot.width
-                >= centerSection.width
+                >= (calendarPanelPresented ? 520 : 448)
                     + 2 * rightSection.centerGap
                     + 2 * Math.max(fullLeftWidth, fullRightWidth)
             readonly property real sectionSpacing: supplementaryInfoVisible
                 ? fullSectionSpacing
                 : compactSectionSpacing
+
+            onCalendarVisibleChanged: {
+                if (calendarVisible) {
+                    calendarPanelCloseTimer.stop();
+                    calendarPanelPresented = true;
+                    Qt.callLater(() => calendarProgress = 1);
+                } else if (calendarPanelPresented) {
+                    calendarProgress = 0;
+                    calendarPanelCloseTimer.restart();
+                }
+            }
+
+            Behavior on calendarProgress {
+                NumberAnimation {
+                    duration: 210
+                    easing.type: Easing.OutCubic
+                }
+            }
 
             screen: modelData
 
@@ -3490,16 +3551,22 @@ ShellRoot {
             anchors.left: true
             anchors.right: true
 
-            implicitHeight: 500
+            implicitHeight: Math.min(modelData.height, 820)
             exclusiveZone: 58
+            focusable: false
             color: "transparent"
             surfaceFormat.opaque: false
             margins.bottom: 10
+            WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
             mask: Region {
                 item: topBarMask
 
                 Region {
                     item: centerSection
+                }
+
+                Region {
+                    item: calendarDismissLayer
                 }
             }
 
@@ -3517,6 +3584,36 @@ ShellRoot {
                 onTriggered: barWindow.islandExpanded = false
             }
 
+            Timer {
+                id: calendarLeaveTimer
+
+                interval: 220
+                repeat: false
+                onTriggered: {
+                    if (barWindow.calendarVisible
+                            && !calendarPanel.pointerInside
+                            && !root.calendarChildOpening
+                            && !root.calendarChildActive)
+                        root.requestCalendarClose();
+                }
+            }
+
+            Timer {
+                id: calendarPanelCloseTimer
+
+                interval: 210
+                repeat: false
+                onTriggered: barWindow.calendarPanelPresented = false
+            }
+
+            Connections {
+                target: root
+                function onCalendarChildReleased() {
+                    if (barWindow.calendarVisible && !calendarPanel.pointerInside)
+                        calendarLeaveTimer.restart();
+                }
+            }
+
             Item {
                 id: contentRoot
 
@@ -3529,6 +3626,17 @@ ShellRoot {
                     anchors.right: parent.right
                     anchors.top: parent.top
                     height: 58
+                }
+
+                MouseArea {
+                    id: calendarDismissLayer
+
+                    z: 45
+                    width: parent.width
+                    height: barWindow.calendarVisible ? parent.height : 0
+                    anchors.top: parent.top
+                    enabled: barWindow.calendarVisible
+                    onClicked: root.requestCalendarClose()
                 }
 
                 Row {
@@ -3596,8 +3704,7 @@ ShellRoot {
                         id: performancePill
 
                         shellRoot: root
-                        visible: barWindow.supplementaryInfoVisible
-                        width: visible ? implicitWidth : 0
+                        visible: true
                         TextModule {
                             id: cpuTrigger
 
@@ -3633,63 +3740,136 @@ ShellRoot {
 
                 }
 
-                DynamicIsland {
+                Rectangle {
                     id: centerSection
-                    shellRoot: root
+
+                    readonly property real attachedCenterOffset: barWindow.calendarPanelPresented ? 0 : dynamicIsland.attachedCenterOffset
+                    width: barWindow.calendarVisible ? calendarPanel.width : dynamicIsland.width
+                    height: barWindow.calendarVisible ? calendarPanel.height : dynamicIsland.height
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.horizontalCenterOffset: centerSection.attachedCenterOffset
                     anchors.top: parent.top
                     anchors.topMargin: 10
-                    now: root.now
-                    mediaAvailable: root.mediaAvailable
-                    mediaPlaying: root.mediaPlaying
-                    mediaTitle: root.mediaTitle
-                    mediaArtist: root.mediaArtist
-                    mediaPlayerName: root.mediaPlayerName
-                    mediaArtUrl: root.mediaArtUrl
-                    mediaPositionSeconds: root.mediaPositionSeconds
-                    mediaLengthSeconds: root.mediaLengthSeconds
-                    spectrumValues: root.audioSpectrumValues
-                    agentSessions: root.agentIslandSessions
-                    agentPending: root.agentIslandPending
-                    agentPendingCount: root.agentIslandPendingCount
+                    z: 50
+                    radius: barWindow.calendarVisible ? 30 : 24
+                    color: barWindow.calendarProgress > 0.001 ? root.moduleBackground : "transparent"
+                    border.width: barWindow.calendarProgress > 0.001 ? 1 : 0
+                    border.color: root.withAlpha(root.primaryText, root.darkMode ? 0.11 : 0.09)
+                    antialiasing: true
+                    clip: true
 
-                    onExpandedChanged: {
-                        if (expanded) {
-                            islandCollapseTimer.stop();
-                            barWindow.islandExpanded = true;
-                        } else {
-                            islandCollapseTimer.restart();
+                    Behavior on width {
+                        enabled: barWindow.calendarPanelPresented
+                        NumberAnimation { duration: 210; easing.type: Easing.OutCubic }
+                    }
+
+                    Behavior on height {
+                        enabled: barWindow.calendarPanelPresented
+                        NumberAnimation { duration: 210; easing.type: Easing.OutCubic }
+                    }
+
+                    Behavior on radius {
+                        enabled: barWindow.calendarPanelPresented
+                        NumberAnimation { duration: 210; easing.type: Easing.OutCubic }
+                    }
+
+                    CalendarBridge {
+                        id: calendarBridge
+                        weekStart: new Date()
+                        onChildWindowRequested: root.beginCalendarChild()
+                    }
+
+                    DynamicIsland {
+                        id: dynamicIsland
+
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        shellRoot: root
+                        calendarOpen: barWindow.calendarPanelPresented
+                        visible: opacity > 0.01
+                        opacity: 1 - barWindow.calendarProgress
+                        now: root.now
+                        mediaAvailable: root.mediaAvailable
+                        mediaPlaying: root.mediaPlaying
+                        mediaTitle: root.mediaTitle
+                        mediaArtist: root.mediaArtist
+                        mediaPlayerName: root.mediaPlayerName
+                        mediaArtUrl: root.mediaArtUrl
+                        mediaPositionSeconds: root.mediaPositionSeconds
+                        mediaLengthSeconds: root.mediaLengthSeconds
+                        spectrumValues: root.audioSpectrumValues
+                        agentSessions: root.agentIslandSessions
+                        agentPending: root.agentIslandPending
+                        agentPendingCount: root.agentIslandPendingCount
+
+                        onExpandedChanged: {
+                            if (expanded) {
+                                islandCollapseTimer.stop();
+                                barWindow.islandExpanded = true;
+                            } else {
+                                islandCollapseTimer.restart();
+                            }
+                        }
+                        onHeightChanged: barWindow.islandCurrentHeight = height
+                        onLockClicked: root.runDetached(["hyprlock"])
+                        onCalendarClicked: root.toggleCalendar(barWindow.modelData)
+                        onPowerClicked: root.runDetached(["wlogout", "--protocol", "layer-shell", "-b", "5"])
+                        onSeekRequested: function(positionSeconds) {
+                            root.seekMedia(positionSeconds);
+                        }
+                        onAppFocusRequested: root.focusMediaApp()
+                        onAgentFocusRequested: function(sessionId) {
+                            root.focusAgentIslandSession(sessionId);
+                        }
+                        onAgentApproveRequested: function(requestId) {
+                            root.agentIslandAction("approve", requestId, "");
+                        }
+                        onAgentDenyRequested: function(requestId) {
+                            root.agentIslandAction("deny", requestId, "");
+                        }
+                        onAgentReplyRequested: function(requestId) {
+                            root.agentIslandAction("reply", requestId, "");
+                        }
+                        onAgentAnswerRequested: function(requestId, answer) {
+                            root.agentIslandAction("answer", requestId, answer);
+                        }
+                        onPreviousClicked: root.runDetached(["playerctl", "previous"])
+                        onPlayPauseClicked: {
+                            root.mediaPlaying = !root.mediaPlaying;
+                            root.runDetached(["playerctl", "play-pause"]);
+                        }
+                        onNextClicked: root.runDetached(["playerctl", "next"])
+                    }
+
+                    WeekCalendarPanel {
+                        id: calendarPanel
+
+                        anchors.top: parent.top
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: Math.min(520, contentRoot.width - 48)
+                        height: Math.min(500, barWindow.height - 78)
+                        shellRoot: root
+                        bridge: calendarBridge
+                        embeddedSurface: true
+                        visible: barWindow.calendarPanelPresented
+                        opacity: Math.max(0, Math.min(1, (barWindow.calendarProgress - 0.16) / 0.84))
+                        transformOrigin: Item.Top
+
+                        onPointerInsideChanged: {
+                            if (!barWindow.calendarVisible)
+                                return;
+                            if (pointerInside) {
+                                calendarLeaveTimer.stop();
+                            } else if (!root.calendarChildOpening && !root.calendarChildActive) {
+                                calendarLeaveTimer.restart();
+                            }
+                        }
+                        onCloseRequested: root.requestCalendarClose()
+                        onExpandRequested: {
+                            root.requestCalendarClose(true);
+                            calendarBridge.showFullApp();
                         }
                     }
-                    onHeightChanged: barWindow.islandCurrentHeight = height
-                    onLockClicked: root.runDetached(["hyprlock"])
-                    onPowerClicked: root.runDetached(["wlogout", "--protocol", "layer-shell", "-b", "5"])
-                    onSeekRequested: function(positionSeconds) {
-                        root.seekMedia(positionSeconds);
-                    }
-                    onAppFocusRequested: root.focusMediaApp()
-                    onAgentFocusRequested: function(sessionId) {
-                        root.focusAgentIslandSession(sessionId);
-                    }
-                    onAgentApproveRequested: function(requestId) {
-                        root.agentIslandAction("approve", requestId, "");
-                    }
-                    onAgentDenyRequested: function(requestId) {
-                        root.agentIslandAction("deny", requestId, "");
-                    }
-                    onAgentReplyRequested: function(requestId) {
-                        root.agentIslandAction("reply", requestId, "");
-                    }
-                    onAgentAnswerRequested: function(requestId, answer) {
-                        root.agentIslandAction("answer", requestId, answer);
-                    }
-                    onPreviousClicked: root.runDetached(["playerctl", "previous"])
-                    onPlayPauseClicked: {
-                        root.mediaPlaying = !root.mediaPlaying;
-                        root.runDetached(["playerctl", "play-pause"]);
-                    }
-                    onNextClicked: root.runDetached(["playerctl", "next"])
                 }
 
                 Rectangle {
@@ -3701,13 +3881,11 @@ ShellRoot {
                     anchors.top: parent.top
                     anchors.topMargin: 10
                     x: leftSection.x + leftSection.width + barWindow.sectionSpacing
-                    width: barWindow.supplementaryInfoVisible
-                        ? Math.min(windowSection.availableWidth, Math.max(windowSection.minimumWidth, windowLabel.implicitWidth + 24))
-                        : 0
+                    width: Math.min(windowSection.availableWidth, Math.max(windowSection.minimumWidth, windowLabel.implicitWidth + 24))
                     height: 38 
                     radius: 19
                     color: root.moduleBackground
-                    visible: barWindow.supplementaryInfoVisible && root.activeWindowTitle.length > 0 && width > 0
+                    visible: root.activeWindowTitle.length > 0 && width > 0
 
                     Text {
                         id: windowLabel
@@ -4072,6 +4250,40 @@ ShellRoot {
         interval: 350
         repeat: false
         onTriggered: themePoll.refresh()
+    }
+
+    Timer {
+        id: calendarChildPoll
+
+        interval: 180
+        repeat: true
+        running: root.calendarOpen || root.calendarChildOpening || root.calendarChildActive
+        onTriggered: {
+            const active = root.hasDankCalendarWindow();
+            if (active) {
+                root.calendarChildOpening = false;
+                root.calendarChildActive = true;
+                calendarChildLaunchTimeout.stop();
+                return;
+            }
+            if (root.calendarChildActive) {
+                root.calendarChildActive = false;
+                root.calendarChildReleased();
+            }
+        }
+    }
+
+    Timer {
+        id: calendarChildLaunchTimeout
+
+        interval: 2600
+        repeat: false
+        onTriggered: {
+            if (!root.hasDankCalendarWindow()) {
+                root.calendarChildOpening = false;
+                root.calendarChildReleased();
+            }
+        }
     }
 
     Timer {

@@ -7,6 +7,7 @@ local function lr(spec)
 end
 
 wr({ name = "float-pavucontrol", match = { class = "^(pavucontrol)$" }, float = true })
+wr({ name = "float-dankcalendar", match = { class = "^(com\\.danklinux\\.dankcalendar)$" }, float = true, center = true, animation = "popup" })
 wr({ name = "float-blueman", match = { class = "^(blueman-manager)$" }, float = true })
 wr({ name = "float-nm-connection-editor", match = { class = "^(nm-connection-editor)$" }, float = true })
 wr({ name = "float-showmethekey", match = { class = "^(one\\.alynx\\.showmethekey)$" }, float = true })

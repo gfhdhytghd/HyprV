@@ -681,6 +681,7 @@ WifiIndicator {
                     visible: root.networks.length > 0
                     clip: true
                     interactive: contentHeight > height
+                    flickableDirection: Flickable.VerticalFlick
                     boundsBehavior: Flickable.StopAtBounds
 
                     Column {
@@ -943,6 +944,22 @@ WifiIndicator {
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.NoButton
+
+                        onWheel: function(wheel) {
+                            if (!networkList.interactive) {
+                                return;
+                            }
+                            const pixelStep = wheel.pixelDelta.y;
+                            const scrollStep = pixelStep !== 0 ? pixelStep : wheel.angleDelta.y / 2;
+                            const maximumY = Math.max(0, networkList.contentHeight - networkList.height);
+                            networkList.contentY = Math.max(0, Math.min(maximumY, networkList.contentY - scrollStep));
+                            wheel.accepted = true;
                         }
                     }
                     }

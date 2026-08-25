@@ -19,8 +19,10 @@ Item {
     property var agentSessions: []
     property var agentPending: null
     property int agentPendingCount: 0
+    property bool calendarOpen: false
 
     signal lockClicked()
+    signal calendarClicked()
     signal powerClicked()
     signal previousClicked()
     signal playPauseClicked()
@@ -36,6 +38,7 @@ Item {
     property bool seeking: false
     property real seekPreviewSeconds: 0
     property string hoverTarget: ""
+    property bool appHoverActive: false
     property bool keepPrimaryCollapsedForMusic: false
 
     readonly property bool hasMusicContent: mediaAvailable && (
@@ -49,8 +52,8 @@ Item {
     readonly property bool musicActive: hasMusicContent && !mediaManuallyHidden
     readonly property bool musicPrimaryActive: musicActive && !agentActive
     readonly property bool dualIslandActive: agentActive && musicActive
-    readonly property bool agentExpanded: agentActive && hoverTarget === "agent" && islandHover.hovered
-    readonly property bool musicExpanded: musicActive && hoverTarget === "music" && islandHover.hovered
+    readonly property bool agentExpanded: !calendarOpen && appHoverActive && agentActive && hoverTarget === "agent" && islandHover.hovered
+    readonly property bool musicExpanded: !calendarOpen && appHoverActive && musicActive && hoverTarget === "music" && islandHover.hovered
     readonly property bool expanded: agentExpanded || musicExpanded
     readonly property bool primaryFrameCollapsedForMusic: dualIslandActive && keepPrimaryCollapsedForMusic
     readonly property real swipeThreshold: 34
@@ -112,6 +115,9 @@ Item {
         ? (agentExpanded ? agentExpandedWidth : (musicExpanded ? expandedWidth : agentCompactWidth))
         : (musicExpanded ? expandedWidth : (musicPrimaryActive ? compactWidth : idleRow.implicitWidth))
     readonly property real targetHeight: agentExpanded ? agentExpandedHeight : (musicExpanded ? expandedHeight : collapsedHeight)
+    readonly property real collapsedClockCenterX: agentActive
+        ? (dualIslandActive ? agentMinimalClockCenterX : agentCompactClockCenterX)
+        : width / 2
     property real attachedCenterOffset: agentActive
         ? (expanded
             ? 0
@@ -322,6 +328,11 @@ Item {
         if (!hasMusicContent) {
             mediaManuallyHidden = false;
         }
+    }
+
+    onCalendarOpenChanged: if (calendarOpen) {
+        appHoverActive = false;
+        hoverTarget = "";
     }
 
     onMusicExpandedChanged: {
@@ -1597,13 +1608,69 @@ Item {
         margin: island.hoverBridgeMargin
         onHoveredChanged: {
             if (!hovered) {
+                island.appHoverActive = false;
                 island.hoverTarget = "";
-                return;
             }
-            if (island.hoverTarget.length === 0 && !island.dualIslandActive) {
-                island.hoverTarget = island.agentActive ? "agent" : (island.musicActive ? "music" : "");
-                return;
+        }
+    }
+
+    Item {
+        id: sideHotspots
+
+        z: 99
+        anchors.fill: parent
+        visible: !island.expanded && !island.calendarOpen
+
+        MouseArea {
+            anchors.left: parent.left
+            anchors.top: parent.top
+            width: Math.max(0, clockHotspot.x)
+            height: island.collapsedHeight
+            hoverEnabled: true
+            acceptedButtons: Qt.NoButton
+            onEntered: {
+                island.appHoverActive = true;
+                island.hoverTarget = island.dualIslandActive
+                    ? island.dualCompactHoverTarget(mouseX)
+                    : (island.agentActive ? "agent" : (island.musicActive ? "music" : ""));
             }
+        }
+
+        MouseArea {
+            anchors.right: parent.right
+            anchors.top: parent.top
+            width: Math.max(0, island.width - (clockHotspot.x + clockHotspot.width))
+            height: island.collapsedHeight
+            hoverEnabled: true
+            acceptedButtons: Qt.NoButton
+            onEntered: {
+                island.appHoverActive = true;
+                island.hoverTarget = island.dualIslandActive ? "music" : (island.agentActive ? "agent" : (island.musicActive ? "music" : ""));
+            }
+        }
+    }
+
+    Item {
+        id: clockHotspot
+
+        z: 100
+        x: island.collapsedClockCenterX - width / 2
+        y: 0
+        width: 58
+        height: island.collapsedHeight
+        visible: !island.expanded && !island.calendarOpen
+
+        MouseArea {
+            id: clockMouse
+
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.ArrowCursor
+            onEntered: {
+                island.appHoverActive = false;
+                island.hoverTarget = "";
+            }
+            onClicked: island.calendarClicked()
         }
     }
 
@@ -1611,7 +1678,7 @@ Item {
         id: islandSwipe
 
         target: null
-        xAxis.enabled: island.musicActive && !island.seeking
+        xAxis.enabled: !island.calendarOpen && island.musicActive && !island.seeking
         yAxis.enabled: false
 
         onActiveChanged: {
