@@ -62,8 +62,8 @@ session_slot("wechat", { class = "^(wechat)$" }, "2", 0.5)
 
 -- Workspace 3: Gmail / Outlook / Feishu in three horizontal columns.
 session_slot("gmail", { class = "^(chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default)$" }, "3", 0.45)
-session_slot("outlook", { class = "^(msedge-_faolnafnngnfdaknnbpnkhgohbobgegn-Profile_1)$" }, "3", 0.45)
-session_slot("feishu", { title = "^(飞书)$" }, "3", 0.45)
+session_slot("outlook", { class = "^(chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default)$" }, "3", 0.45)
+session_slot("feishu", { class = "^(feishu|bytedance-feishu-stable)$" }, "3", 0.45)
 
 -- Workspaces 4-6: one or two full-height application columns.
 session_slot("zen", { class = "^(zen)$" }, "4", 0.85)

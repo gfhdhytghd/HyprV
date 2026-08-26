@@ -21,7 +21,7 @@ launch_if_missing() {
     return 0
   fi
 
-  "$@" >/dev/null 2>&1 &
+  setsid -f -- "$@" >/dev/null 2>&1
 }
 
 wait_for_window() {
@@ -38,33 +38,126 @@ wait_for_window() {
   return 1
 }
 
-# Let the portal, keyring, status notifier, and desktop shell settle first.
-sleep 3
+ensure_window() {
+  local name="$1"
+  local jq_filter="$2"
+  shift 2
 
-# Start every application first. Window rules place them silently while the
-# login-dependent workspace 2 clients settle in parallel.
-launch_if_missing 'any(.[]; .class == "discord")' discord
-launch_if_missing 'any(.[]; .class == "QQ")' linuxqq
-launch_if_missing 'any(.[]; .class == "org.telegram.desktop")' Telegram
+  launch_if_missing "$jq_filter" "$@"
+  if wait_for_window "$jq_filter" 30; then
+    log "$name window is ready"
+    return 0
+  fi
+
+  log "$name did not create a window; retrying"
+  launch_if_missing "$jq_filter" "$@"
+  if wait_for_window "$jq_filter" 30; then
+    log "$name window is ready after retry"
+    return 0
+  fi
+
+  log "$name failed to create a window"
+  return 1
+}
+
+activate_status_notifier() {
+  local wanted_id="$1"
+  local item service path item_id
+
+  while read -r item; do
+    [[ "$item" == */* ]] || continue
+    service="${item%%/*}"
+    path="/${item#*/}"
+    item_id="$(busctl --user get-property "$service" "$path" \
+      org.kde.StatusNotifierItem Id 2>/dev/null || true)"
+    if [[ "$item_id" == "s \"$wanted_id\"" ]]; then
+      busctl --user call "$service" "$path" \
+        org.kde.StatusNotifierItem Activate ii 0 0 >/dev/null 2>&1 || true
+      return 0
+    fi
+  done < <(
+    busctl --user get-property org.kde.StatusNotifierWatcher \
+      /StatusNotifierWatcher org.kde.StatusNotifierWatcher \
+      RegisteredStatusNotifierItems 2>/dev/null | tr ' ' '\n' | tr -d '"'
+  )
+
+  return 1
+}
+
+activate_status_notifier_until_window() {
+  local notifier_id="$1"
+  local jq_filter="$2"
+
+  for _ in $(seq 1 30); do
+    has_window "$jq_filter" && return 0
+    activate_status_notifier "$notifier_id" || true
+    sleep 1
+  done
+
+  return 1
+}
+
+wait_for_desktop_services() {
+  for _ in $(seq 1 30); do
+    if hyprctl -j monitors >/dev/null 2>&1 &&
+        busctl --user status org.freedesktop.portal.Desktop >/dev/null 2>&1 &&
+        busctl --user status org.freedesktop.secrets >/dev/null 2>&1 &&
+        busctl --user status org.kde.StatusNotifierWatcher >/dev/null 2>&1; then
+      # Registration can precede the backends becoming usable by a few seconds.
+      sleep 5
+      return 0
+    fi
+    sleep 1
+  done
+
+  log "desktop services did not all become ready; continuing cautiously"
+}
+
+# Avoid creating headless single-instance applications while the login
+# services they depend on are still racing to initialize.
+wait_for_desktop_services
+
+# Start and verify every application in parallel. Window rules place them
+# silently, and each missing window gets one independent retry.
+ensure_window discord 'any(.[]; .class == "discord")' discord &
+ensure_window qq 'any(.[]; .class == "QQ")' linuxqq &
+ensure_window telegram 'any(.[]; .class == "org.telegram.desktop")' Telegram &
 
 wechat_started=0
 if ! has_window 'any(.[]; .class == "wechat")'; then
-  wechat >/dev/null 2>&1 &
   wechat_started=1
 fi
 
+ensure_window wechat 'any(.[]; .class == "wechat")' wechat &
+
 # Workspace 3.
-launch_if_missing 'any(.[]; .class == "chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default")' \
-  gtk-launch chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default
-launch_if_missing 'any(.[]; .class == "msedge-_faolnafnngnfdaknnbpnkhgohbobgegn-Profile_1")' \
-  gtk-launch msedge-faolnafnngnfdaknnbpnkhgohbobgegn-Profile_1
-launch_if_missing 'any(.[]; .title == "飞书")' feishu
+ensure_window gmail 'any(.[]; .class == "chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default")' \
+  gtk-launch chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default &
+ensure_window outlook 'any(.[]; .class == "chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default")' \
+  gtk-launch chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default &
+
+# Feishu is particularly sensitive to the portal/keyring startup burst.
+(sleep 10; ensure_window feishu \
+  'any(.[]; .class == "feishu" or .class == "bytedance-feishu-stable")' feishu) &
 
 # Workspaces 4-6.
-launch_if_missing 'any(.[]; .class == "zen")' zen-browser
-launch_if_missing 'any(.[]; .class == "Chatgpt")' chatgpt
-launch_if_missing 'any(.[]; .class == "code-oss")' code-oss
-launch_if_missing 'any(.[]; .class == "Cider")' cider
+ensure_window zen 'any(.[]; .class == "zen")' zen-browser &
+# ChatGPT and Code share the Codex state database. Starting them together can
+# make one fail its SQLite initialization, so only this dependent pair is
+# sequenced while every other application continues in parallel.
+(ensure_window chatgpt 'any(.[]; .class == "Chatgpt")' chatgpt
+ ensure_window code-oss 'any(.[]; .class == "code-oss")' code-oss) &
+ensure_window cider 'any(.[]; .class == "Cider")' cider \
+  --enable-features=UseOzonePlatform \
+  --ozone-platform=wayland \
+  --enable-wayland-ime &
+
+# Telegram and WeChat can restore directly into their tray-only state. Activate
+# their notifier items to request the main windows without changing workspace.
+(sleep 5; activate_status_notifier_until_window TelegramDesktop \
+  'any(.[]; .class == "org.telegram.desktop")') &
+(sleep 5; activate_status_notifier_until_window wechat \
+  'any(.[]; .class == "wechat")') &
 
 # WeChat's remembered-account screen has the login button focused by default.
 # XSendEvent targets the XWayland client directly without activating workspace 2.
@@ -82,14 +175,10 @@ if ((wechat_started)); then
   sleep 5
 fi
 
+# Wait for the parallel verification jobs before arranging any workspace.
+wait || true
+
 # Discord and QQ replace their updater/login surfaces after automatic login.
-# These waits happen after every application has already been launched.
-wait_for_window '
-  any(.[]; .class == "discord") and
-  any(.[]; .class == "QQ") and
-  any(.[]; .class == "org.telegram.desktop") and
-  any(.[]; .class == "wechat")
-' 30 || true
 sleep 12
 
 # Assemble the hidden scrolling workspaces after every launch has settled.
@@ -119,8 +208,9 @@ hyprctl eval '
   if ws3 then
     local ordered = {
       hl.get_windows({ workspace = ws3, class = "chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default" })[1],
-      hl.get_windows({ workspace = ws3, class = "msedge-_faolnafnngnfdaknnbpnkhgohbobgegn-Profile_1" })[1],
-      hl.get_windows({ workspace = ws3, title = "飞书" })[1],
+      hl.get_windows({ workspace = ws3, class = "chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default" })[1],
+      hl.get_windows({ workspace = ws3, class = "feishu" })[1] or
+        hl.get_windows({ workspace = ws3, class = "bytedance-feishu-stable" })[1],
     }
 
     for target = 0, 2 do
@@ -145,4 +235,4 @@ hyprctl eval '
   end
 ' >/dev/null 2>&1 || log "could not assemble scrolling workspaces"
 
-log "desktop applications launched with silent workspace rules"
+log "desktop application restore finished"
