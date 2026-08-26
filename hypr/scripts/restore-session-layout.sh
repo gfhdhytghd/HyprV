@@ -240,10 +240,10 @@ hyprctl eval '
   local ws2 = hl.get_workspace("2")
   if ws2 then
     local ordered = {
-      hl.get_windows({ workspace = ws2, class = "QQ" })[1],
-      hl.get_windows({ workspace = ws2, class = "wechat" })[1],
       hl.get_windows({ workspace = ws2, class = "discord" })[1],
+      hl.get_windows({ workspace = ws2, class = "QQ" })[1],
       hl.get_windows({ workspace = ws2, class = "org.telegram.desktop" })[1],
+      hl.get_windows({ workspace = ws2, class = "wechat" })[1],
     }
 
     if ordered[1] and ordered[2] and ordered[3] and ordered[4] then
@@ -277,6 +277,7 @@ hyprctl eval '
           end
         end
 
+        -- Discord/QQ | Telegram/WeChat, with each pair ordered top to bottom.
         hl.dispatch(hl.dsp.window.move({ direction = "left", window = ordered[2] }))
         hl.dispatch(hl.dsp.window.move({ direction = "left", window = ordered[4] }))
       end
