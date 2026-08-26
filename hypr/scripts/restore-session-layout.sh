@@ -113,9 +113,61 @@ wait_for_desktop_services() {
   log "desktop services did not all become ready; continuing cautiously"
 }
 
+install_restore_rules() {
+  hyprctl eval '
+    if _G.hyprv_session_restore_rules then
+      for _, rule in ipairs(_G.hyprv_session_restore_rules) do
+        rule:set_enabled(false)
+      end
+    end
+
+    local function slot(name, match, workspace, width)
+      return hl.window_rule({
+        name = "session-restore-" .. name,
+        match = match,
+        workspace = workspace .. " silent",
+        no_initial_focus = true,
+        tile = true,
+        scrolling_width = width,
+      })
+    end
+
+    _G.hyprv_session_restore_rules = {
+      slot("discord", { class = "^(discord)$" }, "2", 0.5),
+      slot("qq", { class = "^(QQ)$" }, "2", 0.5),
+      slot("telegram", { class = "^(org\\.telegram\\.desktop)$" }, "2", 0.5),
+      slot("wechat", { class = "^(wechat)$" }, "2", 0.5),
+      slot("gmail", { class = "^(chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default)$" }, "3", 0.45),
+      slot("outlook", { class = "^(chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default)$" }, "3", 0.45),
+      slot("feishu-class", { class = "^(feishu|bytedance-feishu-stable)$" }, "3", 0.45),
+      slot("feishu-title", { title = "^(飞书)$" }, "3", 0.45),
+      slot("zen", { class = "^(zen)$" }, "4", 0.85),
+      slot("chatgpt", { class = "^(Chatgpt)$" }, "5", 0.85),
+      slot("code-oss", { class = "^(code-oss)$" }, "5", 0.85),
+      slot("cider", { class = "^(Cider)$" }, "6", 0.85),
+    }
+  ' >/dev/null 2>&1
+}
+
+remove_restore_rules() {
+  hyprctl eval '
+    if _G.hyprv_session_restore_rules then
+      for _, rule in ipairs(_G.hyprv_session_restore_rules) do
+        rule:set_enabled(false)
+      end
+      _G.hyprv_session_restore_rules = nil
+    end
+  ' >/dev/null 2>&1 || true
+}
+
 # Avoid creating headless single-instance applications while the login
 # services they depend on are still racing to initialize.
 wait_for_desktop_services
+
+if ! install_restore_rules; then
+  log "could not install temporary session restore rules"
+fi
+trap remove_restore_rules EXIT
 
 # Start and verify every application in parallel. Window rules place them
 # silently, and each missing window gets one independent retry.
@@ -138,7 +190,7 @@ ensure_window outlook 'any(.[]; .class == "chrome-faolnafnngnfdaknnbpnkhgohbobge
 
 # Feishu is particularly sensitive to the portal/keyring startup burst.
 (sleep 10; ensure_window feishu \
-  'any(.[]; .class == "feishu" or .class == "bytedance-feishu-stable")' feishu) &
+  'any(.[]; .class == "feishu" or .class == "bytedance-feishu-stable" or .title == "飞书")' feishu) &
 
 # Workspaces 4-6.
 ensure_window zen 'any(.[]; .class == "zen")' zen-browser &
@@ -186,21 +238,48 @@ sleep 12
 hyprctl eval '
   local original = hl.get_active_workspace()
   local ws2 = hl.get_workspace("2")
-
   if ws2 then
-    local discord = hl.get_windows({ workspace = ws2, class = "discord" })[1]
-    local qq = hl.get_windows({ workspace = ws2, class = "QQ" })[1]
-    local telegram = hl.get_windows({ workspace = ws2, class = "org.telegram.desktop" })[1]
-    local wechat = hl.get_windows({ workspace = ws2, class = "wechat" })[1]
+    local ordered = {
+      hl.get_windows({ workspace = ws2, class = "QQ" })[1],
+      hl.get_windows({ workspace = ws2, class = "wechat" })[1],
+      hl.get_windows({ workspace = ws2, class = "discord" })[1],
+      hl.get_windows({ workspace = ws2, class = "org.telegram.desktop" })[1],
+    }
 
-    if discord and qq and discord.layout and qq.layout and
-        discord.layout.column.index ~= qq.layout.column.index then
-      hl.dispatch(hl.dsp.window.move({ direction = "left", window = qq }))
-    end
+    if ordered[1] and ordered[2] and ordered[3] and ordered[4] then
+      local by_index = {}
+      local current_index = {}
+      local independent_columns = true
 
-    if telegram and wechat and telegram.layout and wechat.layout and
-        telegram.layout.column.index ~= wechat.layout.column.index then
-      hl.dispatch(hl.dsp.window.move({ direction = "left", window = wechat }))
+      for _, window in ipairs(ordered) do
+        if not window.layout or #window.layout.column.windows ~= 1 then
+          independent_columns = false
+          break
+        end
+        local index = window.layout.column.index
+        by_index[index] = window
+        current_index[window] = index
+      end
+
+      if independent_columns then
+        -- Simulate each swap locally because Lua layout metadata is refreshed
+        -- only after this eval returns.
+        for target = 0, 3 do
+          local wanted = ordered[target + 1]
+          local source = current_index[wanted]
+          if source ~= target then
+            local occupying = by_index[target]
+            hl.dispatch(hl.dsp.window.swap({ window = wanted, other = occupying }))
+            by_index[source] = occupying
+            current_index[occupying] = source
+            by_index[target] = wanted
+            current_index[wanted] = target
+          end
+        end
+
+        hl.dispatch(hl.dsp.window.move({ direction = "left", window = ordered[2] }))
+        hl.dispatch(hl.dsp.window.move({ direction = "left", window = ordered[4] }))
+      end
     end
   end
 
@@ -210,21 +289,31 @@ hyprctl eval '
       hl.get_windows({ workspace = ws3, class = "chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default" })[1],
       hl.get_windows({ workspace = ws3, class = "chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default" })[1],
       hl.get_windows({ workspace = ws3, class = "feishu" })[1] or
-        hl.get_windows({ workspace = ws3, class = "bytedance-feishu-stable" })[1],
+        hl.get_windows({ workspace = ws3, class = "bytedance-feishu-stable" })[1] or
+        hl.get_windows({ workspace = ws3, title = "飞书" })[1],
     }
 
-    for target = 0, 2 do
-      local wanted = ordered[target + 1]
-      if wanted and wanted.layout and wanted.layout.column.index ~= target then
-        local occupying
-        for _, candidate in ipairs(ordered) do
-          if candidate and candidate.layout and candidate.layout.column.index == target then
-            occupying = candidate
-            break
+    if ordered[1] and ordered[2] and ordered[3] then
+      local by_index = {}
+      local current_index = {}
+      for _, window in ipairs(ordered) do
+        local index = window.layout.column.index
+        by_index[index] = window
+        current_index[window] = index
+      end
+
+      for target = 0, 2 do
+        local wanted = ordered[target + 1]
+        local source = current_index[wanted]
+        if source ~= target then
+          local occupying = by_index[target]
+          if occupying then
+            hl.dispatch(hl.dsp.window.swap({ window = wanted, other = occupying }))
+            by_index[source] = occupying
+            current_index[occupying] = source
+            by_index[target] = wanted
+            current_index[wanted] = target
           end
-        end
-        if occupying then
-          hl.dispatch(hl.dsp.window.swap({ window = wanted, other = occupying }))
         end
       end
     end
