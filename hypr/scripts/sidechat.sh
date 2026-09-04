@@ -394,7 +394,15 @@ get_monitor_geometry_by_id() {
 
   hyprctl_json monitors | \
     jq_raw_quiet --arg mon_id "$mon_id" \
-      'first(.[] | select((.id | tostring) == $mon_id) | [.x, .y, .width, .height] | @tsv) // empty'
+      'first(
+         .[] | select((.id | tostring) == $mon_id) |
+         [
+           .x,
+           .y,
+           (if (.transform % 2) == 0 then (.width / .scale) else (.height / .scale) end | round),
+           (if (.transform % 2) == 0 then (.height / .scale) else (.width / .scale) end | round)
+         ] | @tsv
+       ) // empty'
 }
 
 get_active_workspace_field() {
@@ -529,16 +537,27 @@ apply_sidechat_geometry() {
     return 1
   fi
 
-  target_h=$((mon_h / 2 - SIDECHAT_HEIGHT_TRIM))
+  target_h=$((mon_h - SIDECHAT_HEIGHT_TRIM))
   if [[ $target_h -lt 1 ]]; then
     target_h=1
   fi
 
-  target_x=$((mon_x + (mon_w / 2) - SIDECHAT_WIDTH - SIDECHAT_RIGHT_MARGIN))
+  target_x=$((mon_x + mon_w - SIDECHAT_WIDTH - SIDECHAT_RIGHT_MARGIN))
   target_y=$((mon_y + SIDECHAT_TOP_MARGIN))
 
   resize_window_exact "$SIDECHAT_WIDTH" "$target_h" "$addr" || return 1
   move_window_exact "$target_x" "$target_y" "$addr"
+}
+
+reflow_sidechat() {
+  local addr
+
+  addr="$(get_sidechat_address)"
+  [[ -n "$addr" ]] || return 0
+  is_hidden_in_special_by_address "$addr" && return 0
+
+  apply_sidechat_geometry_on_own_monitor "$addr"
+  sync_visibility_state "$addr"
 }
 
 apply_sidechat_geometry_on_focused_monitor() {
@@ -723,6 +742,11 @@ main() {
     echo "无法获取锁，可能有其他实例在运行" >&2
     log_trace "main:lock_failed"
     exit 1
+  fi
+  if [[ ${1:-} == reflow ]]; then
+    cleanup_duplicate_sidechat_windows
+    reflow_sidechat
+    return 0
   fi
   if is_recent_trigger; then
     log_trace "main:debounced"

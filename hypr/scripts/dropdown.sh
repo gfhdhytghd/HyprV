@@ -200,6 +200,34 @@ focused_monitor_prop() {
     "first(.[] | select(.focused == true) | $jq_expr) // empty"
 }
 
+focused_monitor_geometry() {
+  hyprctl monitors -j 2>/dev/null | jq -r '
+    first(
+      .[] | select(.focused == true) |
+      [
+        .x,
+        .y,
+        (if (.transform % 2) == 0 then (.width / .scale) else (.height / .scale) end | round)
+      ] | @tsv
+    ) // empty
+  '
+}
+
+monitor_geometry_by_id() {
+  local mon_id=$1
+
+  hyprctl monitors -j 2>/dev/null | jq -r --arg mon_id "$mon_id" '
+    first(
+      .[] | select((.id | tostring) == $mon_id) |
+      [
+        .x,
+        .y,
+        (if (.transform % 2) == 0 then (.width / .scale) else (.height / .scale) end | round)
+      ] | @tsv
+    ) // empty
+  '
+}
+
 window_monitor_id() {
   window_prop "$1" '.monitor'
 }
@@ -296,9 +324,7 @@ move_to_target_position() {
     return 1
   fi
 
-  target_x="$(awk -v x="$mon_x" -v w="$mon_w" -v window_width="$WINDOW_WIDTH" 'BEGIN {
-    printf "%d\n", x + (w / 4) - (window_width / 2)
-  }')"
+  target_x=$((mon_x + (mon_w - WINDOW_WIDTH) / 2))
   if ! is_integer "$target_x"; then
     return 1
   fi
@@ -368,14 +394,14 @@ wait_for_dropdown() {
 show_dropdown() {
   local addr=$1
   local current_ws
+  local geometry
   local mon_x
   local mon_y
   local mon_w
 
   current_ws="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty')"
-  mon_x="$(focused_monitor_prop '.x')"
-  mon_y="$(focused_monitor_prop '.y')"
-  mon_w="$(focused_monitor_prop '.width')"
+  geometry="$(focused_monitor_geometry || true)"
+  IFS=$'\t' read -r mon_x mon_y mon_w <<< "$geometry"
 
   [[ -n "$current_ws" ]] || {
     echo "无法获取当前工作区" >&2
@@ -407,13 +433,13 @@ spawn_dropdown() {
   local mon_x
   local mon_y
   local mon_w
+  local geometry
 
   save_previous_focus
   rm -f "$TOGGLE_FILE"
 
-  mon_x="$(focused_monitor_prop '.x')"
-  mon_y="$(focused_monitor_prop '.y')"
-  mon_w="$(focused_monitor_prop '.width')"
+  geometry="$(focused_monitor_geometry || true)"
+  IFS=$'\t' read -r mon_x mon_y mon_w <<< "$geometry"
 
   nohup kitty --class "${APP_CLASS}" >/dev/null 2>&1 &
   pid=$!
@@ -438,10 +464,34 @@ spawn_dropdown() {
   touch "$TOGGLE_FILE"
 }
 
+reflow_dropdown() {
+  local addr mon_id geometry mon_x mon_y mon_w
+
+  addr="$(dropdown_address)"
+  [[ -n "$addr" ]] || return 0
+  is_hidden && return 0
+
+  mon_id="$(window_monitor_id "$addr")"
+  geometry="$(monitor_geometry_by_id "$mon_id" || true)"
+  IFS=$'\t' read -r mon_x mon_y mon_w <<< "$geometry"
+  if ! is_integer "$mon_x" || ! is_integer "$mon_y" || ! is_integer "$mon_w"; then
+    return 1
+  fi
+
+  ensure_window_floating "$addr" || true
+  ensure_window_size "$addr" || true
+  move_to_target_position "$addr" "$mon_x" "$mon_y" "$mon_w"
+}
+
 main() {
   local addr
 
   acquire_lock
+
+  if [[ ${1:-} == reflow ]]; then
+    reflow_dropdown
+    return 0
+  fi
 
   addr="$(dropdown_address)"
   if [[ -z "$addr" ]]; then
