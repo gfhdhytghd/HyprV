@@ -133,12 +133,12 @@ install_restore_rules() {
     end
 
     _G.hyprv_session_restore_rules = {
-      slot("thunderbird", { class = "(?i)^(org\\.mozilla\\.thunderbird|thunderbird)$" }, "3", 0.45),
-      slot("feishu-class", { class = "^(feishu|bytedance-feishu-stable)$" }, "3", 0.45),
-      slot("feishu-title", { title = "^(飞书)$" }, "3", 0.45),
+      slot("thunderbird", { class = "(?i)^(org\\.mozilla\\.thunderbird|thunderbird)$" }, "3", 0.85),
+      slot("feishu-class", { class = "^(feishu|bytedance-feishu-stable)$" }, "3", 0.75),
+      slot("feishu-title", { title = "^(飞书)$" }, "3", 0.75),
       slot("zen", { class = "^(zen)$" }, "4", 0.85),
       slot("chatgpt", { class = "(?i)^(chatgpt)$" }, "5", 0.85),
-      slot("code-oss", { class = "^(code-oss)$" }, "5", 0.85),
+      slot("code-oss", { class = "^(code-oss)$" }, "5", 0.90),
       slot("cider", { class = "^(Cider)$" }, "6", 0.85),
     }
   ' >/dev/null 2>&1
@@ -168,12 +168,12 @@ trap remove_restore_rules EXIT
 # silently, and each missing window gets one independent retry.
 # Laptop: QQ, WeChat, Telegram and Discord are launched manually.
 
-# Workspace 3.
-ensure_window thunderbird 'any(.[]; .class | ascii_downcase | IN("thunderbird", "org.mozilla.thunderbird"))' thunderbird &
-
-# Feishu is particularly sensitive to the portal/keyring startup burst.
-(sleep 10; ensure_window feishu \
-  'any(.[]; .class == "feishu" or .class == "bytedance-feishu-stable" or .title == "飞书")' feishu) &
+# Workspace 3: Thunderbird on the left, Feishu on the right.
+# Sequence window creation so scrolling columns follow the current layout.
+(ensure_window thunderbird 'any(.[]; .class | ascii_downcase | IN("thunderbird", "org.mozilla.thunderbird"))' thunderbird
+ sleep 10
+ ensure_window feishu \
+   'any(.[]; .class == "feishu" or .class == "bytedance-feishu-stable" or .title == "飞书")' feishu) &
 
 # Workspaces 4-6.
 ensure_window zen 'any(.[]; .class == "zen")' "$HOME/.config/HyprV/hypr/scripts/browser-wl-relabel.sh" zen-browser &
@@ -187,52 +187,10 @@ ensure_window cider 'any(.[]; .class == "Cider")' cider \
   --ozone-platform=wayland \
   --enable-wayland-ime &
 
-# Wait for the parallel verification jobs before arranging any workspace.
+# Wait until all application groups have finished checking their windows.
 wait || true
 
-# Assemble the hidden scrolling workspaces after every launch has settled.
-# Explicit window targets avoid focusing those workspaces while they are sorted.
-hyprctl eval '
-  local original = hl.get_active_workspace()
-  local ws3 = hl.get_workspace("3")
-  if ws3 then
-    local ordered = {
-      hl.get_windows({ workspace = ws3, class = "chrome-fmgjjmmmlfnkbppncabfkddbjimcfncm-Default" })[1],
-      hl.get_windows({ workspace = ws3, class = "chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default" })[1],
-      hl.get_windows({ workspace = ws3, class = "feishu" })[1] or
-        hl.get_windows({ workspace = ws3, class = "bytedance-feishu-stable" })[1] or
-        hl.get_windows({ workspace = ws3, title = "飞书" })[1],
-    }
-
-    if ordered[1] and ordered[2] and ordered[3] then
-      local by_index = {}
-      local current_index = {}
-      for _, window in ipairs(ordered) do
-        local index = window.layout.column.index
-        by_index[index] = window
-        current_index[window] = index
-      end
-
-      for target = 0, 2 do
-        local wanted = ordered[target + 1]
-        local source = current_index[wanted]
-        if source ~= target then
-          local occupying = by_index[target]
-          if occupying then
-            hl.dispatch(hl.dsp.window.swap({ window = wanted, other = occupying }))
-            by_index[source] = occupying
-            current_index[occupying] = source
-            by_index[target] = wanted
-            current_index[wanted] = target
-          end
-        end
-      end
-    end
-  end
-
-  if original then
-    hl.dispatch(hl.dsp.focus({ workspace = original }))
-  end
-' >/dev/null 2>&1 || log "could not assemble scrolling workspaces"
+# Ordered launches above establish the scrolling column order without
+# focusing or rearranging the user's active desktop.
 
 log "desktop application restore finished"

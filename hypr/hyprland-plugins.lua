@@ -1,5 +1,6 @@
 local lib = require("hypr.lib")
 
+lib.bind_plugin_fn("SUPER + comma", "hymission", "stage_toggle")
 lib.bind_plugin_fn("SUPER + TAB", "hymission", "toggle")
 lib.bind_plugin_fn("SUPER + SHIFT + TAB","hymission","toggle","reverse")
 lib.bind_plugin_fn("ALT + TAB", "hymission", "open", "onlycurrentworkspace")
@@ -24,10 +25,17 @@ lib.call_plugin_fn("hymission", "gesture", {
   mods = "SUPER",
 })
 
+lib.call_plugin_fn("hymission", "gesture", {
+  fingers = 4,
+  direction = "horizontal",
+  action = "stage_toggle",
+  mods = "SUPER",
+})
+
 lib.plugin_config_if_available("plugin.hymission.niri_mode", {
   plugin = {
     hymission = {
-      stage_enabled = 1,
+      stage_enabled = 0, -- 启动时默认关闭；运行时由快捷键/手势切换
       stage_show_active = 0,
       stage_active_glow = 0,
       stage_smartisan_mode = 0,
@@ -161,3 +169,6 @@ lib.plugin_config_if_available("plugin.touch_gestures.sensitivity", {
     },
   },
 })
+
+-- Optional edge triggers: no effect until the independent plugin is installed.
+require("hypr.ultraedge")

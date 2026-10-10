@@ -35,8 +35,27 @@ wr({
   match = { class = "(?i)^(org\\.mozilla\\.thunderbird|thunderbird)$" },
   workspace = "3 silent",
   tile = true,
-  scrolling_width = 0.45,
+  scrolling_width = 0.85,
 })
+-- These applications start independently in exec-once, before restoration
+-- has finished waiting for desktop services. Route their main windows early.
+wr({
+  name = "workspace-lazycat",
+  match = { class = "^(lzc-client-desktop)$" },
+  workspace = "1 silent",
+  no_initial_focus = true,
+  tile = true,
+  scrolling_width = 0.85,
+})
+wr({
+  name = "workspace-local-ai",
+  match = { class = "^(lais_gui)$" },
+  workspace = "1 silent",
+  no_initial_focus = true,
+  tile = true,
+  scrolling_width = 0.85,
+})
+
 wr({
   name = "codex-pet-clean-overlay",
   match = { class = "^(chatgpt)$", float = true },

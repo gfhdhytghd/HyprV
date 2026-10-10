@@ -2510,6 +2510,10 @@ ShellRoot {
     }
 
     function trayIconSource(item) {
+        // Use the bundled LAIS icon independently of the installed icon theme.
+        if (item?.id === "local-ai-service") {
+            return Qt.resolvedUrl("assets/lais/lais.svg?v=deepblue").toString();
+        }
         let icon = item?.icon || "";
         if (!icon) {
             return "";
