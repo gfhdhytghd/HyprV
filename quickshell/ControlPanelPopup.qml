@@ -544,10 +544,16 @@ Item {
                         onRightClicked: popupRoot.toggleBluetoothExpanded()
                     }
 
-                    LaptopBatteryCard {
+                    ControlPanelSplitTile {
                         width: parent.width
                         height: popupRoot.moduleSize
                         shellRoot: popupRoot.shellRoot
+                        icon: popupRoot.powerProfileIcon(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
+                        title: "Power"
+                        subtitle: popupRoot.powerProfileLabel(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
+                        active: popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile === "power-saver" : false
+                        onLeftClicked: popupRoot.cyclePowerProfile()
+                        onRightClicked: popupRoot.cyclePowerProfile()
                     }
 
                     Row {
@@ -624,30 +630,16 @@ Item {
                         }
                     }
 
-                    Row {
+                    ControlPanelSplitTile {
                         width: parent.width
-                        spacing: popupRoot.cardSpacing
-
-                        ControlPanelToggle {
-                            width: (parent.width - popupRoot.cardSpacing) / 2
-                            height: popupRoot.moduleSize
-                            shellRoot: popupRoot.shellRoot
-                            icon: "󰍹"
-                            iconOnly: true
-                            active: popupRoot.shellRoot ? popupRoot.shellRoot.demoModeEnabled : false
-                            onClicked: popupRoot.toggleDemoMode()
-                        }
-
-                        ControlPanelToggle {
-                            width: (parent.width - popupRoot.cardSpacing) / 2
-                            height: popupRoot.moduleSize
-                            shellRoot: popupRoot.shellRoot
-                            icon: popupRoot.powerProfileIcon(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
-                            label: popupRoot.powerProfileLabel(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
-                            iconOnly: false
-                            active: popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile === "power-saver" : false
-                            onClicked: popupRoot.cyclePowerProfile()
-                        }
+                        height: popupRoot.moduleSize
+                        shellRoot: popupRoot.shellRoot
+                        icon: "󰍹"
+                        title: "Display"
+                        subtitle: active ? "Demo mode" : "Normal"
+                        active: popupRoot.shellRoot ? popupRoot.shellRoot.demoModeEnabled : false
+                        onLeftClicked: popupRoot.toggleDemoMode()
+                        onRightClicked: popupRoot.toggleDemoMode()
                     }
                 }
             }
@@ -720,8 +712,15 @@ Item {
                 const point = popupRoot.sourceItem.mapToGlobal(0, popupRoot.sourceItem.height);
                 barBottom = Math.round(point.y - screen.y);
             }
-            popupCard.x = Math.max(popupRoot.popupScreenMargin, width - popupCard.width - popupRoot.popupScreenMargin);
-            popupCard.y = barBottom + popupRoot.popupScreenMargin;
+            const margin = popupRoot.popupScreenMargin;
+            const panelHeight = popupCard.fullPanelHeight;
+            popupCard.x = popupRoot.sourceItem
+                ? Math.max(margin, width - popupCard.width - margin)
+                : Math.max(margin, Math.round((width - popupCard.width) / 2));
+            const targetY = popupRoot.sourceItem
+                ? barBottom + margin
+                : Math.round((height - panelHeight) / 2);
+            popupCard.y = Math.max(margin, Math.min(targetY, height - panelHeight - margin));
         }
 
         onVisibleChanged: {

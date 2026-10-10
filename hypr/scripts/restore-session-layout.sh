@@ -133,10 +133,6 @@ install_restore_rules() {
     end
 
     _G.hyprv_session_restore_rules = {
-      slot("discord", { class = "^(discord)$" }, "2", 0.5),
-      slot("qq", { class = "^(QQ)$" }, "2", 0.5),
-      slot("telegram", { class = "^(org\\.telegram\\.desktop)$" }, "2", 0.5),
-      slot("wechat", { class = "^(wechat)$" }, "2", 0.5),
       slot("thunderbird", { class = "(?i)^(org\\.mozilla\\.thunderbird|thunderbird)$" }, "3", 0.45),
       slot("feishu-class", { class = "^(feishu|bytedance-feishu-stable)$" }, "3", 0.45),
       slot("feishu-title", { title = "^(飞书)$" }, "3", 0.45),
@@ -170,16 +166,7 @@ trap remove_restore_rules EXIT
 
 # Start and verify every application in parallel. Window rules place them
 # silently, and each missing window gets one independent retry.
-ensure_window discord 'any(.[]; .class == "discord")' discord &
-ensure_window qq 'any(.[]; .class == "QQ")' linuxqq &
-ensure_window telegram 'any(.[]; .class == "org.telegram.desktop")' Telegram &
-
-wechat_started=0
-if ! has_window 'any(.[]; .class == "wechat")'; then
-  wechat_started=1
-fi
-
-ensure_window wechat 'any(.[]; .class == "wechat")' wechat &
+# Laptop: QQ, WeChat, Telegram and Discord are launched manually.
 
 # Workspace 3.
 ensure_window thunderbird 'any(.[]; .class | ascii_downcase | IN("thunderbird", "org.mozilla.thunderbird"))' thunderbird &
@@ -200,92 +187,13 @@ ensure_window cider 'any(.[]; .class == "Cider")' cider \
   --ozone-platform=wayland \
   --enable-wayland-ime &
 
-# Telegram and WeChat can restore directly into their tray-only state. Activate
-# their notifier items to request the main windows without changing workspace.
-(sleep 5; activate_status_notifier_until_window TelegramDesktop \
-  'any(.[]; .class == "org.telegram.desktop")') &
-(sleep 5; activate_status_notifier_until_window wechat \
-  'any(.[]; .class == "wechat")') &
-
-# WeChat's remembered-account screen has the login button focused by default.
-# Hyprland targets both Wayland and XWayland clients without switching workspace.
-if ((wechat_started)); then
-  if wait_for_window 'any(.[]; .class == "wechat" and .mapped)' 30; then
-    sleep 1
-    login_result="$(hyprctl eval '
-      local window = hl.get_windows({ class = "wechat" })[1]
-      if not window then error("wechat window disappeared before login") end
-      hl.dispatch(hl.dsp.send_shortcut({ mods = "", key = "Return", window = window }))
-    ' 2>&1)"
-    if [[ "$login_result" == "ok" ]]; then
-      log "wechat login Enter sent"
-    else
-      log "wechat login Enter failed: $login_result"
-    fi
-  else
-    log "wechat login skipped: no mapped window appeared"
-  fi
-  # Give WeChat time to replace the remembered-account surface if necessary.
-  sleep 5
-fi
-
 # Wait for the parallel verification jobs before arranging any workspace.
 wait || true
-
-# Discord and QQ replace their updater/login surfaces after automatic login.
-sleep 12
 
 # Assemble the hidden scrolling workspaces after every launch has settled.
 # Explicit window targets avoid focusing those workspaces while they are sorted.
 hyprctl eval '
   local original = hl.get_active_workspace()
-  local ws2 = hl.get_workspace("2")
-  if ws2 then
-    local ordered = {
-      hl.get_windows({ workspace = ws2, class = "discord" })[1],
-      hl.get_windows({ workspace = ws2, class = "QQ" })[1],
-      hl.get_windows({ workspace = ws2, class = "org.telegram.desktop" })[1],
-      hl.get_windows({ workspace = ws2, class = "wechat" })[1],
-    }
-
-    if ordered[1] and ordered[2] and ordered[3] and ordered[4] then
-      local by_index = {}
-      local current_index = {}
-      local independent_columns = true
-
-      for _, window in ipairs(ordered) do
-        if not window.layout or #window.layout.column.windows ~= 1 then
-          independent_columns = false
-          break
-        end
-        local index = window.layout.column.index
-        by_index[index] = window
-        current_index[window] = index
-      end
-
-      if independent_columns then
-        -- Simulate each swap locally because Lua layout metadata is refreshed
-        -- only after this eval returns.
-        for target = 0, 3 do
-          local wanted = ordered[target + 1]
-          local source = current_index[wanted]
-          if source ~= target then
-            local occupying = by_index[target]
-            hl.dispatch(hl.dsp.window.swap({ window = wanted, other = occupying }))
-            by_index[source] = occupying
-            current_index[occupying] = source
-            by_index[target] = wanted
-            current_index[wanted] = target
-          end
-        end
-
-        -- Discord/QQ | Telegram/WeChat, with each pair ordered top to bottom.
-        hl.dispatch(hl.dsp.window.move({ direction = "left", window = ordered[2] }))
-        hl.dispatch(hl.dsp.window.move({ direction = "left", window = ordered[4] }))
-      end
-    end
-  end
-
   local ws3 = hl.get_workspace("3")
   if ws3 then
     local ordered = {

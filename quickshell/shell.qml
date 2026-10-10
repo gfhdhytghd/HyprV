@@ -1,6 +1,7 @@
 //@ pragma UseQApplication
 
 import QtQuick
+import QtQuick.Controls as Controls
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Bluetooth
@@ -74,7 +75,7 @@ ShellRoot {
         : []
     readonly property string brightnessScriptPath: configDir + "/hypr/scripts/brightness"
     readonly property string fanControlHelperPath: "/usr/local/libexec/hyprv-fanctl"
-    readonly property int brightnessUiStepPercent: 2
+    readonly property int brightnessUiStepPercent: 1
     property int brightnessPercent: 50
     property bool fanControlAvailable: false
     property int chassisFanPercent: 0
@@ -114,7 +115,6 @@ ShellRoot {
     property string _previousInterface: ""
     property bool _showQuickAdjustAfterBrightnessProbe: false
     property bool _brightnessProbeQueued: false
-    property int _pendingBrightnessPercent: -1
     property int _pendingChassisFanPercent: -1
     property int _pendingPumpFanPercent: -1
     property double _lastFanInteractionTimestamp: 0
@@ -472,6 +472,7 @@ ShellRoot {
         id: module
 
         property string label: ""
+        property string tooltipText: ""
         property color textColor: root.primaryText
         property string fontFamily: root.baseFont
         property int fontPixelSize: 16
@@ -499,6 +500,10 @@ ShellRoot {
 
         implicitWidth: collapseWhenHidden && !visible ? 0 : naturalImplicitWidth
         implicitHeight: module.moduleHeight
+
+        Controls.ToolTip.text: module.tooltipText
+        Controls.ToolTip.visible: module.tooltipText.length > 0 && mouseArea.containsMouse
+        Controls.ToolTip.delay: 350
 
         Rectangle {
             anchors.fill: parent
@@ -2712,10 +2717,9 @@ ShellRoot {
 
     function applyBrightnessPercent(value) {
         const nextValue = updateBrightnessPercentLocally(value);
-        _pendingBrightnessPercent = nextValue;
-        if (!brightnessSetProcess.running) {
-            brightnessApplyTimer.restart();
-        }
+        // Restore the direct laptop slider implementation preceding 8128051.
+        runDetached(["brightnessctl", "--device", "intel_backlight", "--min-value", "1", "set", nextValue + "%"]);
+        brightnessProbeDebounce.restart();
     }
 
     function clampFanPercent(value) {
@@ -2915,13 +2919,14 @@ ShellRoot {
         id: quickAdjustBrightnessProbe
 
         running: false
-        command: [root.brightnessScriptPath, "--get-level"]
+        command: ["brightnessctl", "--device", "intel_backlight", "--machine-readable"]
         stdout: StdioCollector {
             id: quickAdjustBrightnessProbeStdout
         }
 
         onExited: function(exitCode) {
-            const parsed = Number((quickAdjustBrightnessProbeStdout.text || "").trim());
+            const fields = (quickAdjustBrightnessProbeStdout.text || "").trim().split(",");
+            const parsed = fields.length >= 4 ? parseFloat(fields[3]) : NaN;
             if (exitCode === 0 && isFinite(parsed)) {
                 root.brightnessPercent = root.snapBrightnessPercent(parsed);
             }
@@ -2934,36 +2939,6 @@ ShellRoot {
                 root._brightnessProbeQueued = false;
                 quickAdjustBrightnessProbe.running = true;
             }
-        }
-    }
-
-    Process {
-        id: brightnessSetProcess
-
-        running: false
-
-        onExited: {
-            if (root._pendingBrightnessPercent >= 0) {
-                brightnessApplyTimer.restart();
-            } else {
-                brightnessProbeDebounce.restart();
-            }
-        }
-    }
-
-    Timer {
-        id: brightnessApplyTimer
-
-        interval: 60
-        repeat: false
-        onTriggered: {
-            if (root._pendingBrightnessPercent < 0 || brightnessSetProcess.running) {
-                return;
-            }
-            const nextValue = root._pendingBrightnessPercent;
-            root._pendingBrightnessPercent = -1;
-            brightnessSetProcess.command = [root.brightnessScriptPath, "--set-level", String(nextValue)];
-            brightnessSetProcess.running = true;
         }
     }
 
@@ -3389,7 +3364,7 @@ ShellRoot {
             root.refreshBrightnessStatus(false);
         }
 
-        function showBrightnessLevel(level) {
+        function showBrightnessLevel(level: int): void {
             const parsed = Number(level);
             if (isFinite(parsed)) {
                 root.updateBrightnessPercentLocally(parsed);
@@ -3516,12 +3491,12 @@ ShellRoot {
                 + memoryTrigger.naturalImplicitWidth
                 + networkTrigger.naturalImplicitWidth
             readonly property real fullRightWidth: rightSection.edgeMargin
-                + temperatureTrigger.naturalImplicitWidth
-                + batteryTrigger.implicitWidth
+                + (root.cpuPackagePowerAvailable ? cpuPowerTrigger.naturalImplicitWidth : 0)
+                + batteryModule.naturalImplicitWidth - batteryModule.paddingLeft + 5
                 + fullSectionSpacing
-                + previousMediaButton.naturalImplicitWidth
+                + previousMediaButton.naturalImplicitWidth - previousMediaButton.paddingLeft + 9
                 + playPauseMediaButton.naturalImplicitWidth
-                + nextMediaButton.naturalImplicitWidth
+                + nextMediaButton.naturalImplicitWidth - nextMediaButton.paddingRight
                 + volumeButton.naturalImplicitWidth
                 + fullSectionSpacing
                 + systemLeadingSpacer.implicitWidth
@@ -3706,26 +3681,6 @@ ShellRoot {
                             paddingLeft: 7
                             paddingRight: 4
                             onLeftClicked: root.runDetached(["rofi-wayland", "-show", "drun"])
-                        }
-
-                        // Viewflow Windows fusion button
-                        TextModule {
-                            id: viewflowWindowsButton
-                            label: "󰖳"
-                            textColor: root.launchColor
-                            fontFamily: root.baseFont
-                            fontPixelSize: 17
-                            moduleHeight: 38
-                            interactive: true
-                            hoverable: true
-                            paddingLeft: 7
-                            paddingRight: 7
-                            onLeftClicked: {
-                                console.info("Viewflow Start button clicked");
-                                const point = viewflowWindowsButton.mapToGlobal(0, viewflowWindowsButton.height);
-                                root.runDetached([root.homeDir + "/.local/bin/viewflow-windows", "start", "--anchor", String(Math.round(point.x)), String(Math.round(point.y + 8))]);
-                            }
-                            onRightClicked: root.runDetached([root.homeDir + "/.local/bin/viewflow-windows", "menu"])
                         }
 
                         Item {
@@ -3986,15 +3941,16 @@ ShellRoot {
 
                         shellRoot: root
                         TextModule {
-                            id: temperatureTrigger
+                            id: cpuPowerTrigger
 
-                            label: (root.temperatureC >= 70 ? " " : " ") + Math.round(root.temperatureC) + "°C"
-                            textColor: root.temperatureC >= 70 ? root.criticalColor : root.primaryText
-                            interactive: true
-                            visible: barWindow.supplementaryInfoVisible
+                            label: root.cpuPackagePowerText
+                            tooltipText: "CPU 温度：" + Math.round(root.temperatureC) + "°C"
+                            textColor: root.usageSeverityColor(root.cpuPackagePowerW)
+                            visible: root.cpuPackagePowerAvailable
                             collapseWhenHidden: true
-                            paddingLeft: 10
-                            paddingRight: 5
+                            interactive: true
+                            paddingLeft: 12
+                            paddingRight: 8
                             onLeftClicked: root.runDetached(["alacritty", "-t", "btop", "-o", "window.startup_mode=Fullscreen", "-e", "btop"])
                         }
 
