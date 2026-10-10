@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly main_output="${HYPRV_ROTATE_OUTPUT:-DP-4}"
+readonly main_output="${HYPRV_ROTATE_OUTPUT:-eDP-1}"
 readonly state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyprv"
 readonly state_file="$state_dir/monitor-transform"
 readonly lock_file="$state_dir/monitor-transform.lock"

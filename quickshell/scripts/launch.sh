@@ -8,6 +8,6 @@ script_dir="$config_dir/scripts"
 "$script_dir/ui-state.sh" ensure >/dev/null 2>&1 || true
 # Keep manual theme changes intact across login; explicit theme toggles still call apply-ui-state.sh.
 # "$script_dir/apply-ui-state.sh" apply >/dev/null 2>&1 || true
-/usr/local/libexec/hyprv-fanctl restore >/dev/null 2>&1 || true
+# Laptop cooling is managed by Dell firmware.
 
 exec quickshell -p "$config_dir" -n -d

@@ -544,21 +544,10 @@ Item {
                         onRightClicked: popupRoot.toggleBluetoothExpanded()
                     }
 
-                    Row {
+                    LaptopBatteryCard {
                         width: parent.width
-                        spacing: popupRoot.cardSpacing
-
-                        WindowsVmControl {
-                            width: (parent.width - popupRoot.cardSpacing) / 2
-                            height: popupRoot.moduleSize
-                            shellRoot: popupRoot.shellRoot
-                        }
-
-                        ViewflowTargetControl {
-                            width: (parent.width - popupRoot.cardSpacing) / 2
-                            height: popupRoot.moduleSize
-                            shellRoot: popupRoot.shellRoot
-                        }
+                        height: popupRoot.moduleSize
+                        shellRoot: popupRoot.shellRoot
                     }
 
                     Row {
@@ -654,8 +643,9 @@ Item {
                             height: popupRoot.moduleSize
                             shellRoot: popupRoot.shellRoot
                             icon: popupRoot.powerProfileIcon(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
-                            iconOnly: true
-                            active: false
+                            label: popupRoot.powerProfileLabel(popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile : "balanced")
+                            iconOnly: false
+                            active: popupRoot.shellRoot ? popupRoot.shellRoot.powerProfile === "power-saver" : false
                             onClicked: popupRoot.cyclePowerProfile()
                         }
                     }
@@ -691,31 +681,6 @@ Item {
                     onIconClicked: popupRoot.toggleAudioMute()
                 }
 
-                ControlPanelSlider {
-                    shellRoot: popupRoot.shellRoot
-                    width: popupRoot.columnWidth
-                    height: popupRoot.moduleSize
-                    enabled: popupRoot.shellRoot ? popupRoot.shellRoot.fanControlAvailable : false
-                    opacity: enabled ? 1 : 0.48
-                    icon: "󰈐"
-                    label: "Chassis Fan · " + (popupRoot.shellRoot ? popupRoot.shellRoot.chassisFanRpm : 0) + " RPM"
-                    value: popupRoot.shellRoot ? popupRoot.shellRoot.chassisFanPercent : 0
-                    accentColor: popupRoot.shellRoot ? popupRoot.shellRoot.usageLowColor : "#2f9e44"
-                    onValueChangeRequested: function(newValue) { popupRoot.setFanPercent("chassis", newValue); }
-                }
-
-                ControlPanelSlider {
-                    shellRoot: popupRoot.shellRoot
-                    width: popupRoot.columnWidth
-                    height: popupRoot.moduleSize
-                    enabled: popupRoot.shellRoot ? popupRoot.shellRoot.fanControlAvailable : false
-                    opacity: enabled ? 1 : 0.48
-                    icon: "󰈐"
-                    label: "Pump Fan · " + (popupRoot.shellRoot ? popupRoot.shellRoot.pumpFanRpm : 0) + " RPM"
-                    value: popupRoot.shellRoot ? popupRoot.shellRoot.pumpFanPercent : 0
-                    accentColor: popupRoot.shellRoot ? popupRoot.shellRoot.batteryColor : "#40a37d"
-                    onValueChangeRequested: function(newValue) { popupRoot.setFanPercent("pump", newValue); }
-                }
             }
         }
     }
