@@ -594,8 +594,8 @@ ShellRoot {
             id: mouseArea
 
             anchors.fill: parent
-            enabled: module.interactive || module.wheelInteractive || module.hoverable
-            hoverEnabled: module.hoverable || module.interactive || module.wheelInteractive
+            enabled: module.interactive || module.wheelInteractive || module.hoverable || module.tooltipText.length > 0
+            hoverEnabled: module.hoverable || module.interactive || module.wheelInteractive || module.tooltipText.length > 0
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             cursorShape: module.interactive || module.wheelInteractive ? Qt.PointingHandCursor : Qt.ArrowCursor
 
@@ -4009,10 +4009,8 @@ ShellRoot {
                             textColor: root.usageSeverityColor(root.cpuPackagePowerW)
                             visible: root.cpuPackagePowerAvailable
                             collapseWhenHidden: true
-                            interactive: true
                             paddingLeft: 12
                             paddingRight: 8
-                            onLeftClicked: root.runDetached(["alacritty", "-t", "btop", "-o", "window.startup_mode=Fullscreen", "-e", "btop"])
                         }
 
                         Item {
