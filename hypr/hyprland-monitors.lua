@@ -13,8 +13,9 @@ if state_file then
 end
 
 local main_width = transform % 2 == 0 and 3072 or 1728
+-- Moonlight owns HEADLESS-100; Viewflow manages its own outputs.
 local main_height = transform % 2 == 0 and 1728 or 3072
-local headless_y = 1300 + math.floor((main_height - 1728) / 2)
+local headless_y = 1590 + math.floor((main_height - 1728) / 2)
 
 hl.monitor({
   output = "DP-4",
@@ -27,11 +28,22 @@ hl.monitor({
 })
 
 hl.monitor({
-  output = "HEADLESS-1",
-  mode = "2752x2064@60",
+  output = "HEADLESS-100",
+  mode = "2752x2064@120",
   position = main_width .. "x" .. headless_y,
   scale = "2",
-  transform = 1,
+  transform = 0,
 })
 
+-- Sunshine probes its capture output before running an application's prep command.
+lib.exec_once("hyprctl output create headless HEADLESS-100")
 lib.exec_once("xrdb ~/.Xresources")
+
+-- Viewflow remote desktop: keep the live route geometry across config reloads.
+hl.monitor({
+  output = "HEADLESS-13",
+  mode = "3840x2400@60",
+  position = "3072x415",
+  scale = "2",
+  transform = 0,
+})

@@ -2,7 +2,7 @@ local lib = require("hypr.lib")
 
 hl.config({
   general = {
-    layout = "scrolling",
+   layout = "scrolling",
   },
   scrolling = {
     fullscreen_on_one_column = true,
@@ -22,7 +22,7 @@ hl.config({
     touchpad = {
       natural_scroll = true,
       drag_lock = false,
-      disable_while_typing = false,
+      disable_while_typing = true,
     },
   },
   misc = {
@@ -38,6 +38,8 @@ hl.config({
     preserve_split = false,
   },
   gestures = {
+    workspace_swipe_forever = true,
+    workspace_swipe_create_new = true,
     workspace_swipe_cancel_ratio = 0.05,
     workspace_swipe_touch = true,
   },
@@ -82,3 +84,6 @@ hl.bind("CTRL + ALT + code:34", hl.dsp.exec_raw("ydotool mousemove -- -3000 0"))
 hl.animation({ leaf = "workspaces", enabled = true, speed = 8, bezier = "default", style = "slidevert" })
 hl.animation({ leaf = "workspacesIn", enabled = true, speed = 8, bezier = "default", style = "slidevert" })
 hl.animation({ leaf = "workspacesOut", enabled = true, speed = 8, bezier = "default", style = "slidevert" })
+
+-- Magic Trackpad: two-finger press is secondary click.
+hl.device({ name = "apple-inc.-magic-trackpad", clickfinger_behavior = true })

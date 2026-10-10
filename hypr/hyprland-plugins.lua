@@ -4,6 +4,7 @@ lib.bind_plugin_fn("SUPER + TAB", "hymission", "toggle")
 lib.bind_plugin_fn("SUPER + SHIFT + TAB","hymission","toggle","reverse")
 lib.bind_plugin_fn("ALT + TAB", "hymission", "open", "onlycurrentworkspace")
 lib.bind_plugin_fn_or_exec("SUPER + s", "hyprcapture", "open", "/home/wilf/.local/bin/hyprcapture-ui")
+lib.bind_plugin_fn("SUPER + ALT + s", "hyprcapture", "open_editor")
 
 -- TEMP: hymission grouped-window test (2026-08-10). Remove this block after testing.
 hl.bind("SUPER + ALT + G", hl.dsp.group.toggle())
@@ -26,6 +27,10 @@ lib.call_plugin_fn("hymission", "gesture", {
 lib.plugin_config_if_available("plugin.hymission.niri_mode", {
   plugin = {
     hymission = {
+      stage_enabled = 1,
+      stage_show_active = 0,
+      stage_active_glow = 0,
+      stage_smartisan_mode = 0,
       pick_labels_enabled = 1,
       pick_labels_show = 0,
       pick_labels_direct_activate = 0,
@@ -58,6 +63,7 @@ lib.plugin_config_if_available("plugin.hymission.niri_mode", {
       layout_scale_weight = 1.0,
       layout_space_weight = 0.10,
       overview_focus_follows_mouse = 1,
+      gesture_close_restores_focus = 0,
       only_active_workspace = 0,
       workspace_change_keeps_overview = 1,
       hide_bar_when_strip = 1,
@@ -110,7 +116,7 @@ local hyprcapture_config = {
       record_codec = "auto",
       record_solid_alpha = true,
       record_gsr_flags = "",
-      record_window_backend = "compositor",
+      record_window_backend = "auto",
       include_cursor = false,
       thumbnail_timeout_ms = 5000,
       thumbnail_monitor  = "all",
@@ -125,6 +131,23 @@ local hyprcapture_config = {
 
 
 lib.plugin_config_if_available("plugin.hyprcapture.default_mode", hyprcapture_config)
+
+lib.plugin_config_if_available("plugin.hyprcapture.in_place_edit_toolbar", {
+  plugin = {
+    hyprcapture = {
+      in_place_edit_toolbar = true,
+      language = "auto",
+    },
+  },
+})
+
+lib.plugin_config_if_available("plugin.hyprcapture.remember_settings", {
+  plugin = {
+    hyprcapture = {
+      remember_settings = true,
+    },
+  },
+})
 
 lib.plugin_config_if_available("plugin.touch_gestures.sensitivity", {
   plugin = {

@@ -9,6 +9,7 @@ Item {
     property real value: 50
     property color accentColor: shellRoot ? shellRoot.launchColor : "#89b4fa"
     property bool iconClickable: false
+    property real iconLeftInset: -1
     property bool adjusting: false
     property real previewValue: 0
 
@@ -70,7 +71,7 @@ Item {
             clip: true
 
             Text {
-                x: slider.iconCenterX - width / 2
+                x: slider.iconLeftInset >= 0 ? slider.iconLeftInset : slider.iconCenterX - width / 2
                 anchors.verticalCenter: parent.verticalCenter
                 text: slider.icon
                 color: "#ffffff"
@@ -88,7 +89,7 @@ Item {
             clip: true
 
             Text {
-                x: slider.iconCenterX - parent.x - width / 2
+                x: (slider.iconLeftInset >= 0 ? slider.iconLeftInset : slider.iconCenterX - width / 2) - parent.x
                 anchors.verticalCenter: parent.verticalCenter
                 text: slider.icon
                 color: slider.iconSolidColor
@@ -121,7 +122,10 @@ Item {
 
             function insideIcon(mouseX, mouseY) {
                 const hitRadius = Math.max(18, slider.height * 0.3);
-                return Math.abs(mouseX - slider.iconCenterX) <= hitRadius
+                const centerX = slider.iconLeftInset >= 0
+                    ? slider.iconLeftInset + slider.iconPixelSize / 2
+                    : slider.iconCenterX;
+                return Math.abs(mouseX - centerX) <= hitRadius
                     && Math.abs(mouseY - slider.height / 2) <= hitRadius;
             }
 

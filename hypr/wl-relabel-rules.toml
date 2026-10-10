@@ -1,0 +1,8 @@
+# Candidate Document PiP signature, verified with Chrome's Document PiP API.
+# Main window: client_side, min_width=500; ordinary popup: server_side.
+# Verified with Bilibili's player PiP button too. Recheck after browser upgrades.
+[[rule]]
+app_id = ["google-chrome"]
+when.decorations = "client_side"
+when.min_width_below = 400
+then.app_id = "google-chrome-docpip"

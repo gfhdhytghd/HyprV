@@ -10,7 +10,11 @@ if [[ -z "$action" || ! "$requested" =~ ^-?[0-9]+$ ]]; then
 fi
 
 current=$(hyprctl activeworkspace -j | jq -r .id)
+if (( current < 1 )); then current=1; fi
 target=$(((((current - 1) / 10) * 10) + requested))
+if hyprctl workspaces -j | jq -e --argjson target "$target" 'any(.[]; .id == $target and (.name | startswith("viewflow")))' >/dev/null; then
+  exit 0
+fi
 
 case "$action" in
   workspace)

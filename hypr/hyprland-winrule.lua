@@ -6,6 +6,14 @@ local function lr(spec)
   hl.layer_rule(spec)
 end
 
+wr({
+  name = "float-file-managers",
+  match = {
+    class = "(?i)^(org\\.kde\\.dolphin|dolphin|org\\.gnome\\.Nautilus|nautilus|thunar|org\\.xfce\\.Thunar|nemo|org\\.nemo\\.Nemo|pcmanfm|pcmanfm-qt|org\\.lxqt\\.pcmanfm-qt|caja|org\\.mate\\.Caja|spacefm|doublecmd|krusader|org\\.kde\\.krusader|io\\.elementary\\.files|pantheon-files|yazi|ranger)$",
+  },
+  float = true,
+})
+
 wr({ name = "float-pavucontrol", match = { class = "^(pavucontrol)$" }, float = true })
 wr({ name = "float-dankcalendar", match = { class = "^(com\\.danklinux\\.dankcalendar)$" }, float = true, center = true, animation = "popup" })
 wr({ name = "float-blueman", match = { class = "^(blueman-manager)$" }, float = true })
@@ -13,6 +21,29 @@ wr({ name = "float-nm-connection-editor", match = { class = "^(nm-connection-edi
 wr({ name = "float-showmethekey", match = { class = "^(one\\.alynx\\.showmethekey)$" }, float = true })
 wr({ name = "pin-showmethekey-gtk", match = { class = "^(showmethekey-gtk)$" }, float = true, pin = true })
 wr({ name = "no-anim-wofi", match = { class = "^(wofi)$" }, no_anim = true })
+-- WeChat replaces its login window; keep routing active after startup completes.
+wr({
+  name = "workspace-wechat",
+  match = { class = "^(wechat)$" },
+  workspace = "2 silent",
+  no_initial_focus = true,
+  tile = true,
+  scrolling_width = 0.5,
+})
+wr({
+  name = "workspace-thunderbird",
+  match = { class = "(?i)^(org\\.mozilla\\.thunderbird|thunderbird)$" },
+  workspace = "3 silent",
+  tile = true,
+  scrolling_width = 0.45,
+})
+wr({
+  name = "codex-pet-clean-overlay",
+  match = { class = "^(chatgpt)$", float = true },
+  no_blur = true,
+  decorate = false,
+  no_shadow = true,
+})
 
 wr({
   name = "xwayland-video-bridge-fixes",
@@ -41,6 +72,14 @@ wr({
 
 wr({ name = "tile-warp", match = { class = "dev.warp.Warp" }, tile = true })
 wr({ name = "pip-float", match = { title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$" }, float = true })
+wr({
+  name = "chrome-docpip-clean",
+  match = { class = "^google-chrome-docpip$" },
+  float = true,
+  decorate = false,
+  no_blur = true,
+  no_shadow = true,
+})
 
 wr({ name = "dialog-open-file", match = { title = "^(Open File)(.*)$" }, float = true })
 wr({ name = "dialog-open-cn", match = { title = "^(打开)(.*)$" }, float = true })
@@ -93,3 +132,12 @@ lr({ name = "layer-indicator-wild", match = { namespace = "indicator*" }, blur =
 lr({ name = "layer-osk", match = { namespace = "osk" }, blur = true, ignore_alpha = 0.6 })
 lr({ name = "swaync-control-center", match = { namespace = "swaync-control-center" }, blur = true, ignore_alpha = 0.05 })
 lr({ name = "swaync-notification-window", match = { namespace = "swaync-notification-window" }, blur = true, ignore_alpha = 0.05 })
+
+-- Viewflow proxies must preserve their source geometry across config reloads.
+hl.window_rule({name='viewflow-windows-reverse',match={class='^ViewflowReverse-.*$'},float=true,no_initial_focus=true,decorate=false,border_size=0,no_shadow=true,rounding=0,no_blur=true,no_anim=true})
+hl.window_rule({name='viewflow-windows-reverse-tiled-animation',match={class='^ViewflowReverse-.*$',float=false},no_anim=false})
+hl.window_rule({name='viewflow-windows-reverse-ime',match={class='^ViewflowReverse-IME-.*$'},float=true,no_initial_focus=true,no_focus=true,decorate=false,border_size=0,no_shadow=true,rounding=0,no_blur=true,no_anim=true})
+
+hl.window_rule({name='viewflow-windows-start',match={class='^ViewflowReverse-WindowsStart-.*$'},float=true,pin=true,no_anim=true,move='38 56'})
+
+dofile(os.getenv('HOME') .. '/.config/HyprV/hypr/windows-fusion-dismiss.lua')

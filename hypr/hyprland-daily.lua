@@ -12,3 +12,5 @@ require("hypr.hyprland-bind")
 require("hypr.hyprland-dropitem")
 require("hypr.hyprland-winrule")
 require("hypr.hyprland-plugins")
+
+require("hypr.viewflow-workspace")

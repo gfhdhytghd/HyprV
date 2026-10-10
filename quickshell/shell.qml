@@ -162,7 +162,8 @@ ShellRoot {
 
     readonly property var hyprWorkspaces: {
         const values = Array.from(Hyprland.workspaces?.values || []);
-        const filtered = values.filter(ws => (ws?.id ?? -1) > -1);
+        const filtered = values.filter(ws => (ws?.id ?? -1) > -1
+            && ws?.name !== "viewflow-underlay");
         filtered.sort((a, b) => (a?.id ?? 0) - (b?.id ?? 0));
         return filtered.length > 0 ? filtered : [{
                 id: 1,
@@ -3505,6 +3506,7 @@ ShellRoot {
             readonly property bool calendarVisible: root.calendarOpen && root.calendarScreen === modelData
             property bool calendarPanelPresented: false
             property real calendarProgress: 0
+            property bool calendarDismissArmed: false
             readonly property real fullSectionSpacing: 9.5
             readonly property real compactSectionSpacing: 5
             readonly property real fullLeftWidth: 10
@@ -3537,12 +3539,19 @@ ShellRoot {
 
             onCalendarVisibleChanged: {
                 if (calendarVisible) {
+                    calendarLeaveTimer.stop();
                     calendarPanelCloseTimer.stop();
+                    calendarDismissArmed = false;
+                    calendarDismissArmTimer.restart();
                     calendarPanelPresented = true;
                     Qt.callLater(() => calendarProgress = 1);
-                } else if (calendarPanelPresented) {
+                } else {
+                    calendarLeaveTimer.stop();
+                    calendarDismissArmTimer.stop();
+                    calendarDismissArmed = false;
                     calendarProgress = 0;
-                    calendarPanelCloseTimer.restart();
+                    if (calendarPanelPresented)
+                        calendarPanelCloseTimer.restart();
                 }
             }
 
@@ -3610,11 +3619,26 @@ ShellRoot {
             }
 
             Timer {
+                id: calendarDismissArmTimer
+
+                interval: 260
+                repeat: false
+                onTriggered: barWindow.calendarDismissArmed = barWindow.calendarVisible
+            }
+
+            Timer {
                 id: calendarPanelCloseTimer
 
                 interval: 210
                 repeat: false
-                onTriggered: barWindow.calendarPanelPresented = false
+                onTriggered: {
+                    if (barWindow.calendarVisible) {
+                        barWindow.calendarProgress = 1;
+                        return;
+                    }
+                    barWindow.calendarProgress = 0;
+                    barWindow.calendarPanelPresented = false;
+                }
             }
 
             Connections {
@@ -3647,6 +3671,15 @@ ShellRoot {
                     height: barWindow.calendarVisible ? parent.height : 0
                     anchors.top: parent.top
                     enabled: barWindow.calendarVisible
+                    hoverEnabled: true
+                    acceptedButtons: Qt.LeftButton
+                    onPositionChanged: {
+                        if (barWindow.calendarVisible
+                                && barWindow.calendarDismissArmed
+                                && !root.calendarChildOpening
+                                && !root.calendarChildActive)
+                            calendarLeaveTimer.restart();
+                    }
                     onClicked: root.requestCalendarClose()
                 }
 
@@ -3673,6 +3706,26 @@ ShellRoot {
                             paddingLeft: 7
                             paddingRight: 4
                             onLeftClicked: root.runDetached(["rofi-wayland", "-show", "drun"])
+                        }
+
+                        // Viewflow Windows fusion button
+                        TextModule {
+                            id: viewflowWindowsButton
+                            label: "󰖳"
+                            textColor: root.launchColor
+                            fontFamily: root.baseFont
+                            fontPixelSize: 17
+                            moduleHeight: 38
+                            interactive: true
+                            hoverable: true
+                            paddingLeft: 7
+                            paddingRight: 7
+                            onLeftClicked: {
+                                console.info("Viewflow Start button clicked");
+                                const point = viewflowWindowsButton.mapToGlobal(0, viewflowWindowsButton.height);
+                                root.runDetached([root.homeDir + "/.local/bin/viewflow-windows", "start", "--anchor", String(Math.round(point.x)), String(Math.round(point.y + 8))]);
+                            }
+                            onRightClicked: root.runDetached([root.homeDir + "/.local/bin/viewflow-windows", "menu"])
                         }
 
                         Item {
@@ -3755,8 +3808,8 @@ ShellRoot {
                     id: centerSection
 
                     readonly property real attachedCenterOffset: barWindow.calendarPanelPresented ? 0 : dynamicIsland.attachedCenterOffset
-                    width: barWindow.calendarVisible ? calendarPanel.width : dynamicIsland.width
-                    height: barWindow.calendarVisible ? calendarPanel.height : dynamicIsland.height
+                    width: barWindow.calendarPanelPresented ? calendarPanel.width : dynamicIsland.width
+                    height: barWindow.calendarPanelPresented ? calendarPanel.height : dynamicIsland.height
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.horizontalCenterOffset: centerSection.attachedCenterOffset
                     anchors.top: parent.top
@@ -3863,7 +3916,7 @@ ShellRoot {
                         bridge: calendarBridge
                         embeddedSurface: true
                         visible: barWindow.calendarPanelPresented
-                        opacity: Math.max(0, Math.min(1, (barWindow.calendarProgress - 0.16) / 0.84))
+                        opacity: barWindow.calendarProgress
                         transformOrigin: Item.Top
 
                         onPointerInsideChanged: {

@@ -544,12 +544,21 @@ Item {
                         onRightClicked: popupRoot.toggleBluetoothExpanded()
                     }
 
-                    MihomoControlTile {
+                    Row {
                         width: parent.width
-                        height: popupRoot.moduleSize
-                        shellRoot: popupRoot.shellRoot
-                        expanded: popupRoot.mihomoExpanded
-                        onDetailsClicked: popupRoot.toggleMihomoExpanded()
+                        spacing: popupRoot.cardSpacing
+
+                        WindowsVmControl {
+                            width: (parent.width - popupRoot.cardSpacing) / 2
+                            height: popupRoot.moduleSize
+                            shellRoot: popupRoot.shellRoot
+                        }
+
+                        ViewflowTargetControl {
+                            width: (parent.width - popupRoot.cardSpacing) / 2
+                            height: popupRoot.moduleSize
+                            shellRoot: popupRoot.shellRoot
+                        }
                     }
 
                     Row {
