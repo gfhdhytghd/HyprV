@@ -38,7 +38,7 @@ hl.config({
     preserve_split = false,
   },
   gestures = {
-    workspace_swipe_forever = true,
+    workspace_swipe_forever = false,
     workspace_swipe_create_new = true,
     workspace_swipe_cancel_ratio = 0.05,
     workspace_swipe_touch = true,
