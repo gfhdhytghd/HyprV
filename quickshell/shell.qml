@@ -503,6 +503,7 @@ ShellRoot {
         implicitHeight: module.moduleHeight
 
         Controls.ToolTip {
+            id: moduleTooltip
             parent: module
             visible: module.tooltipText.length > 0 && mouseArea.containsMouse
             delay: 350
@@ -511,11 +512,15 @@ ShellRoot {
             y: module.height + 9
             padding: 12
 
-            background: Rectangle {
-                radius: 16
-                color: root.darkMode ? "#ed20242c" : "#edf4f6fb"
-                border.width: 1
-                border.color: root.withAlpha(root.primaryText, 0.12)
+            background: AnimatedGlassPanel {
+                fullPanelHeight: moduleTooltip.contentItem.implicitHeight + moduleTooltip.topPadding + moduleTooltip.bottomPadding
+                radius: 19
+                fillColor: root.withAlpha(root.darkMode ? "#101214" : "#ffffff", root.darkMode ? 0.42 : 0.28)
+                strokeColor: root.withAlpha(root.primaryText, root.darkMode ? 0.14 : 0.10)
+                shadowColor: root.darkMode ? root.withAlpha("#000000", 0.45) : root.withAlpha("#111111", 0.18)
+                devicePixelRatio: moduleTooltip.parent.Window.window ? moduleTooltip.parent.Window.window.devicePixelRatio : 1
+                Component.onCompleted: resetAnimationState()
+                onFullPanelHeightChanged: resetAnimationState()
             }
 
             contentItem: Row {
@@ -526,14 +531,14 @@ ShellRoot {
                     height: 36
                     radius: 12
                     anchors.verticalCenter: parent.verticalCenter
-                    color: root.withAlpha(root.launchColor, 0.12)
+                    color: "transparent"
 
                     Text {
                         anchors.centerIn: parent
                         text: ""
                         font.family: root.baseFont
                         font.pixelSize: 21
-                        color: root.launchColor
+                        color: root.primaryText
                     }
                 }
 
