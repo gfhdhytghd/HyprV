@@ -473,6 +473,7 @@ ShellRoot {
 
         property string label: ""
         property string tooltipText: ""
+        property string tooltipTitle: ""
         property color textColor: root.primaryText
         property string fontFamily: root.baseFont
         property int fontPixelSize: 16
@@ -501,9 +502,63 @@ ShellRoot {
         implicitWidth: collapseWhenHidden && !visible ? 0 : naturalImplicitWidth
         implicitHeight: module.moduleHeight
 
-        Controls.ToolTip.text: module.tooltipText
-        Controls.ToolTip.visible: module.tooltipText.length > 0 && mouseArea.containsMouse
-        Controls.ToolTip.delay: 350
+        Controls.ToolTip {
+            parent: module
+            visible: module.tooltipText.length > 0 && mouseArea.containsMouse
+            delay: 350
+            timeout: -1
+            x: Math.round((module.width - implicitWidth) / 2)
+            y: module.height + 9
+            padding: 12
+
+            background: Rectangle {
+                radius: 16
+                color: root.darkMode ? "#ed20242c" : "#edf4f6fb"
+                border.width: 1
+                border.color: root.withAlpha(root.primaryText, 0.12)
+            }
+
+            contentItem: Row {
+                spacing: 11
+
+                Rectangle {
+                    width: 36
+                    height: 36
+                    radius: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: root.withAlpha(root.launchColor, 0.12)
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: ""
+                        font.family: root.baseFont
+                        font.pixelSize: 21
+                        color: root.launchColor
+                    }
+                }
+
+                Column {
+                    spacing: 2
+
+                    Text {
+                        text: module.tooltipTitle
+                        color: root.withAlpha(root.primaryText, 0.65)
+                        font.family: root.baseFont
+                        font.pixelSize: 11
+                        visible: text.length > 0
+                        renderType: Text.NativeRendering
+                    }
+                    Text {
+                        text: module.tooltipText
+                        color: root.primaryText
+                        font.family: root.baseFont
+                        font.pixelSize: 18
+                        font.weight: Font.DemiBold
+                        renderType: Text.NativeRendering
+                    }
+                }
+            }
+        }
 
         Rectangle {
             anchors.fill: parent
@@ -3944,7 +3999,8 @@ ShellRoot {
                             id: cpuPowerTrigger
 
                             label: root.cpuPackagePowerText
-                            tooltipText: "CPU 温度：" + Math.round(root.temperatureC) + "°C"
+                            tooltipTitle: "CPU 温度"
+                            tooltipText: Math.round(root.temperatureC) + " °C"
                             textColor: root.usageSeverityColor(root.cpuPackagePowerW)
                             visible: root.cpuPackagePowerAvailable
                             collapseWhenHidden: true
