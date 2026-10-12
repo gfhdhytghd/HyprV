@@ -142,9 +142,10 @@ hl.window_rule({name='viewflow-windows-start',match={class='^ViewflowReverse-Win
 
 dofile(os.getenv('HOME') .. '/.config/HyprV/hypr/windows-fusion-dismiss.lua')
 
--- Installed Electron apps and Chrome: preserve SDR white; clip HDR over peak.
+-- Installed Electron apps and Chrome: keep SDR white untouched below the knee, roll HDR
+-- highlights off into the panel peak (the default curve dims SDR, clamp clips highlights).
 hl.window_rule({
   name = "chromium-electron-hdr-preserve-sdr-white",
   match = { class = "(?i)^(google-chrome.*|chromium.*|chrome-.*|discord|Cider|claude-desktop|Claude|chatgpt|Codex|openai-codex-electron|code|Code - OSS|code-oss|code-translucent|com\\.microsoft\\.VSCode|Cursor|deepseek-harness|QQ|qqmusic|synergy|Xmind|xmind-vana|Wave|waveterm|LM Studio|lm-studio|lmstudio|Recordly|eSearch|e-search|Notion|notion-app|Netease Cloud Music Web Player|netease-cloud-music-web-player|lzc-client-desktop|Chatbox|xyz\\.chatboxapp\\.app)$" },
-  tonemap = "clamp",
+  tonemap = "limited",
 })
