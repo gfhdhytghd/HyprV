@@ -8,8 +8,4 @@ if f then
 end
 local t = math.max(0, math.min(1, (level - 70) / 30))
 local desktop = math.floor(173 + (446 - 173) * t + 0.5)
-local client = desktop
-require("hypr.lib").plugin_config_if_available("plugin.hypr_sdr_white.reference_luminance", {
-  plugin = { hypr_sdr_white = { reference_luminance = client } },
-})
 return desktop

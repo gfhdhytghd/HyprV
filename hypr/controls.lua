@@ -21,13 +21,12 @@ local goal, dragging, verifyTicks, confirmRetries, confirmFailed = nil, false, n
 local requestSequence = 0
 local maxConfirmRetries = 3
 M.stats={hardware_jobs=0,sdr_updates=0,verification_reads=0,verification_retries=0}
-local appliedDesktop, appliedClient
+local appliedDesktop, forceSDR
 local function targets(level)
   local t=clamp((level-70)/30,0,1)
-  local white=round(cfg.desktop+(cfg.peak-cfg.desktop)*t)
-  return white,white
+  return round(cfg.desktop+(cfg.peak-cfg.desktop)*t)
 end
-appliedDesktop,appliedClient=targets(saved)
+appliedDesktop=targets(saved)
 -- Hardware percent: linear 0..10, then logarithmic 10..100 over UI 10..70.
 local function hardwarePercent(level)
   level=clamp(level,0,70)
@@ -35,9 +34,8 @@ local function hardwarePercent(level)
   return 10*10^((level-10)/60)
 end
 function M.plan(level)
-  local d,c=targets(level)
   local minimum=cfg.backend=="backlight" and 1 or 0
-  return clamp(round(maximum*hardwarePercent(level)/100),minimum,maximum),d,c
+  return clamp(round(maximum*hardwarePercent(level)/100),minimum,maximum)
 end
 local function rawLevel(r)
   local percent=100*r/maximum
@@ -51,21 +49,16 @@ local function notify(kind,level)
   hl.exec_cmd("quickshell -p " .. quote(root .. "/quickshell") .. " ipc call quickAdjust " .. kind .. (level and (" " .. level) or ""))
 end
 local function applySDR(level)
-  local d,c=targets(level)
-  if d==appliedDesktop and c==appliedClient then return end
+  -- hypr-sdr-white follows sdr_max_luminance and notifies clients on its own.
+  local d=targets(level)
+  if d==appliedDesktop and not forceSDR then return end
   M.stats.sdr_updates=M.stats.sdr_updates+1
-  local plugin=hl.plugin and hl.plugin.hypr_sdr_white
-  assert(plugin and plugin.refresh,"hypr-sdr-white is not loaded")
-  hl.config({plugin={hypr_sdr_white={reference_luminance=c}}})
-  if d~=appliedDesktop then
-    local mon=assert(hl.get_monitor(cfg.output),"Display unavailable")
-    local p=mon.position
-    local fields={output=cfg.output,mode=cfg.mode,position=p.x .. "x" .. p.y,scale=mon.scale,transform=mon.transform,bitdepth=10,cm="hdr",sdr_min_luminance=cfg.sdr_min,sdr_max_luminance=d}
-    for k,v in pairs(cfg.monitor or {}) do fields[k]=v end
-    hl.monitor(fields)
-  end
-  plugin.refresh()
-  appliedDesktop,appliedClient=d,c
+  local mon=assert(hl.get_monitor(cfg.output),"Display unavailable")
+  local p=mon.position
+  local fields={output=cfg.output,mode=cfg.mode,position=p.x .. "x" .. p.y,scale=mon.scale,transform=mon.transform,bitdepth=10,cm="hdr",sdr_min_luminance=cfg.sdr_min,sdr_max_luminance=d}
+  for k,v in pairs(cfg.monitor or {}) do fields[k]=v end
+  hl.monitor(fields)
+  appliedDesktop,forceSDR=d,false
 end
 local function persist(level)
   local f=assert(io.open(state .. ".tmp","w")); f:write('{"level":' .. level .. '}'); f:close(); assert(os.rename(state .. ".tmp",state))
@@ -150,7 +143,7 @@ function M.brightness_step(delta)
   local level=M.brightness_get()
   if level then M.brightness_set(level+delta,true) else notice("Reading display brightness; try again shortly") end
 end
-function M.restore() appliedClient=nil; M.brightness_set(saved,false) end
+function M.restore() forceSDR=true; M.brightness_set(saved,false) end
 function M.volume(action,value)
   local cmd
   if action=="set" then cmd="wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ " .. string.format("%.2f",clamp(assert(tonumber(value)),0,100)/100)
