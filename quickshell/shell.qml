@@ -72,7 +72,6 @@ ShellRoot {
     readonly property var bluetoothDeviceObjects: bluetoothAdapterObject && bluetoothAdapterObject.devices
         ? Array.from(bluetoothAdapterObject.devices.values || [])
         : []
-    readonly property string brightnessScriptPath: configDir + "/hypr/scripts/brightness"
     readonly property string fanControlHelperPath: "/usr/local/libexec/hyprv-fanctl"
     readonly property int brightnessUiStepPercent: 2
     property int brightnessPercent: 50
@@ -115,6 +114,9 @@ ShellRoot {
     property bool _showQuickAdjustAfterBrightnessProbe: false
     property bool _brightnessProbeQueued: false
     property int _pendingBrightnessPercent: -1
+    property bool _pendingBrightnessFinish: false
+    property bool _brightnessInteractionActive: false
+    property int _brightnessRequestSequence: 0
     property int _pendingChassisFanPercent: -1
     property int _pendingPumpFanPercent: -1
     property double _lastFanInteractionTimestamp: 0
@@ -162,7 +164,8 @@ ShellRoot {
 
     readonly property var hyprWorkspaces: {
         const values = Array.from(Hyprland.workspaces?.values || []);
-        const filtered = values.filter(ws => (ws?.id ?? -1) > -1);
+        const filtered = values.filter(ws => (ws?.id ?? -1) > -1
+            && ws?.name !== "viewflow-underlay");
         filtered.sort((a, b) => (a?.id ?? 0) - (b?.id ?? 0));
         return filtered.length > 0 ? filtered : [{
                 id: 1,
@@ -2444,6 +2447,10 @@ ShellRoot {
     }
 
     function trayIconSource(item) {
+        // Use the bundled LAIS icon independently of the installed icon theme.
+        if (item?.id === "local-ai-service") {
+            return Qt.resolvedUrl("assets/lais/lais.svg?v=deepblue").toString();
+        }
         let icon = item?.icon || "";
         if (!icon) {
             return "";
@@ -2711,10 +2718,37 @@ ShellRoot {
 
     function applyBrightnessPercent(value) {
         const nextValue = updateBrightnessPercentLocally(value);
+        _brightnessInteractionActive = true;
+        _brightnessRequestSequence += 1;
         _pendingBrightnessPercent = nextValue;
-        if (!brightnessSetProcess.running) {
-            brightnessApplyTimer.restart();
+        _pendingBrightnessFinish = false;
+        brightnessProbeDebounce.stop();
+        submitPendingBrightness();
+    }
+
+    function finishBrightnessPercent(value) {
+        const nextValue = updateBrightnessPercentLocally(value);
+        _brightnessInteractionActive = false;
+        _brightnessRequestSequence += 1;
+        _pendingBrightnessPercent = nextValue;
+        _pendingBrightnessFinish = true;
+        submitPendingBrightness();
+    }
+
+    function submitPendingBrightness() {
+        if (_pendingBrightnessPercent < 0 || brightnessSetProcess.running) {
+            return;
         }
+        const nextValue = _pendingBrightnessPercent;
+        const finishing = _pendingBrightnessFinish;
+        _pendingBrightnessPercent = -1;
+        _pendingBrightnessFinish = false;
+        brightnessSetProcess.finishing = finishing;
+        brightnessSetProcess.requestSequence = _brightnessRequestSequence;
+        brightnessSetProcess.command = ["hyprctl", "eval", finishing
+            ? 'require("hypr.controls").brightness_finish(' + nextValue + ')'
+            : 'require("hypr.controls").brightness_set(' + nextValue + ', false, true)'];
+        brightnessSetProcess.running = true;
     }
 
     function clampFanPercent(value) {
@@ -2913,15 +2947,20 @@ ShellRoot {
     Process {
         id: quickAdjustBrightnessProbe
 
+        property int requestSequence: 0
         running: false
-        command: [root.brightnessScriptPath, "--get-level"]
+        onRunningChanged: if (running) requestSequence = root._brightnessRequestSequence
+        command: ["hyprctl", "repl", 'return require("hypr.controls").brightness_get()']
         stdout: StdioCollector {
             id: quickAdjustBrightnessProbeStdout
         }
 
         onExited: function(exitCode) {
             const parsed = Number((quickAdjustBrightnessProbeStdout.text || "").trim());
-            if (exitCode === 0 && isFinite(parsed)) {
+            if (exitCode === 0 && isFinite(parsed)
+                    && requestSequence === root._brightnessRequestSequence
+                    && !root._brightnessInteractionActive
+                    && root._pendingBrightnessPercent < 0 && !brightnessSetProcess.running) {
                 root.brightnessPercent = root.snapBrightnessPercent(parsed);
             }
             if (root._showQuickAdjustAfterBrightnessProbe) {
@@ -2939,30 +2978,19 @@ ShellRoot {
     Process {
         id: brightnessSetProcess
 
+        property bool finishing: false
+        property int requestSequence: 0
         running: false
 
-        onExited: {
+        onExited: function(exitCode) {
+            if (exitCode !== 0) {
+                console.warn("Brightness request failed with exit code", exitCode);
+            }
             if (root._pendingBrightnessPercent >= 0) {
-                brightnessApplyTimer.restart();
-            } else {
+                root.submitPendingBrightness();
+            } else if (finishing && requestSequence === root._brightnessRequestSequence) {
                 brightnessProbeDebounce.restart();
             }
-        }
-    }
-
-    Timer {
-        id: brightnessApplyTimer
-
-        interval: 60
-        repeat: false
-        onTriggered: {
-            if (root._pendingBrightnessPercent < 0 || brightnessSetProcess.running) {
-                return;
-            }
-            const nextValue = root._pendingBrightnessPercent;
-            root._pendingBrightnessPercent = -1;
-            brightnessSetProcess.command = [root.brightnessScriptPath, "--set-level", String(nextValue)];
-            brightnessSetProcess.running = true;
         }
     }
 
@@ -3247,7 +3275,7 @@ ShellRoot {
         id: audioStatusPoll
 
         interval: 750
-        command: ["sh", root.configDir + "/quickshell/scripts/audio-status.sh"]
+        command: ["lua", root.configDir + "/hypr/scripts/control-worker.lua", "audio-status"]
         onUpdated: function(output, exitCode) {
             if (exitCode === 0) {
                 root.updateAudioState(output);
@@ -3388,7 +3416,7 @@ ShellRoot {
             root.refreshBrightnessStatus(false);
         }
 
-        function showBrightnessLevel(level) {
+        function showBrightnessLevel(level: int) {
             const parsed = Number(level);
             if (isFinite(parsed)) {
                 root.updateBrightnessPercentLocally(parsed);
@@ -3505,6 +3533,7 @@ ShellRoot {
             readonly property bool calendarVisible: root.calendarOpen && root.calendarScreen === modelData
             property bool calendarPanelPresented: false
             property real calendarProgress: 0
+            property bool calendarDismissArmed: false
             readonly property real fullSectionSpacing: 9.5
             readonly property real compactSectionSpacing: 5
             readonly property real fullLeftWidth: 10
@@ -3537,12 +3566,19 @@ ShellRoot {
 
             onCalendarVisibleChanged: {
                 if (calendarVisible) {
+                    calendarLeaveTimer.stop();
                     calendarPanelCloseTimer.stop();
+                    calendarDismissArmed = false;
+                    calendarDismissArmTimer.restart();
                     calendarPanelPresented = true;
                     Qt.callLater(() => calendarProgress = 1);
-                } else if (calendarPanelPresented) {
+                } else {
+                    calendarLeaveTimer.stop();
+                    calendarDismissArmTimer.stop();
+                    calendarDismissArmed = false;
                     calendarProgress = 0;
-                    calendarPanelCloseTimer.restart();
+                    if (calendarPanelPresented)
+                        calendarPanelCloseTimer.restart();
                 }
             }
 
@@ -3610,11 +3646,26 @@ ShellRoot {
             }
 
             Timer {
+                id: calendarDismissArmTimer
+
+                interval: 260
+                repeat: false
+                onTriggered: barWindow.calendarDismissArmed = barWindow.calendarVisible
+            }
+
+            Timer {
                 id: calendarPanelCloseTimer
 
                 interval: 210
                 repeat: false
-                onTriggered: barWindow.calendarPanelPresented = false
+                onTriggered: {
+                    if (barWindow.calendarVisible) {
+                        barWindow.calendarProgress = 1;
+                        return;
+                    }
+                    barWindow.calendarProgress = 0;
+                    barWindow.calendarPanelPresented = false;
+                }
             }
 
             Connections {
@@ -3647,6 +3698,15 @@ ShellRoot {
                     height: barWindow.calendarVisible ? parent.height : 0
                     anchors.top: parent.top
                     enabled: barWindow.calendarVisible
+                    hoverEnabled: true
+                    acceptedButtons: Qt.LeftButton
+                    onPositionChanged: {
+                        if (barWindow.calendarVisible
+                                && barWindow.calendarDismissArmed
+                                && !root.calendarChildOpening
+                                && !root.calendarChildActive)
+                            calendarLeaveTimer.restart();
+                    }
                     onClicked: root.requestCalendarClose()
                 }
 
@@ -3673,6 +3733,26 @@ ShellRoot {
                             paddingLeft: 7
                             paddingRight: 4
                             onLeftClicked: root.runDetached(["rofi-wayland", "-show", "drun"])
+                        }
+
+                        // Viewflow Windows fusion button
+                        TextModule {
+                            id: viewflowWindowsButton
+                            label: "󰖳"
+                            textColor: root.launchColor
+                            fontFamily: root.baseFont
+                            fontPixelSize: 17
+                            moduleHeight: 38
+                            interactive: true
+                            hoverable: true
+                            paddingLeft: 7
+                            paddingRight: 7
+                            onLeftClicked: {
+                                console.info("Viewflow Start button clicked");
+                                const point = viewflowWindowsButton.mapToGlobal(0, viewflowWindowsButton.height);
+                                root.runDetached([root.homeDir + "/.local/bin/viewflow-windows", "start", "--anchor", String(Math.round(point.x)), String(Math.round(point.y + 8))]);
+                            }
+                            onRightClicked: root.runDetached([root.homeDir + "/.local/bin/viewflow-windows", "menu"])
                         }
 
                         Item {
@@ -3755,8 +3835,8 @@ ShellRoot {
                     id: centerSection
 
                     readonly property real attachedCenterOffset: barWindow.calendarPanelPresented ? 0 : dynamicIsland.attachedCenterOffset
-                    width: barWindow.calendarVisible ? calendarPanel.width : dynamicIsland.width
-                    height: barWindow.calendarVisible ? calendarPanel.height : dynamicIsland.height
+                    width: barWindow.calendarPanelPresented ? calendarPanel.width : dynamicIsland.width
+                    height: barWindow.calendarPanelPresented ? calendarPanel.height : dynamicIsland.height
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.horizontalCenterOffset: centerSection.attachedCenterOffset
                     anchors.top: parent.top
@@ -3863,7 +3943,7 @@ ShellRoot {
                         bridge: calendarBridge
                         embeddedSurface: true
                         visible: barWindow.calendarPanelPresented
-                        opacity: Math.max(0, Math.min(1, (barWindow.calendarProgress - 0.16) / 0.84))
+                        opacity: barWindow.calendarProgress
                         transformOrigin: Item.Top
 
                         onPointerInsideChanged: {
@@ -4021,16 +4101,16 @@ ShellRoot {
                             paddingLeft: 8
                             paddingRight: 12
                             onLeftClicked: {
-                                root.runDetached([root.configDir + "/hypr/scripts/volume", "--toggle"]);
+                                root.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("toggle")']);
                                 audioFollowupRefresh.restart();
                             }
                             onRightClicked: root.runDetached(["pavucontrol"])
                             onWheelUp: {
-                                root.runDetached([root.configDir + "/hypr/scripts/volume", "--dec"]);
+                                root.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("dec")']);
                                 audioFollowupRefresh.restart();
                             }
                             onWheelDown: {
-                                root.runDetached([root.configDir + "/hypr/scripts/volume", "--inc"]);
+                                root.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("inc")']);
                                 audioFollowupRefresh.restart();
                             }
                         }

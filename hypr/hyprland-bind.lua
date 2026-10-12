@@ -3,10 +3,13 @@ local lib = require("hypr.lib")
 local main = "SUPER"
 
 lib.bind_exec("SUPER_L", "true")
-lib.bind_exec(main .. " + Q", "kitty")
+-- Keep the local terminal shortcut available while Viewflow owns pointer input.
+-- Otherwise SUPER is forwarded as Command and SUPER+Q becomes macOS Command+Q.
+lib.bind_exec(main .. " + Q", "kitty", { allow_input_capture = true })
 hl.bind(main .. " + W", hl.dsp.window.close())
 lib.bind_exec(main .. " + L", "hyprlock")
 lib.bind_exec(main .. " + M", "wlogout --protocol layer-shell -b 5")
+lib.bind_exec(main .. " + ALT + M", "bash ~/.config/HyprV/hypr/scripts/toggle-monitor-power.sh", { allow_input_capture = true })
 lib.bind_exec(main .. " + F", "code")
 lib.bind_exec(main .. " + SHIFT + F", "cursor")
 hl.bind(main .. " + SHIFT + M", hl.dsp.exit())
@@ -40,14 +43,14 @@ hl.bind(main .. " + D", hl.dsp.focus({ workspace = "100" }))
 hl.bind(main .. " + SHIFT + up", hl.dsp.workspace.move({ monitor = "+1" }))
 hl.bind(main .. " + SHIFT + down", hl.dsp.workspace.move({ monitor = "-1" }))
 
-lib.bind_exec(main .. " + I", "zen-browser")
+lib.bind_exec(main .. " + I", "~/.config/HyprV/hypr/scripts/browser-wl-relabel.sh zen-browser")
 lib.bind_exec(main .. " + B", "~/.config/HyprV/hypr/scripts/toggle-battery-mode.sh")
 lib.bind_exec(main .. " + T", "~/.config/HyprV/hypr/scripts/rotate-screen-ccw.sh")
 lib.bind_exec(main .. " + R", "~/.config/hypr/scripts/record-script.sh --fullscreen-sound")
 lib.bind_exec(main .. " + SHIFT + R", "~/.config/HyprV/quickshell/scripts/reload.sh && fcitx5")
 lib.bind_exec(main .. " + SHIFT + S", "~/.config/hypr/scripts/ocr.sh")
 lib.bind_exec(main .. " + N", "swaync-client -t -sw")
-lib.bind_exec(main .. " + SHIFT + b", "brightnessctl s 50%")
+hl.bind(main .. " + SHIFT + b", function() require("hypr.controls").brightness_set(35, true) end)
 lib.bind_exec(main .. " + A", "quickshell ipc call -p $HOME/.config/HyprV/quickshell controlPanel toggle")
 
 hl.bind(main .. " + left", hl.dsp.focus({ direction = "left" }))

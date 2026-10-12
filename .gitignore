@@ -1,0 +1,3 @@
+# Local backup copies
+*.backup-*
+*.before-*

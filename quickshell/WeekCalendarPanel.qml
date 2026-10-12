@@ -14,12 +14,17 @@ Rectangle {
     property real tooltipAboveY: 0
     property int allDayLaneCount: 0
     property real hourHeight: 44
+    property bool horizontalScrollInitialized: false
+    property bool rebasingHorizontalScroll: false
+    readonly property int bufferDayCount: 21
+    readonly property int bufferLeadingDays: 7
     readonly property real toolbarHeight: 58
     readonly property real dayHeaderHeight: 48
     readonly property real allDayHeight: Math.max(34, Math.min(106, 12 + allDayLaneCount * 24))
     readonly property real timeColumnWidth: 58
     readonly property real dayWidth: (width - timeColumnWidth - 12) / 7
-    readonly property bool pointerInside: panelHover.hovered
+    readonly property bool pointerInside: visible && panelHover.hovered
+    readonly property date currentTime: shellRoot ? shellRoot.now : new Date()
     readonly property color textColor: shellRoot ? shellRoot.primaryText : "#cdd6f4"
     readonly property color mutedColor: shellRoot ? shellRoot.withAlpha(textColor, shellRoot.darkMode ? 0.62 : 0.58) : "#8a8a96"
     readonly property color accentColor: shellRoot ? shellRoot.launchColor : "#407cdd"
@@ -137,7 +142,7 @@ Rectangle {
     function rebuildLayouts() {
         if (!bridge)
             return;
-        const week = bridge.weekStart;
+        const week = bufferStartDate();
         const raw = (bridge.events || []).filter(eventVisible);
         const timed = [];
         const allDay = [];
@@ -148,8 +153,8 @@ Rectangle {
                 const startDay = allDayDate(event.start);
                 const endDay = allDayDate(event.end);
                 const startIndex = Math.max(0, dayDiff(startDay, week));
-                const endIndex = Math.min(7, Math.max(startIndex + 1, dayDiff(endDay, week)));
-                if (startIndex < 7 && endIndex > 0) {
+                const endIndex = Math.min(bufferDayCount, Math.max(startIndex + 1, dayDiff(endDay, week)));
+                if (startIndex < bufferDayCount && endIndex > 0) {
                     allDay.push({
                         "event": event,
                         "startDay": startIndex,
@@ -162,7 +167,7 @@ Rectangle {
 
             const eventStart = new Date(event.start);
             const eventEnd = new Date(event.end);
-            for (let day = 0; day < 7; day++) {
+            for (let day = 0; day < bufferDayCount; day++) {
                 const dayStart = new Date(week);
                 dayStart.setDate(dayStart.getDate() + day);
                 const dayEnd = new Date(dayStart);
@@ -196,7 +201,7 @@ Rectangle {
             allDayEnds[lane] = allDay[i].startDay + allDay[i].span;
         }
 
-        for (let day = 0; day < 7; day++) {
+        for (let day = 0; day < bufferDayCount; day++) {
             const rows = timed.filter(item => item.day === day).sort((a, b) => a.startMinute - b.startMinute || a.endMinute - b.endMinute);
             const laneEnds = [];
             for (let i = 0; i < rows.length; i++) {
@@ -218,14 +223,20 @@ Rectangle {
         timedLayout = timed;
     }
 
+    function bufferStartDate() {
+        const d = new Date(bridge ? bridge.weekStart : currentTime);
+        d.setDate(d.getDate() - bufferLeadingDays);
+        return d;
+    }
+
     function dayAt(index) {
-        const d = new Date(bridge ? bridge.weekStart : new Date());
+        const d = bufferStartDate();
         d.setDate(d.getDate() + index);
         return d;
     }
 
     function isToday(value) {
-        const now = new Date();
+        const now = currentTime;
         return value.getFullYear() === now.getFullYear()
             && value.getMonth() === now.getMonth()
             && value.getDate() === now.getDate();
@@ -234,9 +245,11 @@ Rectangle {
     function rangeLabel() {
         if (!bridge)
             return "";
-        const start = bridge.weekStart;
-        const end = new Date(start);
-        end.setDate(end.getDate() + 6);
+        const firstIndex = Math.max(0, Math.min(bufferDayCount - 1, Math.floor(timeline.contentX / dayWidth + 0.0001)));
+        const lastIndex = Math.max(firstIndex, Math.min(bufferDayCount - 1,
+            Math.ceil((timeline.contentX + timeline.width) / dayWidth - 0.0001) - 1));
+        const start = dayAt(firstIndex);
+        const end = dayAt(lastIndex);
         if (start.getFullYear() !== end.getFullYear())
             return Qt.formatDate(start, "yyyy/M/d") + " – " + Qt.formatDate(end, "yyyy/M/d");
         if (start.getMonth() !== end.getMonth())
@@ -245,12 +258,78 @@ Rectangle {
     }
 
     function positionNearNow() {
-        const hour = isToday(dayAt(Math.max(0, Math.min(6, dayDiff(new Date(), bridge ? bridge.weekStart : new Date()))))) ? new Date().getHours() : 8;
+        const hour = dayDiff(currentTime, bufferStartDate()) >= 0
+                && dayDiff(currentTime, bufferStartDate()) < bufferDayCount
+            ? currentTime.getHours() : 8;
         timeline.contentY = Math.max(0, Math.min(timeline.contentHeight - timeline.height, (hour - 2) * hourHeight));
     }
 
-    onBridgeChanged: rebuildLayouts()
-    onVisibleChanged: if (visible) Qt.callLater(positionNearNow)
+    function initializeHorizontalScroll() {
+        if (horizontalScrollInitialized || dayWidth <= 0)
+            return;
+        rebasingHorizontalScroll = true;
+        timeline.contentX = bufferLeadingDays * dayWidth;
+        rebasingHorizontalScroll = false;
+        horizontalScrollInitialized = true;
+    }
+
+    function rebaseHorizontalScroll() {
+        if (!horizontalScrollInitialized || rebasingHorizontalScroll || !bridge || dayWidth <= 0)
+            return;
+        const leftThreshold = 3 * dayWidth;
+        const rightThreshold = 11 * dayWidth;
+        if (timeline.contentX >= leftThreshold && timeline.contentX <= rightThreshold)
+            return;
+
+        rebasingHorizontalScroll = true;
+        if (timeline.contentX < leftThreshold) {
+            timeline.contentX += 7 * dayWidth;
+            bridge.previousWeek();
+        } else {
+            timeline.contentX -= 7 * dayWidth;
+            bridge.nextWeek();
+        }
+        rebasingHorizontalScroll = false;
+    }
+
+    function scrollByWeek(direction) {
+        initializeHorizontalScroll();
+        timeline.contentX = Math.max(0, Math.min(timeline.contentWidth - timeline.width,
+            timeline.contentX + direction * 7 * dayWidth));
+    }
+
+    function handleCalendarScroll(event) {
+        const pixelX = event.pixelDelta ? event.pixelDelta.x : 0;
+        const pixelY = event.pixelDelta ? event.pixelDelta.y : 0;
+        const deltaX = pixelX !== 0 ? pixelX : event.angleDelta.x;
+        const deltaY = pixelY !== 0 ? pixelY : event.angleDelta.y;
+
+        if (deltaX === 0 && deltaY === 0) {
+            event.accepted = false;
+            return;
+        }
+
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            const scrollDelta = pixelX !== 0 ? pixelX : deltaX / 120 * dayWidth;
+            timeline.contentX = Math.max(0, Math.min(timeline.contentWidth - timeline.width,
+                timeline.contentX - scrollDelta));
+        } else {
+            const scrollDelta = pixelY !== 0 ? pixelY : deltaY / 120 * hourHeight * 3;
+            timeline.contentY = Math.max(0, Math.min(timeline.contentHeight - timeline.height,
+                timeline.contentY - scrollDelta));
+        }
+        event.accepted = true;
+    }
+
+    onBridgeChanged: {
+        rebuildLayouts();
+        horizontalScrollInitialized = false;
+        Qt.callLater(initializeHorizontalScroll);
+    }
+    onVisibleChanged: if (visible) Qt.callLater(() => {
+        initializeHorizontalScroll();
+        positionNearNow();
+    })
 
     Connections {
         target: root.bridge
@@ -261,7 +340,10 @@ Rectangle {
 
     HoverHandler {
         id: panelHover
+        enabled: root.visible && root.opacity > 0.01
     }
+
+    Component.onCompleted: Qt.callLater(initializeHorizontalScroll)
 
     Row {
         id: toolbar
@@ -295,13 +377,12 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 7
 
-                HeaderButton { label: "‹"; onClicked: if (root.bridge) root.bridge.previousWeek() }
+                HeaderButton { label: "‹"; onClicked: root.scrollByWeek(-1) }
                 HeaderButton {
-                    label: root.rangeLabel() + "  ·  " + Qt.formatTime(root.shellRoot ? root.shellRoot.now : new Date(), "HH:mm")
+                    label: root.rangeLabel() + "  ·  " + Qt.formatTime(root.currentTime, "HH:mm")
                     onClicked: root.closeRequested()
                 }
-                HeaderButton { label: "›"; onClicked: if (root.bridge) root.bridge.nextWeek() }
-                HeaderButton { label: "今天"; onClicked: if (root.bridge) root.bridge.today() }
+                HeaderButton { label: "›"; onClicked: root.scrollByWeek(1) }
             }
         }
 
@@ -325,45 +406,59 @@ Rectangle {
         color: root.lineColor
     }
 
-    Row {
-        id: dayHeaders
+    Item {
+        id: dayHeaderViewport
         x: root.timeColumnWidth
         y: root.toolbarHeight
         width: parent.width - root.timeColumnWidth - 12
         height: root.dayHeaderHeight
+        clip: true
 
-        Repeater {
-            model: 7
-            delegate: Item {
-                required property int index
-                width: root.dayWidth
-                height: dayHeaders.height
-                readonly property date day: root.dayAt(index)
+        WheelHandler {
+            target: null
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: event => root.handleCalendarScroll(event)
+        }
 
-                Column {
-                    anchors.centerIn: parent
-                    spacing: 1
-                    Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: ["一", "二", "三", "四", "五", "六", "日"][index]
-                        color: root.mutedColor
-                        font.family: root.shellRoot ? root.shellRoot.baseFont : "sans-serif"
-                        font.pixelSize: 11
-                        font.weight: Font.DemiBold
-                    }
-                    Rectangle {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        width: 28
-                        height: 24
-                        radius: 12
-                        color: root.isToday(parent.parent.day) ? root.accentColor : "transparent"
+        Row {
+            id: dayHeaders
+            x: -timeline.contentX
+            width: root.bufferDayCount * root.dayWidth
+            height: parent.height
+
+            Repeater {
+                model: root.bufferDayCount
+                delegate: Item {
+                    required property int index
+                    width: root.dayWidth
+                    height: dayHeaders.height
+                    readonly property date day: root.dayAt(index)
+
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 1
                         Text {
-                            anchors.centerIn: parent
-                            text: parent.parent.parent.day.getDate()
-                            color: root.isToday(parent.parent.parent.day) ? "#ffffff" : root.textColor
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: ["一", "二", "三", "四", "五", "六", "日"][index % 7]
+                            color: root.mutedColor
                             font.family: root.shellRoot ? root.shellRoot.baseFont : "sans-serif"
-                            font.pixelSize: 14
-                            font.weight: Font.Bold
+                            font.pixelSize: 11
+                            font.weight: Font.DemiBold
+                        }
+                        Rectangle {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            width: 28
+                            height: 24
+                            radius: 12
+                            color: root.isToday(parent.parent.day) ? root.accentColor : "transparent"
+                            Text {
+                                anchors.centerIn: parent
+                                text: parent.parent.parent.day.getDate()
+                                color: root.isToday(parent.parent.parent.day) ? "#ffffff" : root.textColor
+                                font.family: root.shellRoot ? root.shellRoot.baseFont : "sans-serif"
+                                font.pixelSize: 14
+                                font.weight: Font.Bold
+                            }
                         }
                     }
                 }
@@ -379,39 +474,51 @@ Rectangle {
         height: root.allDayHeight
         clip: true
 
-        Repeater {
-            model: root.allDayLayout
-            delegate: Rectangle {
-                required property var modelData
-                x: modelData.startDay * root.dayWidth + 3
-                y: 6 + modelData.lane * 24
-                width: modelData.span * root.dayWidth - 6
-                height: 20
-                radius: 6
-                color: root.shellRoot ? root.shellRoot.withAlpha(root.eventColor(modelData.event), 0.80) : root.eventColor(modelData.event)
-                border.width: 1
-                border.color: root.shellRoot ? root.shellRoot.withAlpha("#ffffff", 0.22) : "transparent"
+        WheelHandler {
+            target: null
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: event => root.handleCalendarScroll(event)
+        }
 
-                Text {
-                    anchors.fill: parent
-                    anchors.leftMargin: 7
-                    anchors.rightMargin: 5
-                    text: modelData.event.summary || "(无标题)"
-                    color: "#ffffff"
-                    font.family: root.shellRoot ? root.shellRoot.baseFont : "sans-serif"
-                    font.pixelSize: 10
-                    font.weight: Font.DemiBold
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                }
-                MouseArea {
-                    id: allDayMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onEntered: root.showEventTooltip(modelData.event, parent)
-                    onExited: if (root.hoveredEvent === modelData.event) root.hoveredEvent = null
-                    onClicked: if (root.bridge) root.bridge.openEvent(modelData.event)
+        Item {
+            x: -timeline.contentX
+            width: root.bufferDayCount * root.dayWidth
+            height: parent.height
+
+            Repeater {
+                model: root.allDayLayout
+                delegate: Rectangle {
+                    required property var modelData
+                    x: modelData.startDay * root.dayWidth + 3
+                    y: 6 + modelData.lane * 24
+                    width: modelData.span * root.dayWidth - 6
+                    height: 20
+                    radius: 6
+                    color: root.shellRoot ? root.shellRoot.withAlpha(root.eventColor(modelData.event), 0.80) : root.eventColor(modelData.event)
+                    border.width: 1
+                    border.color: root.shellRoot ? root.shellRoot.withAlpha("#ffffff", 0.22) : "transparent"
+
+                    Text {
+                        anchors.fill: parent
+                        anchors.leftMargin: 7
+                        anchors.rightMargin: 5
+                        text: modelData.event.summary || "(无标题)"
+                        color: "#ffffff"
+                        font.family: root.shellRoot ? root.shellRoot.baseFont : "sans-serif"
+                        font.pixelSize: 10
+                        font.weight: Font.DemiBold
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+                    MouseArea {
+                        id: allDayMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onEntered: root.showEventTooltip(modelData.event, parent)
+                        onExited: if (root.hoveredEvent === modelData.event) root.hoveredEvent = null
+                        onClicked: if (root.bridge) root.bridge.openEvent(modelData.event)
+                    }
                 }
             }
         }
@@ -438,19 +545,29 @@ Rectangle {
 
     Flickable {
         id: timeline
-        x: 0
+        x: root.timeColumnWidth
         y: allDayArea.y + allDayArea.height
-        width: parent.width
+        width: parent.width - root.timeColumnWidth - 12
         height: parent.height - y
-        contentWidth: width
+        contentWidth: root.bufferDayCount * root.dayWidth
         contentHeight: 24 * root.hourHeight
         clip: true
         boundsBehavior: Flickable.StopAtBounds
         flickDeceleration: 2600
+        flickableDirection: Flickable.HorizontalAndVerticalFlick
+        pressDelay: 80
+
+        onContentXChanged: root.rebaseHorizontalScroll()
+
+        WheelHandler {
+            target: null
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: event => root.handleCalendarScroll(event)
+        }
 
         Item {
             id: timelineContent
-            width: timeline.width
+            width: timeline.contentWidth
             height: timeline.contentHeight
 
             Repeater {
@@ -461,19 +578,8 @@ Rectangle {
                     width: timelineContent.width
                     height: 1
 
-                    Text {
-                        x: 7
-                        y: -7
-                        width: root.timeColumnWidth - 14
-                        text: index < 24 ? (index < 10 ? "0" : "") + index + ":00" : ""
-                        color: root.mutedColor
-                        font.family: root.shellRoot ? root.shellRoot.baseFont : "sans-serif"
-                        font.pixelSize: 9
-                        horizontalAlignment: Text.AlignRight
-                    }
                     Rectangle {
-                        x: root.timeColumnWidth
-                        width: timelineContent.width - root.timeColumnWidth - 12
+                        width: timelineContent.width
                         height: 1
                         color: root.lineColor
                     }
@@ -481,10 +587,10 @@ Rectangle {
             }
 
             Repeater {
-                model: 8
+                model: root.bufferDayCount + 1
                 delegate: Rectangle {
                     required property int index
-                    x: root.timeColumnWidth + index * root.dayWidth
+                    x: index * root.dayWidth
                     y: 0
                     width: 1
                     height: timelineContent.height
@@ -497,7 +603,7 @@ Rectangle {
                 delegate: Rectangle {
                     required property var modelData
                     readonly property real laneWidth: (root.dayWidth - 6) / modelData.lanes
-                    x: root.timeColumnWidth + modelData.day * root.dayWidth + 3 + modelData.lane * laneWidth
+                    x: modelData.day * root.dayWidth + 3 + modelData.lane * laneWidth
                     y: modelData.startMinute / 60 * root.hourHeight + 1
                     width: Math.max(18, laneWidth - 2)
                     height: Math.max(18, (modelData.endMinute - modelData.startMinute) / 60 * root.hourHeight - 2)
@@ -542,9 +648,10 @@ Rectangle {
             }
 
             Rectangle {
-                visible: root.bridge && root.dayDiff(new Date(), root.bridge.weekStart) >= 0 && root.dayDiff(new Date(), root.bridge.weekStart) < 7
-                x: root.timeColumnWidth + root.dayDiff(new Date(), root.bridge.weekStart) * root.dayWidth
-                y: (new Date().getHours() * 60 + new Date().getMinutes()) / 60 * root.hourHeight
+                visible: root.bridge && root.dayDiff(root.currentTime, root.bufferStartDate()) >= 0
+                    && root.dayDiff(root.currentTime, root.bufferStartDate()) < root.bufferDayCount
+                x: root.dayDiff(root.currentTime, root.bufferStartDate()) * root.dayWidth
+                y: (root.currentTime.getHours() * 60 + root.currentTime.getMinutes() + root.currentTime.getSeconds() / 60) / 60 * root.hourHeight
                 width: root.dayWidth
                 height: 2
                 color: root.accentColor
@@ -569,6 +676,35 @@ Rectangle {
             radius: 2
             color: root.mutedColor
             opacity: timeline.moving ? 0.65 : 0.25
+        }
+    }
+
+    Item {
+        x: 0
+        y: timeline.y
+        width: root.timeColumnWidth
+        height: timeline.height
+        clip: true
+
+        Item {
+            y: -timeline.contentY
+            width: parent.width
+            height: timeline.contentHeight
+
+            Repeater {
+                model: 25
+                delegate: Text {
+                    required property int index
+                    x: 7
+                    y: index * root.hourHeight - 7
+                    width: root.timeColumnWidth - 14
+                    text: index < 24 ? (index < 10 ? "0" : "") + index + ":00" : ""
+                    color: root.mutedColor
+                    font.family: root.shellRoot ? root.shellRoot.baseFont : "sans-serif"
+                    font.pixelSize: 9
+                    horizontalAlignment: Text.AlignRight
+                }
+            }
         }
     }
 

@@ -153,7 +153,7 @@ Item {
             shellRoot.audioVolumePercent = nextValue;
         }
         if (shellRoot) {
-            shellRoot.runDetached(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", (nextValue / 100).toFixed(2)]);
+            shellRoot.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("set",' + nextValue + ')']);
             shellRoot.scheduleAudioRefresh();
         }
     }
@@ -171,7 +171,7 @@ Item {
         }
         shellRoot.audioAvailable = true;
         shellRoot.audioMuted = !shellRoot.audioMuted;
-        shellRoot.runDetached(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]);
+        shellRoot.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("toggle")']);
         shellRoot.scheduleAudioRefresh();
     }
 
@@ -544,12 +544,21 @@ Item {
                         onRightClicked: popupRoot.toggleBluetoothExpanded()
                     }
 
-                    MihomoControlTile {
+                    Row {
                         width: parent.width
-                        height: popupRoot.moduleSize
-                        shellRoot: popupRoot.shellRoot
-                        expanded: popupRoot.mihomoExpanded
-                        onDetailsClicked: popupRoot.toggleMihomoExpanded()
+                        spacing: popupRoot.cardSpacing
+
+                        WindowsVmControl {
+                            width: (parent.width - popupRoot.cardSpacing) / 2
+                            height: popupRoot.moduleSize
+                            shellRoot: popupRoot.shellRoot
+                        }
+
+                        ViewflowTargetControl {
+                            width: (parent.width - popupRoot.cardSpacing) / 2
+                            height: popupRoot.moduleSize
+                            shellRoot: popupRoot.shellRoot
+                        }
                     }
 
                     Row {
@@ -667,6 +676,9 @@ Item {
                     value: popupRoot.shellRoot ? popupRoot.shellRoot.brightnessPercent : 50
                     accentColor: popupRoot.shellRoot ? popupRoot.shellRoot.brightnessColor : "#d47b1f"
                     onValueChangeRequested: function(newValue) { popupRoot.setBrightnessPercent(newValue); }
+                    onAdjustmentFinished: function(finalValue) {
+                        if (popupRoot.shellRoot) popupRoot.shellRoot.finishBrightnessPercent(finalValue);
+                    }
                 }
 
                 ControlPanelSlider {

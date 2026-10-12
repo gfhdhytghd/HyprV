@@ -10,6 +10,7 @@ Item {
     property bool connected: false
     property bool subscribed: false
     property bool loading: false
+    property int weekRequestSerial: 0
     property string lastError: ""
     property date weekStart: startOfWeek(new Date())
     property var calendars: []
@@ -100,17 +101,21 @@ Item {
 
     function loadWeek(value) {
         weekStart = startOfWeek(value);
+        const requestSerial = ++weekRequestSerial;
         if (!connected)
             return;
         const from = new Date(weekStart);
-        const to = new Date(from);
-        to.setDate(to.getDate() + 7);
+        from.setDate(from.getDate() - 7);
+        const to = new Date(weekStart);
+        to.setDate(to.getDate() + 14);
         loading = true;
         sendRequest("events.list", {
             "from": from.toISOString(),
             "to": to.toISOString(),
             "limit": 2000
         }, response => {
+            if (requestSerial !== weekRequestSerial)
+                return;
             loading = false;
             if (response.error) {
                 lastError = response.error;

@@ -73,7 +73,7 @@ Item {
         if (shellRoot.audioMuted && nextValue > 0) {
             shellRoot.audioMuted = false;
         }
-        shellRoot.runDetached(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", (nextValue / 100).toFixed(2)]);
+        shellRoot.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("set",' + nextValue + ')']);
         shellRoot.scheduleAudioRefresh();
     }
 
@@ -84,7 +84,7 @@ Item {
         restartAutoHide();
         shellRoot.audioAvailable = true;
         shellRoot.audioMuted = !shellRoot.audioMuted;
-        shellRoot.runDetached(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]);
+        shellRoot.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("toggle")']);
         shellRoot.scheduleAudioRefresh();
     }
 
@@ -155,12 +155,14 @@ Item {
             if (anchor) {
                 const point = anchor.mapToGlobal(anchor.width, anchor.height);
                 const anchorRight = Math.round(point.x - screen.x);
-                const anchorBottom = Math.round(point.y - screen.y);
                 popupBounds.x = Math.max(
                     popupRoot.popupScreenMargin,
                     Math.min(width - popupBounds.width - popupRoot.popupScreenMargin, anchorRight - popupBounds.width)
                 );
-                popupBounds.y = anchorBottom + 10;
+                const barBottom = popupRoot.shellRoot && popupRoot.shellRoot.primaryBarWindow
+                    ? Math.max(0, popupRoot.shellRoot.primaryBarWindow.exclusiveZone || 58)
+                    : 58;
+                popupBounds.y = barBottom;
                 return;
             }
 
@@ -168,7 +170,7 @@ Item {
             const barBottom = popupRoot.shellRoot && popupRoot.shellRoot.primaryBarWindow
                 ? Math.max(0, popupRoot.shellRoot.primaryBarWindow.exclusiveZone || 58)
                 : 58;
-            popupBounds.y = barBottom + 10;
+            popupBounds.y = barBottom;
         }
 
         Item {
@@ -184,6 +186,7 @@ Item {
                     ? (popupRoot.shellRoot ? popupRoot.shellRoot.volumeIcon : "")
                     : "󰃟"
                 iconClickable: popupRoot.mode === "volume"
+                iconLeftInset: 24
                 label: popupRoot.mode === "volume" ? "Volume" : "Brightness"
                 value: popupRoot.mode === "volume"
                     ? (popupRoot.shellRoot ? popupRoot.shellRoot.audioVolumePercent : 0)

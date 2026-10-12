@@ -8,6 +8,8 @@ PREV_FOCUS=/dev/shm/sidechat.prev_focus
 PREV_WS=/dev/shm/sidechat.prev_ws
 HIDDEN_WS='special:sidechat_hidden'
 DEBOUNCE_MS=300
+SIDECHAT_TARGET_MONITOR=""
+SIDECHAT_FORCE_SHOW=0
 TRACE_FILE=/tmp/sidechat.trace
 APP_LAUNCH_LOG=/tmp/sidechat-ai-hub.log
 
@@ -73,7 +75,7 @@ acquire_lock() {
   local count=0
   while ! mkdir "$LOCK_FILE" 2>/dev/null; do
     sleep 0.1
-    ((count++))
+    ((count+=1))
     if [[ $count -gt $((timeout * 10)) ]]; then
       echo "获取锁超时" >&2
       return 1
@@ -227,7 +229,7 @@ wait_for_window() {
       fi
     fi
     sleep 0.1
-    ((attempt++))
+    ((attempt+=1))
   done
   return 1
 }
@@ -341,7 +343,7 @@ safe_hyprctl() {
     if hyprctl "$@" 2>/dev/null; then
       return 0
     fi
-    ((retry++))
+    ((retry+=1))
     sleep 0.1
   done
 
@@ -479,6 +481,12 @@ get_monitor_active_workspace_by_id() {
 }
 
 get_active_workspace_id() {
+  if [[ -n "$SIDECHAT_TARGET_MONITOR" ]]; then
+    local id
+    id="$(get_monitor_id_by_name "$SIDECHAT_TARGET_MONITOR")"
+    get_monitor_active_workspace_by_id "$id"
+    return
+  fi
   get_active_workspace_field '.id'
 }
 
@@ -491,6 +499,10 @@ get_focused_monitor_id() {
 }
 
 get_target_monitor_id() {
+  if [[ -n "$SIDECHAT_TARGET_MONITOR" ]]; then
+    get_monitor_id_by_name "$SIDECHAT_TARGET_MONITOR"
+    return
+  fi
   local mon_id
   local mon_name
 
@@ -674,7 +686,7 @@ showchat() {
 
   sync_visibility_state "$addr"
 
-  if ! is_marked_visible || is_hidden_in_special_by_address "$addr"; then
+  if [[ "$SIDECHAT_FORCE_SHOW" == 1 ]] || ! is_marked_visible || is_hidden_in_special_by_address "$addr"; then
     should_show=1
   fi
 
@@ -737,6 +749,9 @@ showchat() {
 }
 
 main() {
+  local action=${1:-toggle}
+  SIDECHAT_TARGET_MONITOR=${2:-}
+  case "$action" in toggle|show|hide|reflow) ;; *) echo "Usage: $0 [toggle|show|hide|reflow] [monitor-name]" >&2; return 2 ;; esac
   log_trace "main:start"
   if ! acquire_lock; then
     echo "无法获取锁，可能有其他实例在运行" >&2
@@ -748,7 +763,26 @@ main() {
     reflow_sidechat
     return 0
   fi
-  if is_recent_trigger; then
+  # Explicit actions use actual workspace visibility and are idempotent.
+  # They bypass toggle debounce, so a prompt exit cannot drop its hide request.
+  if [[ "$action" == show || "$action" == hide ]]; then
+    if [[ -n "$SIDECHAT_TARGET_MONITOR" ]] && ! is_integer "$(get_monitor_id_by_name "$SIDECHAT_TARGET_MONITOR")"; then
+      echo "Unknown monitor: $SIDECHAT_TARGET_MONITOR" >&2
+      return 2
+    fi
+    local existing_addr
+    existing_addr="$(get_sidechat_address)"
+    if [[ "$action" == hide && -z "$existing_addr" ]]; then return 0; fi
+    if [[ -n "$existing_addr" ]]; then
+      sync_visibility_state "$existing_addr"
+      if [[ "$action" == show ]] && ! is_hidden_in_special_by_address "$existing_addr"; then
+        if [[ -z "$SIDECHAT_TARGET_MONITOR" ]] || [[ "$(get_window_monitor_id "$existing_addr")" == "$(get_monitor_id_by_name "$SIDECHAT_TARGET_MONITOR")" ]]; then return 0; fi
+        SIDECHAT_FORCE_SHOW=1
+      fi
+      if [[ "$action" == hide ]] && is_hidden_in_special_by_address "$existing_addr"; then return 0; fi
+    fi
+  fi
+  if [[ "$action" == toggle ]] && is_recent_trigger; then
     log_trace "main:debounced"
     exit 0
   fi
