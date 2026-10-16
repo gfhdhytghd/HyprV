@@ -16,6 +16,85 @@ ShellRoot {
     readonly property string homeDir: Quickshell.env("HOME") || ""
     readonly property string configDir: homeDir + "/.config/HyprV"
 
+    property var expandedBarScreens: ({})
+    property var barScreenStates: ({})
+    readonly property int barMotionDuration: barMotion.duration
+    readonly property var barMotionCurve: barMotion.bezierCurve
+    BarMotion { id: barMotion }
+    function registerBarScreenState(name, state) {
+        const next = Object.assign({}, barScreenStates);
+        next[name] = state;
+        barScreenStates = next;
+    }
+    function unregisterBarScreenState(name, state) {
+        if (barScreenStates[name] !== state) return;
+        const next = Object.assign({}, barScreenStates);
+        delete next[name];
+        barScreenStates = next;
+    }
+    readonly property bool anyBarExpanded: Quickshell.screens.some(screen => barExpanded(screen.name))
+    readonly property bool detailedStatsVisible: anyBarExpanded || systemStatsPopup.popupRequested
+    readonly property bool mediaUiVisible: anyBarExpanded || controlPanelPopup.popupRequested
+    property int openWifiPanelCount: 0
+    property double lastBarToggle: 0
+    signal barStateChanged()
+    function barExpanded(name) { return expandedBarScreens[name] === true; }
+    function toggleBar(name) {
+        const now = Date.now();
+        if (now - lastBarToggle < 500) return;
+        lastBarToggle = now;
+        const next = Object.assign({}, expandedBarScreens);
+        next[name] = !barExpanded(name);
+        expandedBarScreens = next;
+        barStateChanged();
+    }
+    IpcHandler {
+        target: "bar"
+        function toggle(monitor: string): void { root.toggleBar(monitor); }
+        function layoutStatus(monitor: string): string {
+            const state = root.barScreenStates[monitor];
+            return JSON.stringify(state ? {expanded: state.expanded, fullscreen: state.fullscreen,
+                reveal: state.reveal, fullscreenHide: state.fullscreenHide,
+                compactOffset: state.compactOffset, topCornerOffset: state.topCornerOffset,
+                bottomCornerOffset: state.bottomCornerOffset, presented: state.presented,
+                duration: root.barMotionDuration, curve: root.barMotionCurve} : null);
+        }
+        function inputStatus(): string {
+            const bar = root.primaryBarWindow;
+            return JSON.stringify(bar ? {
+                monitor: bar.screen.name, reveal: bar.reveal,
+                contentY: -bar.standardTravel * (1 - bar.reveal) + bar.standardOffset * bar.reveal,
+                inputX: bar.mask.x, inputY: bar.mask.y,
+                inputWidth: bar.mask.width, inputHeight: bar.mask.height
+            } : null);
+        }
+        function dataStatus(): string {
+            return JSON.stringify({expanded: root.anyBarExpanded,
+                systemInterval: systemSnapshot.interval, detailedStats: root.detailedStatsVisible,
+                nativeAudio: barServices.audioAvailable, volume: root.audioVolumePercent,
+                nativeWifi: barServices.nativeWifi, wifiConnected: root.wifiConnected,
+                wifiScanning: barServices.wifiDevice ? barServices.wifiDevice.scannerEnabled : false,
+                wifiNetworkCount: root.wifiNetworks.length, networkInterface: root.defaultInterface,
+                dnd: root.dndEnabled, cpu: root.cpuUsage, memory: root.memoryUsage,
+                networkRxRate: root.networkRxRate, networkTxRate: root.networkTxRate,
+                mediaPlayer: root.mediaPlayerName, mediaPosition: root.mediaPositionSeconds,
+                mediaAvailable: root.mediaAvailable, mediaPlaying: root.mediaPlaying,
+                spectrum: audioSpectrumProcess.running, notifications: notificationWatcher.running,
+                agentWatcher: agentIslandWatcher.running, powerProfile: root.powerProfile,
+                batteryAvailable: root.batteryAvailable, batteryPercent: root.batteryPercent,
+                darkMode: root.darkMode, panelPolling: controlPanelStatusPoll.active,
+                batteryDetailPolling: batteryInfoPoll.active});
+        }
+    }
+
+    Connections {
+        target: Hyprland
+        function onRawEvent(event) {
+            if (event.name === "fullscreen") Hyprland.refreshToplevels();
+            else if (event.name === "configreloaded") barMotion.refresh();
+        }
+    }
+
     property bool darkMode: false
     property date now: new Date()
     property real cpuUsage: 0
@@ -73,7 +152,6 @@ ShellRoot {
     readonly property var bluetoothDeviceObjects: bluetoothAdapterObject && bluetoothAdapterObject.devices
         ? Array.from(bluetoothAdapterObject.devices.values || [])
         : []
-    readonly property string brightnessScriptPath: configDir + "/hypr/scripts/brightness"
     readonly property string fanControlHelperPath: "/usr/local/libexec/hyprv-fanctl"
     readonly property int brightnessUiStepPercent: 1
     property int brightnessPercent: 50
@@ -113,6 +191,7 @@ ShellRoot {
     property real _previousRxBytes: -1
     property real _previousTxBytes: -1
     property string _previousInterface: ""
+    property double _previousNetworkSampleTime: 0
     property bool _showQuickAdjustAfterBrightnessProbe: false
     property bool _brightnessProbeQueued: false
     property int _pendingChassisFanPercent: -1
@@ -178,17 +257,9 @@ ShellRoot {
     property bool audioAvailable: false
     property bool audioMuted: false
     property int audioVolumePercent: 0
-    readonly property bool batteryAvailable: batteryInfo?.available === true
-    readonly property real batteryPercent: {
-        if (batteryInfo?.available === true) {
-            const capacity = Number(batteryInfo?.capacity);
-            if (!isNaN(capacity)) {
-                return Math.max(0, Math.min(100, capacity));
-            }
-        }
-        return 0;
-    }
-    readonly property string batteryMode: batteryInfo?.available === true ? (batteryInfo?.mode || "") : ""
+    readonly property bool batteryAvailable: barServices.batteryPresent
+    readonly property real batteryPercent: Math.max(0, Math.min(100, barServices.batteryPercent))
+    readonly property string batteryMode: barServices.batteryMode
     readonly property bool batteryCharging: batteryMode === "charging"
     readonly property bool batteryPlugged: batteryMode === "charging" || batteryMode === "plugged" || batteryMode === "full"
     readonly property bool batteryCritical: batteryAvailable && batteryPercent <= 20
@@ -502,29 +573,41 @@ ShellRoot {
         implicitWidth: collapseWhenHidden && !visible ? 0 : naturalImplicitWidth
         implicitHeight: module.moduleHeight
 
-        Controls.ToolTip {
-            id: moduleTooltip
-            parent: module
-            visible: module.tooltipText.length > 0 && mouseArea.containsMouse
-            delay: 350
-            timeout: -1
-            x: Math.round((module.width - implicitWidth) / 2)
-            y: module.height + 9
-            padding: 12
+        Timer {
+            id: tooltipDelay
+            interval: 350
+            running: mouseArea.containsMouse
+        }
 
-            background: AnimatedGlassPanel {
-                fullPanelHeight: moduleTooltip.contentItem.implicitHeight + moduleTooltip.topPadding + moduleTooltip.bottomPadding
+        PopupWindow {
+            id: moduleTooltip
+            visible: module.tooltipText.length > 0 && mouseArea.containsMouse && !tooltipDelay.running
+            anchor.item: module
+            anchor.rect.x: Math.round((module.width - implicitWidth) / 2)
+            anchor.rect.y: module.height + 9
+            implicitWidth: tooltipRow.implicitWidth + 20
+            implicitHeight: tooltipRow.implicitHeight + 24
+            color: "transparent"
+            mask: Region {}
+            grabFocus: false
+
+            AnimatedGlassPanel {
+                anchors.fill: parent
+                fullPanelHeight: moduleTooltip.implicitHeight
                 radius: 19
                 fillColor: root.withAlpha(root.darkMode ? "#101214" : "#ffffff", root.darkMode ? 0.42 : 0.28)
                 strokeColor: root.withAlpha(root.primaryText, root.darkMode ? 0.14 : 0.10)
                 shadowColor: root.darkMode ? root.withAlpha("#000000", 0.45) : root.withAlpha("#111111", 0.18)
-                devicePixelRatio: moduleTooltip.parent.Window.window ? moduleTooltip.parent.Window.window.devicePixelRatio : 1
+                devicePixelRatio: module.Window.window ? module.Window.window.devicePixelRatio : 1
                 Component.onCompleted: resetAnimationState()
                 onFullPanelHeightChanged: resetAnimationState()
             }
 
-            contentItem: Row {
-                spacing: 11
+            Row {
+                id: tooltipRow
+                x: 8
+                y: 12
+                spacing: 5
 
                 Rectangle {
                     width: 36
@@ -538,12 +621,12 @@ ShellRoot {
                         text: ""
                         font.family: root.baseFont
                         font.pixelSize: 21
-                        color: root.primaryText
+                        color: root.temperatureC < 70 ? "#2eaa45" : root.temperatureC <= 95 ? "#e5b629" : "#e5484d"
                     }
                 }
 
                 Column {
-                    spacing: 2
+                    spacing: 0
 
                     Text {
                         text: module.tooltipTitle
@@ -1984,6 +2067,7 @@ ShellRoot {
             const data = JSON.parse(raw);
             notificationAlt = data.alt || "none";
             notificationTooltip = data.tooltip || "";
+            dndEnabled = notificationAlt.indexOf("dnd") >= 0;
         } catch (_) {
             notificationAlt = "none";
             notificationTooltip = "";
@@ -2390,34 +2474,44 @@ ShellRoot {
             cpuPackagePowerW = cpuPowerRaw;
         }
 
-        const iface = parseDefaultInterface((sections.__ROUTE__ || []).join("\n"));
-        defaultInterface = iface;
-        const counters = interfaceCounters((sections.__NET__ || []).join("\n"), iface);
-        if (!iface || !counters) {
-            networkRxRate = 0;
-            networkTxRate = 0;
+        defaultInterface = parseDefaultInterface((sections.__ROUTE__ || []).join("\n"));
+        if (!sections.__NET__) {
             _previousRxBytes = -1;
             _previousTxBytes = -1;
-            _previousInterface = "";
-        } else if (_previousInterface !== iface) {
-            _previousInterface = iface;
-            _previousRxBytes = counters.rx;
-            _previousTxBytes = counters.tx;
-            networkRxRate = 0;
-            networkTxRate = 0;
+            _previousNetworkSampleTime = 0;
         } else {
-            if (_previousRxBytes >= 0 && _previousTxBytes >= 0) {
-                networkRxRate = Math.max(0, counters.rx - _previousRxBytes);
-                networkTxRate = Math.max(0, counters.tx - _previousTxBytes);
+            const sampleTime = Date.now();
+            const elapsedSeconds = Math.max(0.001, (sampleTime - _previousNetworkSampleTime) / 1000);
+            const iface = defaultInterface;
+            const counters = interfaceCounters((sections.__NET__ || []).join("\n"), iface);
+            if (!iface || !counters) {
+                networkRxRate = 0;
+                networkTxRate = 0;
+                _previousRxBytes = -1;
+                _previousTxBytes = -1;
+                _previousInterface = "";
+            } else if (_previousInterface !== iface) {
+                _previousInterface = iface;
+                _previousRxBytes = counters.rx;
+                _previousTxBytes = counters.tx;
+                networkRxRate = 0;
+                networkTxRate = 0;
+            } else {
+                if (_previousRxBytes >= 0 && _previousTxBytes >= 0) {
+                    networkRxRate = Math.max(0, counters.rx - _previousRxBytes) / elapsedSeconds;
+                    networkTxRate = Math.max(0, counters.tx - _previousTxBytes) / elapsedSeconds;
+                }
+
+                _previousRxBytes = counters.rx;
+                _previousTxBytes = counters.tx;
             }
 
-            _previousRxBytes = counters.rx;
-            _previousTxBytes = counters.tx;
+            _previousNetworkSampleTime = sampleTime;
         }
 
         cpuHistory = appendHistory(cpuHistory, cpuUsage, statsHistoryLimit);
         memoryHistory = appendHistory(memoryHistory, memoryUsage, statsHistoryLimit);
-        networkHistory = appendHistory(networkHistory, networkRxRate + networkTxRate, statsHistoryLimit);
+        if (sections.__NET__) networkHistory = appendHistory(networkHistory, networkRxRate + networkTxRate, statsHistoryLimit);
     }
 
     function trayItemPriority(item) {
@@ -2557,7 +2651,8 @@ ShellRoot {
     }
 
     function refreshWifiStatus() {
-        wifiStatusPoll.refresh();
+        if (barServices.nativeWifi) barServices.syncWifi();
+        else wifiStatusPoll.refresh();
     }
 
     function openBluetoothManager() {
@@ -2781,8 +2876,8 @@ ShellRoot {
 
     function applyBrightnessPercent(value) {
         const nextValue = updateBrightnessPercentLocally(value);
-        // Restore the direct laptop slider implementation preceding 8128051.
-        runDetached(["brightnessctl", "--device", "intel_backlight", "--min-value", "1", "set", nextValue + "%"]);
+        // Route hardware brightness and HDR SDR white through one control.
+        runDetached(["hyprctl", "eval", 'require("hypr.controls").brightness_set(' + nextValue + ')']);
         brightnessProbeDebounce.restart();
     }
 
@@ -2830,7 +2925,7 @@ ShellRoot {
     }
 
     function refreshAudioStatus() {
-        audioStatusPoll.refresh();
+        barServices.syncAudio();
     }
 
     function scheduleAudioRefresh() {
@@ -2838,7 +2933,7 @@ ShellRoot {
     }
 
     function refreshMediaStatus() {
-        mediaStatusPoll.refresh();
+        barServices.syncMedia();
     }
 
     function seekMedia(positionSeconds) {
@@ -2915,7 +3010,7 @@ ShellRoot {
     }
 
     function refreshPowerProfileStatus() {
-        powerProfilePoll.refresh();
+        barServices.syncPowerProfile();
     }
 
     Process {
@@ -2974,7 +3069,7 @@ ShellRoot {
             } else {
                 wifiActionMessage = stderr.length > 0 ? stderr : (stdout.length > 0 ? stdout : "Wi-Fi action failed");
             }
-            wifiStatusPoll.refresh();
+            root.refreshWifiStatus();
             wifiFollowupRefresh.restart();
         }
     }
@@ -2983,14 +3078,13 @@ ShellRoot {
         id: quickAdjustBrightnessProbe
 
         running: false
-        command: ["brightnessctl", "--device", "intel_backlight", "--machine-readable"]
+        command: ["hyprctl", "repl", 'return require("hypr.controls").brightness_get()']
         stdout: StdioCollector {
             id: quickAdjustBrightnessProbeStdout
         }
 
         onExited: function(exitCode) {
-            const fields = (quickAdjustBrightnessProbeStdout.text || "").trim().split(",");
-            const parsed = fields.length >= 4 ? parseFloat(fields[3]) : NaN;
+            const parsed = Number((quickAdjustBrightnessProbeStdout.text || "").trim());
             if (exitCode === 0 && isFinite(parsed)) {
                 root.brightnessPercent = root.snapBrightnessPercent(parsed);
             }
@@ -3044,7 +3138,7 @@ ShellRoot {
 
         interval: 1500
         repeat: false
-        onTriggered: wifiStatusPoll.refresh()
+        onTriggered: root.refreshWifiStatus()
     }
 
     Timer {
@@ -3076,7 +3170,7 @@ ShellRoot {
 
         interval: 150
         repeat: false
-        onTriggered: audioStatusPoll.refresh()
+        onTriggered: barServices.syncAudio()
     }
 
     Timer {
@@ -3084,7 +3178,7 @@ ShellRoot {
 
         interval: 180
         repeat: false
-        onTriggered: mediaStatusPoll.refresh()
+        onTriggered: barServices.syncMedia()
     }
 
     Timer {
@@ -3092,7 +3186,9 @@ ShellRoot {
 
         interval: 220
         repeat: false
-        onTriggered: agentIslandStatusPoll.refresh()
+        onTriggered: {
+            if (agentIslandWatcher.running) agentIslandWatcher.write("refresh\n");
+        }
     }
 
     Connections {
@@ -3170,7 +3266,7 @@ ShellRoot {
     }
 
     Timer {
-        interval: 1000
+        interval: root.mediaUiVisible ? 1000 : Math.max(1, 60000 - (root.now.getSeconds() * 1000 + root.now.getMilliseconds()))
         repeat: true
         running: true
         triggeredOnStart: true
@@ -3180,8 +3276,8 @@ ShellRoot {
     PollCommand {
         id: systemSnapshot
 
-        interval: 1000
-        command: [root.configDir + "/quickshell/scripts/system-snapshot.sh"]
+        interval: root.detailedStatsVisible ? 1000 : 5000
+        command: [root.configDir + "/quickshell/scripts/system-snapshot.sh", root.detailedStatsVisible ? "--full" : "--minimal"]
         onUpdated: function(output, exitCode) {
             if (exitCode === 0 && output.length > 0) {
                 root.updateSystemStats();
@@ -3189,16 +3285,27 @@ ShellRoot {
         }
     }
 
-    PollCommand {
-        id: themePoll
+    BarServices {
+        id: barServices
+        shellRoot: root
+        mediaVisible: root.mediaUiVisible
+        wifiPageVisible: (controlPanelPopup.popupRequested && controlPanelPopup.wifiExpanded) || root.openWifiPanelCount > 0
+    }
 
-        interval: 2000
+    // Initialize/migrate the state file once; subsequent updates use FileView.
+    Process {
+        running: true
         command: [root.configDir + "/quickshell/scripts/ui-state.sh", "print"]
-        onUpdated: function(output, exitCode) {
-            if (exitCode === 0) {
-                root.darkMode = output.indexOf("theme=dark") >= 0;
-            }
-        }
+        onExited: barServices.refreshTheme()
+        stdout: StdioCollector {}
+        stderr: StdioCollector {}
+    }
+
+    onDetailedStatsVisibleChanged: {
+        _previousRxBytes = -1;
+        _previousTxBytes = -1;
+        _previousNetworkSampleTime = 0;
+        systemSnapshot.refresh(true);
     }
 
     Process {
@@ -3214,7 +3321,7 @@ ShellRoot {
     Process {
         id: audioSpectrumProcess
 
-        running: root.audioSpectrumCavaAvailable && root.mediaAvailable && root.mediaPlaying
+        running: root.mediaUiVisible && root.audioSpectrumCavaAvailable && root.mediaAvailable && root.mediaPlaying
         command: [root.configDir + "/quickshell/scripts/audio-spectrum.sh"]
 
         onRunningChanged: {
@@ -3259,88 +3366,58 @@ ShellRoot {
         stderr: StdioCollector {}
     }
 
+    // Fallback for builds without the NetworkManager backend. No shell queries
+    // are launched on the native path, including after user actions.
     PollCommand {
         id: wifiStatusPoll
-
-        interval: 8000
+        active: !barServices.nativeWifi
+        interval: root.openWifiPanelCount > 0 ? 8000 : 30000
         command: ["sh", root.configDir + "/quickshell/scripts/wifi-status.sh"]
         onUpdated: function(output, exitCode) {
-            if (exitCode === 0) {
-                root.updateWifiStatus(output);
-            }
+            if (exitCode === 0) root.updateWifiStatus(output);
         }
     }
 
-    PollCommand {
-        id: notificationPoll
-
-        interval: 2000
-        command: ["sh", "-lc", "swaync-client -swb | head -n 1"]
-        onUpdated: function(output, exitCode) {
-            if (exitCode === 0) {
-                root.updateNotificationState((output || "").split("\n")[0] || "");
-            }
+    Process {
+        id: notificationWatcher
+        running: true
+        command: ["swaync-client", "-swb"]
+        stdout: SplitParser {
+            splitMarker: "\n"
+            onRead: data => root.updateNotificationState(data)
         }
+        stderr: StdioCollector {}
+        onExited: notificationRestart.restart()
     }
-
-    PollCommand {
-        id: audioStatusPoll
-
-        interval: 750
-        command: ["sh", root.configDir + "/quickshell/scripts/audio-status.sh"]
-        onUpdated: function(output, exitCode) {
-            if (exitCode === 0) {
-                root.updateAudioState(output);
-            } else {
-                root.resetAudioState();
-            }
-        }
-    }
-
-    PollCommand {
-        id: mediaStatusPoll
-
-        interval: 1000
-        command: ["sh", root.configDir + "/quickshell/scripts/media-status.sh"]
-        onUpdated: function(output, exitCode) {
-            if (exitCode === 0) {
-                root.updateMediaState(output);
-            } else {
-                root.resetMediaState();
-            }
-        }
-    }
-
-    PollCommand {
-        id: agentIslandStatusPoll
-
-        interval: root.agentIslandActive ? 650 : 1200
-        command: ["/usr/bin/python3", root.configDir + "/quickshell/scripts/agent-island-status.py", "--json"]
-        onUpdated: function(output, exitCode) {
-            if (exitCode === 0) {
-                root.updateAgentIslandState(output);
-            } else {
-                root.resetAgentIslandState();
-            }
-        }
-    }
-
-    PollCommand {
-        id: powerProfilePoll
-
+    Timer {
+        id: notificationRestart
         interval: 3000
-        command: [root.configDir + "/quickshell/scripts/power-profile.sh"]
-        onUpdated: function(output, exitCode) {
-            if (exitCode === 0 && output.length > 0) {
-                root.powerProfileText = output;
-            }
+        onTriggered: notificationWatcher.running = true
+    }
+
+    Process {
+        id: agentIslandWatcher
+        running: true
+        stdinEnabled: true
+        command: ["/usr/bin/python3", root.configDir + "/quickshell/scripts/agent-island-watch.py"]
+        stdout: SplitParser {
+            splitMarker: "\n"
+            onRead: data => root.updateAgentIslandState(data)
         }
+        stderr: StdioCollector {}
+        onExited: agentWatcherRestart.restart()
+    }
+    Timer {
+        id: agentWatcherRestart
+        interval: 3000
+        onTriggered: agentIslandWatcher.running = true
     }
 
     PollCommand {
         id: batteryInfoPoll
 
-        interval: batteryInfoPopup.openVisible ? 1000 : 30000
+        active: batteryInfoPopup.openVisible
+        interval: 1000
         command: ["sh", root.configDir + "/quickshell/scripts/battery-info.sh"]
         onUpdated: function(output, exitCode) {
             if (exitCode === 0) {
@@ -3378,7 +3455,8 @@ ShellRoot {
     PollCommand {
         id: controlPanelStatusPoll
 
-        interval: controlPanelPopup.popupRequested ? 1500 : 10000
+        active: controlPanelPopup.popupRequested
+        interval: 2000
         command: ["sh", root.configDir + "/quickshell/scripts/control-panel-status.sh"]
         onUpdated: function(output, exitCode) {
             if (exitCode === 0) {
@@ -3454,9 +3532,22 @@ ShellRoot {
 
     Variants {
         model: Quickshell.screens
+        BarScreenState {
+            required property var modelData
+            shellRoot: root
+            screenInfo: modelData
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
 
         PanelWindow {
+            id: cornerWindow
             required property var modelData
+            readonly property var barState: root.barScreenStates[modelData.name] || null
+            readonly property bool expanded: root.barExpanded(modelData.name)
+            readonly property real reveal: barState ? barState.reveal : (expanded ? 1 : 0)
 
             screen: modelData
             visible: true
@@ -3466,20 +3557,13 @@ ShellRoot {
             exclusiveZone: -1
             color: "transparent"
             surfaceFormat.opaque: false
+            // The corner artwork is decorative. Only the visible part of the
+            // compact strip accepts input; standard mode is fully click-through.
             mask: Region {
-                item: topLeftShade
-
-                Region {
-                    item: topRightShade
-                }
-
-                Region {
-                    item: bottomLeftShade
-                }
-
-                Region {
-                    item: bottomRightShade
-                }
+                x: 0
+                y: 0
+                width: cornerWindow.width
+                height: cornerWindow.barState ? Math.ceil(cornerWindow.barState.topCornerOffset) : 15
             }
 
             WlrLayershell.layer: WlrLayer.Overlay
@@ -3491,10 +3575,92 @@ ShellRoot {
             anchors.right: true
             anchors.bottom: true
 
+            Rectangle {
+                id: compactStrip
+                z: 100
+                width: parent.width
+                height: 15
+                y: (cornerWindow.barState ? cornerWindow.barState.topCornerOffset : 15) - height
+                color: "#000000"
+                visible: cornerWindow.reveal < 1
+
+                Row {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10
+                    height: 15
+                    spacing: 12
+                    Row {
+                        spacing: 10
+                        Repeater {
+                            model: root.hyprWorkspaces
+                            delegate: Text {
+                                required property var modelData
+                                text: String(modelData.name || modelData.id)
+                                color: root.activeWorkspaceId === modelData.id ? "#ffffff" : "#858585"
+                                font.family: root.baseFont
+                                font.pixelSize: 11
+                                font.bold: root.activeWorkspaceId === modelData.id
+                                height: 15
+                                verticalAlignment: Text.AlignVCenter
+                                MouseArea { anchors.fill: parent; onClicked: modelData.activate() }
+                            }
+                        }
+                    }
+                    Text {
+                        text: " " + Math.round(root.cpuUsage) + "%   " + Math.round(root.memoryUsage) + "%"
+                        color: "white"; font.family: root.baseFont; font.pixelSize: 10
+                        height: 15; verticalAlignment: Text.AlignVCenter
+                        MouseArea { anchors.fill: parent; onClicked: systemStatsPopup.toggleFor(parent, cornerWindow) }
+                    }
+                }
+                Text {
+                    anchors.centerIn: parent
+                    text: Qt.formatDateTime(root.now, "ddd  HH:mm")
+                    color: "white"; font.family: root.baseFont; font.pixelSize: 11
+                    MouseArea { anchors.fill: parent; onClicked: {
+                        if (!cornerWindow.expanded) root.toggleBar(cornerWindow.modelData.name);
+                        root.toggleCalendar(cornerWindow.modelData);
+                    } }
+                }
+                Row {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 10
+                    height: 15
+                    spacing: 12
+                    Text {
+                        text: root.batteryOrCpuPowerText
+                        color: "white"; font.family: root.baseFont; font.pixelSize: 10
+                        height: 15; verticalAlignment: Text.AlignVCenter
+                        MouseArea { anchors.fill: parent; onClicked: batteryInfoPopup.toggleFor(parent, cornerWindow) }
+                    }
+                    Text {
+                        text: root.wifiConnected ? "" : "󰖪"
+                        color: "white"; font.family: root.baseFont; font.pixelSize: 11
+                        height: 15; verticalAlignment: Text.AlignVCenter
+                        MouseArea { anchors.fill: parent; onClicked: controlPanelPopup.toggleFor(parent, cornerWindow) }
+                    }
+                    Item {
+                        width: 13; height: 15
+                        Image {
+                            anchors.centerIn: parent; width: 11; height: 11
+                            source: Qt.resolvedUrl("assets/bar/control-panel-dark.svg")
+                        }
+                        MouseArea { anchors.fill: parent; onClicked: controlPanelPopup.toggleFor(parent, cornerWindow) }
+                    }
+                    Text {
+                        text: root.notificationIcon + (root.notificationHasDot ? "·" : "")
+                        color: "white"; font.family: root.baseFont; font.pixelSize: 11
+                        height: 15; verticalAlignment: Text.AlignVCenter
+                        MouseArea { anchors.fill: parent; onClicked: root.runDetached(["swaync-client", "-t", "-sw"]) }
+                    }
+                }
+            }
+
             ScreenCornerShade {
                 id: topLeftShade
                 anchors.left: parent.left
                 anchors.top: parent.top
+                anchors.topMargin: barState ? barState.topCornerOffset : 15
                 width: root.screenCornerShadeSize
                 height: root.screenCornerShadeSize
                 corner: "topLeft"
@@ -3505,6 +3671,7 @@ ShellRoot {
                 id: topRightShade
                 anchors.right: parent.right
                 anchors.top: parent.top
+                anchors.topMargin: barState ? barState.topCornerOffset : 15
                 width: root.screenCornerShadeSize
                 height: root.screenCornerShadeSize
                 corner: "topRight"
@@ -3515,6 +3682,7 @@ ShellRoot {
                 id: bottomLeftShade
                 anchors.left: parent.left
                 anchors.bottom: parent.bottom
+                anchors.bottomMargin: barState ? barState.bottomCornerOffset : 0
                 width: root.screenCornerShadeSize
                 height: root.screenCornerShadeSize
                 corner: "bottomLeft"
@@ -3525,6 +3693,7 @@ ShellRoot {
                 id: bottomRightShade
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
+                anchors.bottomMargin: barState ? barState.bottomCornerOffset : 0
                 width: root.screenCornerShadeSize
                 height: root.screenCornerShadeSize
                 corner: "bottomRight"
@@ -3540,6 +3709,15 @@ ShellRoot {
             id: barWindow
 
             required property var modelData
+            readonly property var barState: root.barScreenStates[modelData.name] || null
+            readonly property bool expanded: root.barExpanded(modelData.name)
+            readonly property real reveal: barState ? barState.reveal : (expanded ? 1 : 0)
+            readonly property real compactOffset: barState ? barState.compactOffset : 0
+            readonly property real standardTravel: Math.max(68, centerSection.height + 10)
+            readonly property real standardOffset: -standardTravel * (barState ? barState.fullscreenHide : 0)
+            // Retain the exclusive zone while fullscreen ignores it. Remapping
+            // on exit would retarget the window's layout animation mid-flight.
+            visible: true
             property bool islandExpanded: false
             property real islandCurrentHeight: 38
             readonly property bool calendarVisible: root.calendarOpen && root.calendarScreen === modelData
@@ -3603,7 +3781,10 @@ ShellRoot {
 
             screen: modelData
 
-            WlrLayershell.layer: WlrLayer.Top
+            // Both modes must stay above fullscreen for their QML slide.
+            // Return to Top only after the standard bar has finished entering.
+            WlrLayershell.layer: reveal < 1 || (barState && (barState.fullscreen || barState.fullscreenHide !== 0))
+                ? WlrLayer.Overlay : WlrLayer.Top
             WlrLayershell.namespace: "hyprv-quickshell"
 
             anchors.top: true
@@ -3611,14 +3792,20 @@ ShellRoot {
             anchors.right: true
 
             implicitHeight: Math.min(modelData.height, 820)
-            exclusiveZone: 58
+            exclusiveZone: Math.round(25 + 33 * reveal) // Compact: 15+10; expanded: 10+38+10
             focusable: false
             color: "transparent"
             surfaceFormat.opaque: false
             margins.bottom: 10
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+            // Region.item observes only the item's own geometry, not its
+            // moving ancestors. Track contentRoot explicitly so the input
+            // region follows every frame of both bar animations.
             mask: Region {
-                item: topBarMask
+                x: Math.floor(contentRoot.x)
+                y: Math.floor(contentRoot.y)
+                width: Math.ceil(contentRoot.width)
+                height: topBarMask.height
 
                 Region {
                     item: centerSection
@@ -3691,7 +3878,10 @@ ShellRoot {
             Item {
                 id: contentRoot
 
-                anchors.fill: parent
+                width: parent.width
+                height: parent.height
+                y: -barWindow.standardTravel * (1 - barWindow.reveal) + barWindow.standardOffset * barWindow.reveal
+                visible: barWindow.reveal > 0
 
                 Item {
                     id: topBarMask
@@ -4093,16 +4283,16 @@ ShellRoot {
                             paddingLeft: 8
                             paddingRight: 12
                             onLeftClicked: {
-                                root.runDetached([root.configDir + "/hypr/scripts/volume", "--toggle"]);
+                                root.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("toggle")']);
                                 audioFollowupRefresh.restart();
                             }
                             onRightClicked: root.runDetached(["pavucontrol"])
                             onWheelUp: {
-                                root.runDetached([root.configDir + "/hypr/scripts/volume", "--dec"]);
+                                root.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("dec")']);
                                 audioFollowupRefresh.restart();
                             }
                             onWheelDown: {
-                                root.runDetached([root.configDir + "/hypr/scripts/volume", "--inc"]);
+                                root.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("inc")']);
                                 audioFollowupRefresh.restart();
                             }
                         }
@@ -4332,7 +4522,7 @@ ShellRoot {
 
         interval: 350
         repeat: false
-        onTriggered: themePoll.refresh()
+        onTriggered: barServices.refreshTheme()
     }
 
     Timer {
@@ -4374,7 +4564,7 @@ ShellRoot {
 
         interval: 350
         repeat: false
-        onTriggered: notificationPoll.refresh()
+        onTriggered: root.refreshControlPanelStatus()
     }
 
     Timer {
@@ -4382,6 +4572,6 @@ ShellRoot {
 
         interval: 350
         repeat: false
-        onTriggered: powerProfilePoll.refresh()
+        onTriggered: barServices.syncPowerProfile()
     }
 }

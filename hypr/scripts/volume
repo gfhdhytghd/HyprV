@@ -1,115 +1,21 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-iDIR="$HOME/.config/HyprV/mako/icons"
-NOTIFY_HINT="string:x-canonical-private-synchronous:sys-notify"
-VOL_STEP="${VOL_STEP:-5}"
-MIC_STEP="${MIC_STEP:-5}"
-QS_CONFIG_DIR="$HOME/.config/HyprV/quickshell"
-
-get_volume() {
-    pamixer --get-volume
-}
-
-get_icon() {
-    local current muted
-    current="$(get_volume)"
-    muted="$(pamixer --get-mute)"
-
-    if [[ "$muted" == "true" || "$current" -eq 0 ]]; then
-        echo "$iDIR/volume-mute.png"
-    elif (( current <= 30 )); then
-        echo "$iDIR/volume-low.png"
-    elif (( current <= 60 )); then
-        echo "$iDIR/volume-mid.png"
-    else
-        echo "$iDIR/volume-high.png"
-    fi
-}
-
-notify_user() {
-    quickshell -p "$QS_CONFIG_DIR" ipc call quickAdjust showVolume >/dev/null 2>&1 || true
-}
-
-inc_volume() {
-    pamixer -i "$VOL_STEP"
-    notify_user
-}
-
-dec_volume() {
-    pamixer -d "$VOL_STEP"
-    notify_user
-}
-
-toggle_mute() {
-    if [[ "$(pamixer --get-mute)" == "false" ]]; then
-        pamixer -m
-    else
-        pamixer -u
-    fi
-    notify_user
-}
-
-get_mic_icon() {
-    if [[ "$(pamixer --default-source --get-mute)" == "true" ]]; then
-        echo "$iDIR/microphone-mute.png"
-    else
-        echo "$iDIR/microphone.png"
-    fi
-}
-
-notify_mic_user() {
-    notify-send -h "$NOTIFY_HINT" -u low -i "$(get_mic_icon)" "Mic-Level : $(pamixer --default-source --get-volume) %"
-}
-
-toggle_mic() {
-    if [[ "$(pamixer --default-source --get-mute)" == "false" ]]; then
-        pamixer --default-source -m
-        notify-send -h "$NOTIFY_HINT" -u low -i "$iDIR/microphone-mute.png" "Microphone Switched OFF"
-    else
-        pamixer --default-source -u
-        notify-send -h "$NOTIFY_HINT" -u low -i "$iDIR/microphone.png" "Microphone Switched ON"
-    fi
-}
-
-inc_mic_volume() {
-    pamixer --default-source -i "$MIC_STEP"
-}
-
-dec_mic_volume() {
-    pamixer --default-source -d "$MIC_STEP"
-}
-
-case "${1:-}" in
-    --get)
-        get_volume
-        ;;
-    --inc)
-        inc_volume
-        ;;
-    --dec)
-        dec_volume
-        ;;
-    --toggle)
-        toggle_mute
-        ;;
-    --toggle-mic)
-        toggle_mic
-        ;;
-    --get-icon)
-        get_icon
-        ;;
-    --get-mic-icon)
-        get_mic_icon
-        ;;
-    --mic-inc)
-        inc_mic_volume
-        ;;
-    --mic-dec)
-        dec_mic_volume
-        ;;
-    *)
-        get_volume
-        ;;
-esac
+#!/usr/bin/env lua
+-- Compatibility CLI for native Hyprland Lua audio controls.
+local action=(arg[1] or '--get'):gsub('^%-%-','')
+local function quote(s)return "'" .. s:gsub("'","'\\''") .. "'" end
+local function capture(cmd)
+ local p=assert(io.popen(cmd));local s=p:read('*a');local ok=p:close();if not ok then os.exit(1) end;return s
+end
+if action=='get' then io.write(capture('pamixer --get-volume'));return end
+if action=='get-icon' or action=='get-mic-icon' then
+ local mic=action=='get-mic-icon';local prefix=mic and 'pamixer --default-source ' or 'pamixer '
+ local muted=capture(prefix .. '--get-mute'):match('true')
+ local volume=tonumber(capture(prefix .. '--get-volume')) or 0
+ local icon=mic and (muted and 'microphone-mute' or 'microphone') or ((muted or volume==0) and 'volume-mute' or volume<=30 and 'volume-low' or volume<=60 and 'volume-mid' or 'volume-high')
+ print(os.getenv('HOME') .. '/.config/HyprV/mako/icons/' .. icon .. '.png');return
+end
+local allowed={inc=true,dec=true,toggle=true,['toggle-mic']=true,['mic-inc']=true,['mic-dec']=true,set=true}
+assert(allowed[action],'Unknown volume command')
+local expr='require("hypr.controls").volume(' .. string.format('%q',action)
+if action=='set' then expr=expr .. ',' .. assert(tonumber(arg[2])) end
+expr=expr .. ')'
+capture('hyprctl ' .. (os.getenv('HYPRLAND_INSTANCE_SIGNATURE') and '' or '-i 0 ') .. 'eval ' .. quote(expr))

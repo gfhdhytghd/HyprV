@@ -8,11 +8,15 @@ if ! command -v playerctl >/dev/null 2>&1; then
 fi
 
 selected_player=""
+if [[ "${1:-}" == "--player" && -n "${2:-}" ]]; then
+    selected_player="$2"
+fi
 fallback_player=""
 content_player=""
 paused_content_player=""
 paused_player=""
 
+if [[ -z "$selected_player" ]]; then
 while IFS= read -r player; do
     [[ -z "$player" ]] && continue
     if [[ -z "$fallback_player" ]]; then
@@ -38,6 +42,7 @@ while IFS= read -r player; do
         fi
     fi
 done < <(playerctl -l 2>/dev/null || true)
+fi
 
 if [[ -z "$selected_player" ]]; then
     selected_player="${paused_content_player:-${content_player:-${paused_player:-$fallback_player}}}"
@@ -69,6 +74,8 @@ player_comm=""
 if [[ "$selected_player" == chromium.instance* ]] && command -v busctl >/dev/null 2>&1; then
     player_comm="$(busctl --user status "org.mpris.MediaPlayer2.${selected_player}" 2>/dev/null | sed -n 's/^Comm=//p' | head -n 1 || true)"
 fi
+
+printf 'cider=%s\n' "$([[ "$player_comm" == "Cider" || "$selected_player" == *cider* || "$selected_player" == *Cider* ]] && printf true || printf false)"
 
 if [[ "$player_comm" == "Cider" && "$length" != "0" ]]; then
     script_dir="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"

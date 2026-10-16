@@ -50,7 +50,7 @@ lib.bind_exec(main .. " + R", "~/.config/hypr/scripts/record-script.sh --fullscr
 lib.bind_exec(main .. " + SHIFT + R", "~/.config/HyprV/quickshell/scripts/reload.sh && fcitx5")
 lib.bind_exec(main .. " + SHIFT + S", "~/.config/hypr/scripts/ocr.sh")
 lib.bind_exec(main .. " + N", "swaync-client -t -sw")
-lib.bind_exec(main .. " + SHIFT + b", "brightnessctl s 50%")
+hl.bind(main .. " + SHIFT + b", function() require("hypr.controls").brightness_set(35, true) end)
 lib.bind_exec(main .. " + A", "quickshell ipc call -p $HOME/.config/HyprV/quickshell controlPanel toggle")
 
 hl.bind(main .. " + left", hl.dsp.focus({ direction = "left" }))

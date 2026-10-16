@@ -134,7 +134,7 @@ lr({ name = "layer-no-anim-indicator", match = { namespace = "indicator.*" }, no
 lr({ name = "layer-no-anim-osk", match = { namespace = "osk" }, no_anim = true })
 lr({ name = "layer-no-anim-hyprpicker", match = { namespace = "hyprpicker" }, no_anim = true })
 lr({ name = "layer-shell-blur", match = { namespace = "shell:.*" }, blur = true, blur_popups = true, ignore_alpha = 0.05 })
-lr({ name = "layer-quickshell", match = { namespace = "hyprv-quickshell" }, blur = true, blur_popups = true, ignore_alpha = 0.15 })
+lr({ name = "layer-quickshell", match = { namespace = "hyprv-quickshell" }, no_anim = true, blur = true, blur_popups = true, ignore_alpha = 0.15 })
 lr({ name = "layer-no-anim-noanim", match = { namespace = "noanim" }, no_anim = true })
 lr({ name = "layer-gtk", match = { namespace = "gtk-layer-shell" }, blur = true, ignore_alpha = 0 })
 lr({ name = "layer-launcher", match = { namespace = "launcher" }, blur = true, ignore_alpha = 0.5 })
@@ -160,3 +160,10 @@ hl.window_rule({name='viewflow-windows-reverse-ime',match={class='^ViewflowRever
 hl.window_rule({name='viewflow-windows-start',match={class='^ViewflowReverse-WindowsStart-.*$'},float=true,pin=true,no_anim=true,move='38 56'})
 
 dofile(os.getenv('HOME') .. '/.config/HyprV/hypr/windows-fusion-dismiss.lua')
+
+-- Installed Electron apps and Chrome: preserve SDR white; clip HDR over peak.
+hl.window_rule({
+  name = "chromium-electron-hdr-preserve-sdr-white",
+  match = { class = "(?i)^(google-chrome.*|chromium.*|chrome-.*|discord|Cider|claude-desktop|Claude|chatgpt|Codex|openai-codex-electron|code|Code - OSS|code-oss|code-translucent|com\\.microsoft\\.VSCode|Cursor|deepseek-harness|QQ|qqmusic|synergy|Xmind|xmind-vana|Wave|waveterm|LM Studio|lm-studio|lmstudio|Recordly|eSearch|e-search|Notion|notion-app|Netease Cloud Music Web Player|netease-cloud-music-web-player|lzc-client-desktop|Chatbox|xyz\\.chatboxapp\\.app)$" },
+  tonemap = "clamp",
+})

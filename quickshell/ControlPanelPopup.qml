@@ -153,7 +153,7 @@ Item {
             shellRoot.audioVolumePercent = nextValue;
         }
         if (shellRoot) {
-            shellRoot.runDetached(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", (nextValue / 100).toFixed(2)]);
+            shellRoot.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("set",' + nextValue + ')']);
             shellRoot.scheduleAudioRefresh();
         }
     }
@@ -171,7 +171,7 @@ Item {
         }
         shellRoot.audioAvailable = true;
         shellRoot.audioMuted = !shellRoot.audioMuted;
-        shellRoot.runDetached(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]);
+        shellRoot.runDetached(["hyprctl", "eval", 'require("hypr.controls").volume("toggle")']);
         shellRoot.scheduleAudioRefresh();
     }
 

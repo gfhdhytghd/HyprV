@@ -45,3 +45,8 @@ hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 -- SuperPower: keep atomic modesetting enabled.
 -- hl.env("WLR_DRM_NO_ATOMIC", "1")
 hl.env("XCURSOR_SIZE", "24")
+
+-- HDR client color feedback is loaded by hyprpm above.
+
+-- Start ALS brightness directly: this session does not activate graphical-session.target.
+lib.exec_once("systemctl --user start wluma.service")

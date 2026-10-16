@@ -1,0 +1,1 @@
+return {auto_brightness=true,mode="preferred",output="eDP-1",backend="backlight",desktop=153,client=153,peak=400,monitor={supports_hdr=1,supports_wide_color=1,min_luminance=0.0005,max_luminance=530,max_avg_luminance=400},initial_raw=1,initial_max=400,sdr_min=0}

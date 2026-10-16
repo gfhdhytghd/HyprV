@@ -97,11 +97,16 @@ lib.plugin_config_if_available("plugin.hymission.workspace_overview_max_preview_
   },
 })
 
-local hyprcapture_config = {
+lib.plugin_config_if_available("plugin.hypr_edgehover.enabled", {
   plugin = {
     hypr_edgehover = {
-      enabled = 1
+      enabled = 1,
     },
+  },
+})
+
+local hyprcapture_config = {
+  plugin = {
     hyprcapture = {
       notification_backend = "system",
       default_mode = "region",
@@ -170,5 +175,64 @@ lib.plugin_config_if_available("plugin.touch_gestures.sensitivity", {
   },
 })
 
--- Optional edge triggers: no effect until the independent plugin is installed.
-require("hypr.ultraedge")
+-- UltraEdge: optional edge triggers.
+do
+  local edge = hl.plugin and hl.plugin.ultraedge
+  if edge and type(edge.rule) == "function" then
+    edge.clear()
+
+    local stage = hl.plugin and hl.plugin.hymission
+    if stage and type(stage.stage_open) == "function" and
+        type(stage.stage_close) == "function" and type(stage.stage_region) == "function" then
+      assert(edge.rule({
+        monitor = "*", target = "left", mode = "move",
+        move_ms = 200, movement_gap_ms = 80, noise = 0.5, band = 2, cooldown_ms = 400,
+        on_enter = function() stage.stage_open() end,
+        on_exit = function() stage.stage_close() end,
+        hold = function(monitor) return stage.stage_region(monitor) end,
+      }))
+    end
+
+    -- Both outward gestures toggle the persistent compact/full bar state.
+    local function toggle_bar(monitor)
+      local quoted = "'" .. monitor:gsub("'", "'\\''") .. "'"
+      hl.exec_cmd("quickshell ipc -p /home/wilf/.config/HyprV/quickshell call bar toggle " .. quoted)
+    end
+    for _, mode in ipairs({"push", "move"}) do
+      assert(edge.rule({
+        monitor = "*", target = "top", mode = mode,
+        move_ms = 200, movement_gap_ms = 80, pause_ms = 180,
+        noise = 0.5, band = 2, cooldown_ms = 500, exit_distance = 20,
+        on_enter = toggle_bar,
+      }))
+    end
+
+    -- The right strip follows actual AI-HUB window geometry, including the gap
+    -- between its right edge and the output boundary. No fixed 360/370 px snapshot.
+    local function shell_quote(s) return "'" .. s:gsub("'", "'\\''") .. "'" end
+    local function ai_region(name)
+      for _, win in ipairs(hl.get_windows()) do
+        local mon, ws = win.monitor, win.workspace
+        if win.class == "ai-hub-firefox" and win.mapped and not win.hidden and
+            ws and ws.name ~= "special:sidechat_hidden" and mon and mon.name == name then
+          local at = win.at
+          -- monitor.width/height are physical dimensions in Hyprland 0.56.2;
+          -- logical dimensions follow scale + transform.
+          local w, h = mon.width / mon.scale, mon.height / mon.scale
+          if mon.transform % 2 == 1 then w, h = h, w end
+          local left = math.max(mon.x, at.x)
+          return { x = left, y = mon.y, width = mon.x + w - left, height = h }
+        end
+      end
+      return nil
+    end
+    assert(edge.rule({
+      monitor = "*", target = "right", mode = "move",
+      move_ms = 200, movement_gap_ms = 80, noise = 0.5, band = 2, cooldown_ms = 400,
+      hold_wait_ms = 5000, exit_distance = 80,
+      on_enter = function(monitor) hl.exec_cmd("bash /home/wilf/.config/HyprV/hypr/scripts/sidechat.sh show " .. shell_quote(monitor) .. " --no-cursor-warp") end,
+      on_exit = function() hl.exec_cmd("bash /home/wilf/.config/HyprV/hypr/scripts/sidechat.sh hide '' --no-cursor-warp") end,
+      hold = ai_region,
+    }))
+  end
+end
