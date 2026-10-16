@@ -115,7 +115,7 @@ lr({ name = "layer-no-anim-indicator", match = { namespace = "indicator.*" }, no
 lr({ name = "layer-no-anim-osk", match = { namespace = "osk" }, no_anim = true })
 lr({ name = "layer-no-anim-hyprpicker", match = { namespace = "hyprpicker" }, no_anim = true })
 lr({ name = "layer-shell-blur", match = { namespace = "shell:.*" }, blur = true, blur_popups = true, ignore_alpha = 0.05 })
-lr({ name = "layer-quickshell", match = { namespace = "hyprv-quickshell" }, blur = true, blur_popups = true, ignore_alpha = 0.15 })
+lr({ name = "layer-quickshell", match = { namespace = "hyprv-quickshell" }, no_anim = true, blur = true, blur_popups = true, ignore_alpha = 0.15 })
 lr({ name = "layer-no-anim-noanim", match = { namespace = "noanim" }, no_anim = true })
 lr({ name = "layer-gtk", match = { namespace = "gtk-layer-shell" }, blur = true, ignore_alpha = 0 })
 lr({ name = "layer-launcher", match = { namespace = "launcher" }, blur = true, ignore_alpha = 0.5 })

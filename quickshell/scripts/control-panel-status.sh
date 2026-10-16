@@ -6,25 +6,9 @@ run_quick() {
     timeout 2s "$@" 2>/dev/null || true
 }
 
-# WiFi radio state
-wifi_enabled=false
-if command -v nmcli >/dev/null 2>&1; then
-    state="$(run_quick nmcli radio wifi)"
-    [[ "$state" == "enabled" ]] && wifi_enabled=true
-fi
-printf 'wifi_enabled=%s\n' "$wifi_enabled"
-
 # Brightness is read by quickAdjustBrightnessProbe on panel open and after
 # user adjustments. Periodic DDC/CI queries stall the NVIDIA import path.
 # Omit brightness here so unrelated status polling keeps the current UI value.
-
-# DND (Do Not Disturb) state
-dnd=false
-if command -v swaync-client >/dev/null 2>&1; then
-    dnd_state="$(run_quick swaync-client -D)"
-    [[ "$dnd_state" == "true" ]] && dnd=true
-fi
-printf 'dnd=%s\n' "$dnd"
 
 # Screen recording detection
 recording=false
@@ -34,14 +18,6 @@ if pgrep -x 'wf-recorder' >/dev/null 2>&1 || \
     recording=true
 fi
 printf 'recording=%s\n' "$recording"
-
-# Power profile
-power_profile="balanced"
-if command -v powerprofilesctl >/dev/null 2>&1; then
-    power_profile="$(run_quick powerprofilesctl get)"
-    [[ -z "$power_profile" ]] && power_profile="balanced"
-fi
-printf 'power_profile=%s\n' "$power_profile"
 
 # Prevent sleep state
 prevent_sleep=false

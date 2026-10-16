@@ -8,11 +8,16 @@ Item {
     property int interval: 1000
     property bool active: true
     property string output: ""
+    property bool _refreshQueued: false
 
     signal updated(string output, int exitCode)
 
-    function refresh() {
-        if (!active || !command || command.length === 0 || proc.running) {
+    function refresh(queueIfRunning) {
+        if (!active || !command || command.length === 0) {
+            return;
+        }
+        if (proc.running) {
+            if (queueIfRunning) _refreshQueued = true;
             return;
         }
         proc.command = command;
@@ -42,6 +47,10 @@ Item {
                 poll.output = text;
             }
             poll.updated(text, exitCode);
+            if (poll._refreshQueued) {
+                poll._refreshQueued = false;
+                poll.refresh();
+            }
         }
     }
 }

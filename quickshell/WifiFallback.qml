@@ -8,6 +8,8 @@ WifiIndicator {
     property var shellRoot: null
     property var parentWindow: null
     property bool popupVisible: false
+    property bool _scanRegistered: false
+    Component.onDestruction: if (_scanRegistered && shellRoot) shellRoot.openWifiPanelCount--
     property string expandedSsid: ""
     property string passwordText: ""
     property var displayedNetworks: []
@@ -241,6 +243,10 @@ WifiIndicator {
     onShellRootChanged: syncNetworkList(true)
 
     onPopupVisibleChanged: {
+        if (shellRoot && popupVisible !== _scanRegistered) {
+            shellRoot.openWifiPanelCount += popupVisible ? 1 : -1;
+            _scanRegistered = popupVisible;
+        }
         if (popupVisible) {
             syncNetworkList(true);
             return;

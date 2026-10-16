@@ -51,14 +51,21 @@ read_cpu_temperature() {
 }
 
 printf '__STAT__\n'
-cat /proc/stat
+if [[ "${1:-}" == "--minimal" ]]; then
+    head -n 1 /proc/stat
+else
+    cat /proc/stat
+fi
 printf '\n__MEM__\n'
 cat /proc/meminfo
 printf '\n__TEMP__\n'
-read_cpu_temperature || true
+if [[ "${1:-}" != "--minimal" ]]; then
+    read_cpu_temperature || true
+fi
 printf '\n__CPU_POWER__\n'
 [[ -r /run/hyprv/cpu-package-power-w ]] && cat /run/hyprv/cpu-package-power-w
 printf '\n__ROUTE__\n'
 cat /proc/net/route
+[[ "${1:-}" != "--minimal" ]] || exit 0
 printf '\n__NET__\n'
 cat /proc/net/dev
