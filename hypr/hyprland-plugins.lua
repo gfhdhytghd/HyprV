@@ -181,20 +181,6 @@ do
       }))
     end
 
-    -- Both outward gestures toggle the persistent compact/full bar state.
-    local function toggle_bar(monitor)
-      local quoted = "'" .. monitor:gsub("'", "'\\''") .. "'"
-      hl.exec_cmd("quickshell ipc -p /home/wilf/.config/HyprV/quickshell call bar toggle " .. quoted)
-    end
-    for _, mode in ipairs({"push", "move"}) do
-      assert(edge.rule({
-        monitor = "*", target = "top", mode = mode,
-        move_ms = 200, movement_gap_ms = 80, pause_ms = 180,
-        noise = 0.5, band = 2, cooldown_ms = 500, exit_distance = 20,
-        on_enter = toggle_bar,
-      }))
-    end
-
     -- The right strip follows actual AI-HUB window geometry, including the gap
     -- between its right edge and the output boundary. No fixed 360/370 px snapshot.
     local function shell_quote(s) return "'" .. s:gsub("'", "'\\''") .. "'" end

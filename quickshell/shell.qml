@@ -15,7 +15,6 @@ ShellRoot {
     readonly property string homeDir: Quickshell.env("HOME") || ""
     readonly property string configDir: homeDir + "/.config/HyprV"
 
-    property var expandedBarScreens: ({})
     property var barScreenStates: ({})
     readonly property int barMotionDuration: barMotion.duration
     readonly property var barMotionCurve: barMotion.bezierCurve
@@ -35,18 +34,10 @@ ShellRoot {
     readonly property bool detailedStatsVisible: anyBarExpanded || systemStatsPopup.popupRequested
     readonly property bool mediaUiVisible: anyBarExpanded || controlPanelPopup.popupRequested
     property int openWifiPanelCount: 0
-    property double lastBarToggle: 0
     signal barStateChanged()
-    function barExpanded(name) { return expandedBarScreens[name] === true; }
-    function toggleBar(name) {
-        const now = Date.now();
-        if (now - lastBarToggle < 500) return;
-        lastBarToggle = now;
-        const next = Object.assign({}, expandedBarScreens);
-        next[name] = !barExpanded(name);
-        expandedBarScreens = next;
-        barStateChanged();
-    }
+    // Desktop always uses the standard bar. Keep the IPC method compatible.
+    function barExpanded(name) { return true; }
+    function toggleBar(name) {}
     IpcHandler {
         target: "bar"
         function toggle(monitor: string): void { root.toggleBar(monitor); }
@@ -3535,13 +3526,12 @@ ShellRoot {
             exclusiveZone: -1
             color: "transparent"
             surfaceFormat.opaque: false
-            // The corner artwork is decorative. Only the visible part of the
-            // compact strip accepts input; standard mode is fully click-through.
+            // Corner artwork is decorative and accepts no input.
             mask: Region {
                 x: 0
                 y: 0
                 width: cornerWindow.width
-                height: cornerWindow.barState ? Math.ceil(cornerWindow.barState.topCornerOffset) : 15
+                height: 0
             }
 
             WlrLayershell.layer: WlrLayer.Overlay
@@ -3552,87 +3542,6 @@ ShellRoot {
             anchors.left: true
             anchors.right: true
             anchors.bottom: true
-
-            Rectangle {
-                id: compactStrip
-                z: 100
-                width: parent.width
-                height: 15
-                y: (cornerWindow.barState ? cornerWindow.barState.topCornerOffset : 15) - height
-                color: "#000000"
-                visible: cornerWindow.reveal < 1
-
-                Row {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    height: 15
-                    spacing: 12
-                    Row {
-                        spacing: 10
-                        Repeater {
-                            model: root.hyprWorkspaces
-                            delegate: Text {
-                                required property var modelData
-                                text: String(modelData.name || modelData.id)
-                                color: root.activeWorkspaceId === modelData.id ? "#ffffff" : "#858585"
-                                font.family: root.baseFont
-                                font.pixelSize: 11
-                                font.bold: root.activeWorkspaceId === modelData.id
-                                height: 15
-                                verticalAlignment: Text.AlignVCenter
-                                MouseArea { anchors.fill: parent; onClicked: modelData.activate() }
-                            }
-                        }
-                    }
-                    Text {
-                        text: " " + Math.round(root.cpuUsage) + "%   " + Math.round(root.memoryUsage) + "%"
-                        color: "white"; font.family: root.baseFont; font.pixelSize: 10
-                        height: 15; verticalAlignment: Text.AlignVCenter
-                        MouseArea { anchors.fill: parent; onClicked: systemStatsPopup.toggleFor(parent, cornerWindow) }
-                    }
-                }
-                Text {
-                    anchors.centerIn: parent
-                    text: Qt.formatDateTime(root.now, "ddd  HH:mm")
-                    color: "white"; font.family: root.baseFont; font.pixelSize: 11
-                    MouseArea { anchors.fill: parent; onClicked: {
-                        if (!cornerWindow.expanded) root.toggleBar(cornerWindow.modelData.name);
-                        root.toggleCalendar(cornerWindow.modelData);
-                    } }
-                }
-                Row {
-                    anchors.right: parent.right
-                    anchors.rightMargin: 10
-                    height: 15
-                    spacing: 12
-                    Text {
-                        text: root.batteryOrCpuPowerText
-                        color: "white"; font.family: root.baseFont; font.pixelSize: 10
-                        height: 15; verticalAlignment: Text.AlignVCenter
-                        MouseArea { anchors.fill: parent; onClicked: batteryInfoPopup.toggleFor(parent, cornerWindow) }
-                    }
-                    Text {
-                        text: root.wifiConnected ? "" : "󰖪"
-                        color: "white"; font.family: root.baseFont; font.pixelSize: 11
-                        height: 15; verticalAlignment: Text.AlignVCenter
-                        MouseArea { anchors.fill: parent; onClicked: controlPanelPopup.toggleFor(parent, cornerWindow) }
-                    }
-                    Item {
-                        width: 13; height: 15
-                        Image {
-                            anchors.centerIn: parent; width: 11; height: 11
-                            source: Qt.resolvedUrl("assets/bar/control-panel-dark.svg")
-                        }
-                        MouseArea { anchors.fill: parent; onClicked: controlPanelPopup.toggleFor(parent, cornerWindow) }
-                    }
-                    Text {
-                        text: root.notificationIcon + (root.notificationHasDot ? "·" : "")
-                        color: "white"; font.family: root.baseFont; font.pixelSize: 11
-                        height: 15; verticalAlignment: Text.AlignVCenter
-                        MouseArea { anchors.fill: parent; onClicked: root.runDetached(["swaync-client", "-t", "-sw"]) }
-                    }
-                }
-            }
 
             ScreenCornerShade {
                 id: topLeftShade
