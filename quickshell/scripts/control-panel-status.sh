@@ -2,19 +2,13 @@
 
 set -euo pipefail
 
-run_quick() {
-    timeout 2s "$@" 2>/dev/null || true
-}
-
 # Brightness is read by quickAdjustBrightnessProbe on panel open and after
 # user adjustments. Periodic DDC/CI queries stall the NVIDIA import path.
 # Omit brightness here so unrelated status polling keeps the current UI value.
 
 # Screen recording detection
 recording=false
-if pgrep -x 'wf-recorder' >/dev/null 2>&1 || \
-   pgrep -x 'wl-screenrec' >/dev/null 2>&1 || \
-   pgrep -x 'gpu-screen-recorder' >/dev/null 2>&1; then
+if pgrep -f '(^|/)(wf-recorder|wl-screenrec|gpu-screen-recorder)( |$)' >/dev/null 2>&1; then
     recording=true
 fi
 printf 'recording=%s\n' "$recording"

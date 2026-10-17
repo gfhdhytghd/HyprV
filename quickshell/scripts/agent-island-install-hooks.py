@@ -18,13 +18,13 @@ CLAUDE_EVENTS = {
     "PreToolUse": 5,
     "PostToolUse": 5,
     "PostToolUseFailure": 5,
-    "PermissionRequest": 86400,
+    "PermissionRequest": 5,
     "Stop": 5,
     "SubagentStart": 5,
     "SubagentStop": 5,
     "SessionStart": 5,
     "SessionEnd": 5,
-    "Notification": 86400,
+    "Notification": 5,
     "PreCompact": 5,
 }
 

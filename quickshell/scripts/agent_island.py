@@ -471,22 +471,25 @@ def list_processes() -> dict[int, dict[str, Any]]:
     processes: dict[int, dict[str, Any]] = {}
     try:
         entries = os.listdir("/proc")
-    except Exception:
+    except OSError:
         return processes
     for entry in entries:
         if not entry.isdigit():
             continue
         pid = int(entry)
-        cmdline = proc_cmdline(pid)
-        stat_data = proc_stat(pid)
-        if not cmdline or not stat_data:
+        try:
+            with open(f"/proc/{pid}/stat", encoding="utf-8", errors="replace") as file:
+                text = file.read()
+            close = text.rfind(")")
+            fields = text[close + 2:].split()
+            name = text[text.find("(") + 1:close]
+            ppid, start_ticks = int(fields[1]), int(fields[19])
+        except (OSError, ValueError, IndexError):
             continue
-        ppid, start_ticks = stat_data
-        processes[pid] = {
-            "cmdline": cmdline,
-            "ppid": ppid,
-            "start_ticks": start_ticks,
-        }
+        # Every PID remains in the ancestry/liveness map. Only these executables
+        # participate in discovery; avoid opening argv for browsers and workers.
+        cmdline = proc_cmdline(pid) if name in ("codex", "claude", "systemd-inhibit") else []
+        processes[pid] = {"cmdline": cmdline, "ppid": ppid, "start_ticks": start_ticks}
     return processes
 
 
@@ -863,6 +866,13 @@ def update_session_from_event(state: dict[str, Any], payload: dict[str, Any], so
 
 def cleanup_state(state: dict[str, Any]) -> None:
     now = time.time()
+    alive_cache: dict[int | None, bool] = {}
+
+    def alive(pid: int | None) -> bool:
+        if pid not in alive_cache:
+            alive_cache[pid] = process_exists(pid)
+        return alive_cache[pid]
+
     sessions = state.setdefault("sessions", {})
     for sid, session in list(sessions.items()):
         if not isinstance(session, dict):
@@ -871,10 +881,10 @@ def cleanup_state(state: dict[str, Any]) -> None:
         status = session.get("status")
         pid = session_pid(session)
         has_pending = bool(session.get("pending_request_id"))
-        if pid is not None and not process_exists(pid) and not has_pending:
+        if pid is not None and not alive(pid) and not has_pending:
             sessions.pop(sid, None)
             continue
-        if status == "completed" and session.get("had_activity") and process_exists(pid):
+        if status == "completed" and session.get("had_activity") and alive(pid):
             continue
         last = float(session.get("last_activity") or 0)
         completed = float(session.get("completed_at") or last or 0)
@@ -893,8 +903,9 @@ def cleanup_state(state: dict[str, Any]) -> None:
             pending.pop(rid, None)
 
 
-def public_snapshot(state: dict[str, Any]) -> dict[str, Any]:
-    sync_codex_process_sessions(state)
+def public_snapshot(state: dict[str, Any], *, scan_processes: bool = True) -> dict[str, Any]:
+    if scan_processes:
+        sync_codex_process_sessions(state)
     cleanup_state(state)
     sessions = []
     for session in state.get("sessions", {}).values():

@@ -26,7 +26,7 @@ hl.monitor({
   transform = transform,
   bitdepth = 10,
   cm = "hdr",
-  sdr_max_luminance = require("hypr.brightness-hdr"),
+  reference_luminance = require("hypr.brightness-hdr"),
 })
 
 hl.monitor({

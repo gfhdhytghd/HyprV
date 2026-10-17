@@ -275,228 +275,46 @@ Item {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
             }
 
-            Column {
+            Loader {
                 id: popupContent
 
                 anchors.fill: parent
                 anchors.margins: popupRoot.popupPadding
-                spacing: 18
-                onImplicitHeightChanged: {
-                    if (popupRoot.openAnimationPending) {
-                        popupOpenTimer.restart();
+                active: popupWindow.visible
+
+                sourceComponent: Column {
+                    width: popupContent.width
+                    spacing: 18
+                    onImplicitHeightChanged: {
+                        if (popupRoot.openAnimationPending) {
+                            popupOpenTimer.restart();
+                        }
                     }
-                }
-
-                Item {
-                    width: parent.width
-                    height: Math.max(titleLabel.implicitHeight, refreshLabel.implicitHeight)
-
-                    Text {
-                        id: titleLabel
-
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "系统资源"
-                        color: popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#2b2b2c"
-                        font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
-                        font.pixelSize: 15
-                        font.weight: Font.Bold
-                        renderType: Text.NativeRendering
-                    }
-
-                    Text {
-                        id: refreshLabel
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "过去 120s · 1s"
-                        color: popupRoot.mutedTextColor
-                        font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
-                        font.pixelSize: 11
-                        font.weight: Font.Medium
-                        renderType: Text.NativeRendering
-                    }
-                }
-
-                Column {
-                    width: parent.width
-                    spacing: 8
 
                     Item {
                         width: parent.width
-                        height: Math.max(cpuTitle.implicitHeight, cpuValue.implicitHeight)
+                        height: Math.max(titleLabel.implicitHeight, refreshLabel.implicitHeight)
 
                         Text {
-                            id: cpuTitle
+                            id: titleLabel
 
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "CPU:"
+                            text: "系统资源"
                             color: popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#2b2b2c"
                             font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
-                            font.pixelSize: 16
+                            font.pixelSize: 15
                             font.weight: Font.Bold
                             renderType: Text.NativeRendering
                         }
 
                         Text {
-                            id: cpuValue
-
-                            anchors.left: cpuTitle.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: popupRoot.cpuCurrentText
-                            color: popupRoot.metricTextColor
-                            font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
-                            font.pixelSize: 16
-                            font.weight: Font.Bold
-                            renderType: Text.NativeRendering
-                        }
-                    }
-
-                    Item {
-                        width: parent.width
-                        implicitHeight: Math.max(cpuChart.implicitHeight, cpuCoreGrid.implicitHeight)
-
-                        SystemTrendChart {
-                            id: cpuChart
-
-                            shellRoot: popupRoot.shellRoot
-                            samples: popupRoot.shellRoot ? popupRoot.shellRoot.cpuHistory : []
-                            accentColor: popupRoot.cpuChartColor
-                            width: Math.max(240, parent.width - cpuCoreGrid.implicitWidth - 16)
-                            height: Math.max(112, cpuCoreGrid.implicitHeight)
-                            maxValue: 100
-                            autoScale: false
-                        }
-
-                        Grid {
-                            id: cpuCoreGrid
+                            id: refreshLabel
 
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            columns: 2
-                            rowSpacing: 8
-                            columnSpacing: 10
-
-                            Repeater {
-                                model: popupRoot.cpuCoreDisplayData
-
-                                delegate: Rectangle {
-                                    required property var modelData
-
-                                    width: 74
-                                    height: 32
-                                    radius: 10
-                                    color: popupRoot.panelColor(popupRoot.shellRoot ? popupRoot.shellRoot.withAlpha(popupRoot.shellRoot.primaryText, popupRoot.shellRoot.darkMode ? 0.06 : 0.04) : Qt.rgba(0.2, 0.2, 0.2, 0.04))
-                                    border.width: 1
-                                    border.color: popupRoot.glassStroke
-                                    antialiasing: true
-
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: modelData.label + " " + popupRoot.formatPercent(modelData.value)
-                                        color: popupRoot.coreUsageColor(modelData.value)
-                                        font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
-                                        font.pixelSize: 13
-                                        font.weight: Font.Bold
-                                        renderType: Text.NativeRendering
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Column {
-                    width: parent.width
-                    spacing: 8
-
-                    Item {
-                        width: parent.width
-                        height: Math.max(ramTitle.implicitHeight, ramValue.implicitHeight)
-
-                        Text {
-                            id: ramTitle
-
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: "RAM:"
-                            color: popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#2b2b2c"
-                            font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
-                            font.pixelSize: 16
-                            font.weight: Font.Bold
-                            renderType: Text.NativeRendering
-                        }
-
-                        Text {
-                            id: ramValue
-
-                            anchors.left: ramTitle.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: popupRoot.memoryCurrentText
-                            color: popupRoot.metricTextColor
-                            font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
-                            font.pixelSize: 16
-                            font.weight: Font.Bold
-                            renderType: Text.NativeRendering
-                        }
-                    }
-
-                    SystemTrendChart {
-                        shellRoot: popupRoot.shellRoot
-                        samples: popupRoot.shellRoot ? popupRoot.shellRoot.memoryHistory : []
-                        accentColor: popupRoot.memoryChartColor
-                        width: parent.width
-                        height: 112
-                        maxValue: 100
-                        autoScale: false
-                    }
-                }
-
-                Column {
-                    width: parent.width
-                    spacing: 8
-
-                    Item {
-                        width: parent.width
-                        height: Math.max(networkTitle.implicitHeight, networkValue.implicitHeight, networkDetail.implicitHeight)
-
-                        Text {
-                            id: networkTitle
-
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: "Network:"
-                            color: popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#2b2b2c"
-                            font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
-                            font.pixelSize: 16
-                            font.weight: Font.Bold
-                            renderType: Text.NativeRendering
-                        }
-
-                        Text {
-                            id: networkValue
-
-                            anchors.left: networkTitle.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: popupRoot.networkCurrentText
-                            color: popupRoot.metricTextColor
-                            font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
-                            font.pixelSize: 16
-                            font.weight: Font.Bold
-                            renderType: Text.NativeRendering
-                        }
-
-                        Text {
-                            id: networkDetail
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: popupRoot.networkDetailText
-                            color: popupRoot.metricTextColor
+                            text: "过去 120s · 1s"
+                            color: popupRoot.mutedTextColor
                             font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
                             font.pixelSize: 11
                             font.weight: Font.Medium
@@ -504,13 +322,203 @@ Item {
                         }
                     }
 
-                    SystemTrendChart {
-                        shellRoot: popupRoot.shellRoot
-                        samples: popupRoot.shellRoot ? popupRoot.shellRoot.networkHistory : []
-                        accentColor: popupRoot.networkChartColor
+                    Column {
                         width: parent.width
-                        height: 112
-                        autoScale: true
+                        spacing: 8
+
+                        Item {
+                            width: parent.width
+                            height: Math.max(cpuTitle.implicitHeight, cpuValue.implicitHeight)
+
+                            Text {
+                                id: cpuTitle
+
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "CPU:"
+                                color: popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#2b2b2c"
+                                font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
+                                font.pixelSize: 16
+                                font.weight: Font.Bold
+                                renderType: Text.NativeRendering
+                            }
+
+                            Text {
+                                id: cpuValue
+
+                                anchors.left: cpuTitle.right
+                                anchors.leftMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: popupRoot.cpuCurrentText
+                                color: popupRoot.metricTextColor
+                                font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
+                                font.pixelSize: 16
+                                font.weight: Font.Bold
+                                renderType: Text.NativeRendering
+                            }
+                        }
+
+                        Item {
+                            width: parent.width
+                            implicitHeight: Math.max(cpuChart.implicitHeight, cpuCoreGrid.implicitHeight)
+
+                            SystemTrendChart {
+                                active: popupRoot.popupRequested || popupRoot.animatingClose
+                                id: cpuChart
+
+                                shellRoot: popupRoot.shellRoot
+                                samples: popupRoot.shellRoot ? popupRoot.shellRoot.cpuHistory : []
+                                accentColor: popupRoot.cpuChartColor
+                                width: Math.max(240, parent.width - cpuCoreGrid.implicitWidth - 16)
+                                height: Math.max(112, cpuCoreGrid.implicitHeight)
+                                maxValue: 100
+                                autoScale: false
+                            }
+
+                            Grid {
+                                id: cpuCoreGrid
+
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                columns: 2
+                                rowSpacing: 8
+                                columnSpacing: 10
+
+                                Repeater {
+                                    model: popupRoot.cpuCoreDisplayData
+
+                                    delegate: Rectangle {
+                                        required property var modelData
+
+                                        width: 74
+                                        height: 32
+                                        radius: 10
+                                        color: popupRoot.panelColor(popupRoot.shellRoot ? popupRoot.shellRoot.withAlpha(popupRoot.shellRoot.primaryText, popupRoot.shellRoot.darkMode ? 0.06 : 0.04) : Qt.rgba(0.2, 0.2, 0.2, 0.04))
+                                        border.width: 1
+                                        border.color: popupRoot.glassStroke
+                                        antialiasing: true
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: modelData.label + " " + popupRoot.formatPercent(modelData.value)
+                                            color: popupRoot.coreUsageColor(modelData.value)
+                                            font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
+                                            font.pixelSize: 13
+                                            font.weight: Font.Bold
+                                            renderType: Text.NativeRendering
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Column {
+                        width: parent.width
+                        spacing: 8
+
+                        Item {
+                            width: parent.width
+                            height: Math.max(ramTitle.implicitHeight, ramValue.implicitHeight)
+
+                            Text {
+                                id: ramTitle
+
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "RAM:"
+                                color: popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#2b2b2c"
+                                font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
+                                font.pixelSize: 16
+                                font.weight: Font.Bold
+                                renderType: Text.NativeRendering
+                            }
+
+                            Text {
+                                id: ramValue
+
+                                anchors.left: ramTitle.right
+                                anchors.leftMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: popupRoot.memoryCurrentText
+                                color: popupRoot.metricTextColor
+                                font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
+                                font.pixelSize: 16
+                                font.weight: Font.Bold
+                                renderType: Text.NativeRendering
+                            }
+                        }
+
+                        SystemTrendChart {
+                            active: popupRoot.popupRequested || popupRoot.animatingClose
+                            shellRoot: popupRoot.shellRoot
+                            samples: popupRoot.shellRoot ? popupRoot.shellRoot.memoryHistory : []
+                            accentColor: popupRoot.memoryChartColor
+                            width: parent.width
+                            height: 112
+                            maxValue: 100
+                            autoScale: false
+                        }
+                    }
+
+                    Column {
+                        width: parent.width
+                        spacing: 8
+
+                        Item {
+                            width: parent.width
+                            height: Math.max(networkTitle.implicitHeight, networkValue.implicitHeight, networkDetail.implicitHeight)
+
+                            Text {
+                                id: networkTitle
+
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "Network:"
+                                color: popupRoot.shellRoot ? popupRoot.shellRoot.primaryText : "#2b2b2c"
+                                font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
+                                font.pixelSize: 16
+                                font.weight: Font.Bold
+                                renderType: Text.NativeRendering
+                            }
+
+                            Text {
+                                id: networkValue
+
+                                anchors.left: networkTitle.right
+                                anchors.leftMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: popupRoot.networkCurrentText
+                                color: popupRoot.metricTextColor
+                                font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
+                                font.pixelSize: 16
+                                font.weight: Font.Bold
+                                renderType: Text.NativeRendering
+                            }
+
+                            Text {
+                                id: networkDetail
+
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: popupRoot.networkDetailText
+                                color: popupRoot.metricTextColor
+                                font.family: popupRoot.shellRoot ? popupRoot.shellRoot.baseFont : "monospace"
+                                font.pixelSize: 11
+                                font.weight: Font.Medium
+                                renderType: Text.NativeRendering
+                            }
+                        }
+
+                        SystemTrendChart {
+                            active: popupRoot.popupRequested || popupRoot.animatingClose
+                            shellRoot: popupRoot.shellRoot
+                            samples: popupRoot.shellRoot ? popupRoot.shellRoot.networkHistory : []
+                            accentColor: popupRoot.networkChartColor
+                            width: parent.width
+                            height: 112
+                            autoScale: true
+                        }
                     }
                 }
             }

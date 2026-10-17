@@ -753,7 +753,7 @@ Item {
             if (!visible || !screen) {
                 return;
             }
-            let barBottom = popupRoot.parentWindow ? popupRoot.parentWindow.implicitHeight : 0;
+            let barBottom = popupRoot.parentWindow ? Math.max(0, popupRoot.parentWindow.exclusiveZone || 58) : 0;
             if (popupRoot.sourceItem) {
                 const point = popupRoot.sourceItem.mapToGlobal(0, popupRoot.sourceItem.height);
                 barBottom = Math.round(point.y - screen.y);
@@ -895,6 +895,7 @@ Item {
                 Loader {
                     id: pageLoader
 
+                    active: popupWindow.visible
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top

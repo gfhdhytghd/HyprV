@@ -17,8 +17,6 @@ Item {
     property var spectrumValues: []
     property bool mediaManuallyHidden: false
     property var agentSessions: []
-    property var agentPending: null
-    property int agentPendingCount: 0
     property bool calendarOpen: false
 
     signal lockClicked()
@@ -29,11 +27,12 @@ Item {
     signal nextClicked()
     signal appFocusRequested()
     signal agentFocusRequested(string sessionId)
-    signal agentApproveRequested(string requestId)
-    signal agentDenyRequested(string requestId)
-    signal agentReplyRequested(string requestId)
-    signal agentAnswerRequested(string requestId, string answer)
     signal seekRequested(real positionSeconds)
+
+    AgentTaskModel { id: taskRows }
+    function syncTaskRows() { taskRows.sync(agentSessions); }
+    onAgentSessionsChanged: Qt.callLater(syncTaskRows)
+    Component.onCompleted: syncTaskRows()
 
     property bool seeking: false
     property real seekPreviewSeconds: 0
@@ -100,14 +99,14 @@ Item {
     readonly property real agentSessionRowHeight: 42
     readonly property real agentSessionSpacing: 8
     readonly property int visibleAgentSessionCount: agentActive ? agentSessions.length : 0
-    readonly property real agentExpandedTopReserve: 26 + 58 + (agentPending ? 11 + 74 + 13 : 20)
+    readonly property real agentExpandedTopReserve: 26 + 58 + 20
     readonly property real agentSessionContentHeight: visibleAgentSessionCount * agentSessionRowHeight + Math.max(0, visibleAgentSessionCount - 1) * agentSessionSpacing
     readonly property real agentSessionListHeight: Math.max(
         agentSessionRowHeight,
         Math.min(agentSessionContentHeight, agentExpandedBudgetHeight - agentExpandedTopReserve)
     )
     readonly property real agentExpandedHeight: Math.max(
-        agentPending ? 216 : 184,
+        184,
         agentExpandedTopReserve + agentSessionListHeight
     )
     readonly property real hoverBridgeMargin: 10
@@ -293,35 +292,6 @@ Item {
             return "✓";
         }
         return "";
-    }
-
-    function pendingKind() {
-        if (!agentPending || agentPending.kind === undefined || agentPending.kind === null) {
-            return "";
-        }
-        return String(agentPending.kind);
-    }
-
-    function pendingRequestId() {
-        if (!agentPending || agentPending.id === undefined || agentPending.id === null) {
-            return "current";
-        }
-        return String(agentPending.id);
-    }
-
-    function pendingQuestionText() {
-        if (!agentPending) {
-            return "";
-        }
-        const value = agentPending.question || agentPending.detail || "";
-        return String(value);
-    }
-
-    function pendingOptions() {
-        if (!agentPending || !Array.isArray(agentPending.options)) {
-            return [];
-        }
-        return agentPending.options.slice(0, 3).map(option => String(option));
     }
 
     onHasMusicContentChanged: {
@@ -745,50 +715,6 @@ Item {
             cursorShape: Qt.PointingHandCursor
             onClicked: island.appFocusRequested()
             onEntered: island.hoverTarget = "music"
-        }
-    }
-
-    component AgentActionButton: Item {
-        id: actionButton
-
-        property string label: ""
-        property color buttonColor: island.softFill
-        property color labelColor: island.textColor
-
-        signal clicked()
-
-        width: Math.max(56, labelText.implicitWidth + 22)
-        height: 30
-        scale: actionMouse.pressed ? 0.95 : 1
-
-        Rectangle {
-            anchors.fill: parent
-            radius: 15
-            color: actionButton.buttonColor
-            border.width: 1
-            border.color: island.strokeColor
-            opacity: actionMouse.containsMouse ? 1 : 0.86
-        }
-
-        Text {
-            id: labelText
-
-            anchors.centerIn: parent
-            text: actionButton.label
-            color: actionButton.labelColor
-            font.family: island.shellRoot ? island.shellRoot.baseFont : "JetBrainsMono Nerd Font"
-            font.pixelSize: 12
-            font.weight: Font.Bold
-            renderType: Text.NativeRendering
-        }
-
-        MouseArea {
-            id: actionMouse
-
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: actionButton.clicked()
         }
     }
 
@@ -1389,93 +1315,6 @@ Item {
             }
         }
 
-        Rectangle {
-            id: pendingAgentCard
-
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: expandedAgentHeader.bottom
-            anchors.topMargin: 11
-            height: island.agentPending ? 74 : 0
-            radius: 16
-            color: island.softFill
-            border.width: island.agentPending ? 1 : 0
-            border.color: island.strokeColor
-            visible: island.agentPending !== null
-
-            Column {
-                anchors.left: parent.left
-                anchors.right: pendingActions.left
-                anchors.leftMargin: 12
-                anchors.rightMargin: 10
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 4
-
-                Text {
-                    width: parent.width
-                    text: island.pendingKind().indexOf("question") >= 0 ? "Question" : "Approval"
-                    color: island.agentAccent(island.primaryAgent)
-                    font.family: island.shellRoot ? island.shellRoot.baseFont : "JetBrainsMono Nerd Font"
-                    font.pixelSize: 11
-                    font.weight: Font.Black
-                    renderType: Text.NativeRendering
-                }
-
-                Text {
-                    width: parent.width
-                    text: island.pendingQuestionText()
-                    color: island.textColor
-                    font.family: island.shellRoot ? island.shellRoot.baseFont : "JetBrainsMono Nerd Font"
-                    font.pixelSize: 12
-                    font.weight: Font.DemiBold
-                    elide: Text.ElideRight
-                    renderType: Text.NativeRendering
-                }
-            }
-
-            Row {
-                id: pendingActions
-
-                anchors.right: parent.right
-                anchors.rightMargin: 10
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 7
-
-                Repeater {
-                    model: island.pendingKind().indexOf("question") >= 0 ? island.pendingOptions() : []
-
-                    delegate: AgentActionButton {
-                        required property string modelData
-
-                        label: modelData
-                        buttonColor: island.agentAccent(island.primaryAgent)
-                        labelColor: "#ffffff"
-                        onClicked: island.agentAnswerRequested(island.pendingRequestId(), modelData)
-                    }
-                }
-
-                AgentActionButton {
-                    visible: island.pendingKind().indexOf("question") >= 0
-                    label: "Reply"
-                    onClicked: island.agentReplyRequested(island.pendingRequestId())
-                }
-
-                AgentActionButton {
-                    visible: island.pendingKind().indexOf("question") < 0
-                    label: "Allow"
-                    buttonColor: island.agentAccent(island.primaryAgent)
-                    labelColor: "#ffffff"
-                    onClicked: island.agentApproveRequested(island.pendingRequestId())
-                }
-
-                AgentActionButton {
-                    visible: island.pendingKind().indexOf("question") < 0
-                    label: "Deny"
-                    onClicked: island.agentDenyRequested(island.pendingRequestId())
-                }
-            }
-        }
-
         ListView {
             id: agentSessionList
 
@@ -1485,12 +1324,13 @@ Item {
             height: island.agentSessionListHeight
             clip: true
             spacing: island.agentSessionSpacing
-            model: island.agentSessions
+            model: taskRows
             boundsBehavior: Flickable.StopAtBounds
             interactive: contentHeight > height
 
             delegate: Rectangle {
-                required property var modelData
+                required property var model
+                readonly property var modelData: model
 
                 width: agentSessionList.width
                 height: island.agentSessionRowHeight

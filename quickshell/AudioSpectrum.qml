@@ -27,6 +27,10 @@ Canvas {
 
     property real phase: 0
 
+    function repaintIfVisible() {
+        if (visible) requestPaint();
+    }
+
     function normalizedSample(index) {
         let ratio = minimumBarRatio;
         if (!active || !hasEnergy || !values || values.length === 0) {
@@ -87,14 +91,15 @@ Canvas {
         }
     }
 
-    onValuesChanged: requestPaint()
-    onActiveChanged: requestPaint()
-    onBarCountChanged: requestPaint()
-    onBarColorChanged: requestPaint()
-    onPeakColorChanged: requestPaint()
-    onQuietColorChanged: requestPaint()
-    onAmplitudeGainChanged: requestPaint()
-    onHeightRangeScaleChanged: requestPaint()
-    onWidthChanged: requestPaint()
-    onHeightChanged: requestPaint()
+    onVisibleChanged: repaintIfVisible()
+    onValuesChanged: repaintIfVisible()
+    onActiveChanged: repaintIfVisible()
+    onBarCountChanged: repaintIfVisible()
+    onBarColorChanged: repaintIfVisible()
+    onPeakColorChanged: repaintIfVisible()
+    onQuietColorChanged: repaintIfVisible()
+    onAmplitudeGainChanged: repaintIfVisible()
+    onHeightRangeScaleChanged: repaintIfVisible()
+    onWidthChanged: repaintIfVisible()
+    onHeightChanged: repaintIfVisible()
 }

@@ -4,6 +4,7 @@ Item {
     id: root
 
     property var shellRoot: null
+    property bool active: true
     property var samples: []
     property real maxValue: 100
     property bool autoScale: false
@@ -40,6 +41,10 @@ Item {
 
     implicitWidth: 280
     implicitHeight: 116
+
+    function repaintIfVisible() {
+        if (active && visible) chartCanvas.requestPaint();
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -148,15 +153,17 @@ Item {
         }
     }
 
-    onSamplesChanged: chartCanvas.requestPaint()
-    onResolvedMaxValueChanged: chartCanvas.requestPaint()
-    onWidthChanged: chartCanvas.requestPaint()
-    onHeightChanged: chartCanvas.requestPaint()
-    onAccentColorChanged: chartCanvas.requestPaint()
-    onFrameColorChanged: chartCanvas.requestPaint()
-    onGridColorChanged: chartCanvas.requestPaint()
-    onPanelFillChanged: chartCanvas.requestPaint()
-    onOverlayFillChanged: chartCanvas.requestPaint()
-    onAreaTopColorChanged: chartCanvas.requestPaint()
-    onAreaBottomColorChanged: chartCanvas.requestPaint()
+    onActiveChanged: repaintIfVisible()
+    onVisibleChanged: repaintIfVisible()
+    onSamplesChanged: repaintIfVisible()
+    onResolvedMaxValueChanged: repaintIfVisible()
+    onWidthChanged: repaintIfVisible()
+    onHeightChanged: repaintIfVisible()
+    onAccentColorChanged: repaintIfVisible()
+    onFrameColorChanged: repaintIfVisible()
+    onGridColorChanged: repaintIfVisible()
+    onPanelFillChanged: repaintIfVisible()
+    onOverlayFillChanged: repaintIfVisible()
+    onAreaTopColorChanged: repaintIfVisible()
+    onAreaBottomColorChanged: repaintIfVisible()
 }

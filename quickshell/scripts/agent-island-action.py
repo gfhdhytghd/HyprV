@@ -6,57 +6,8 @@ import argparse
 import json
 from pathlib import Path
 import subprocess
-import sys
-import time
 
-from agent_island import (
-    is_agent_focus_client,
-    locked_state,
-    response_allow,
-    response_answer_notification,
-    response_answer_permission,
-    response_deny,
-    response_file,
-)
-
-
-def current_request(state: dict, request_id: str | None) -> dict | None:
-    pending = state.get("pending_requests", {})
-    if request_id and request_id != "current":
-        req = pending.get(request_id)
-        return req if isinstance(req, dict) else None
-    items = [req for req in pending.values() if isinstance(req, dict)]
-    items.sort(key=lambda req: float(req.get("created_at") or 0))
-    return items[0] if items else None
-
-
-def write_response(request_id: str, response: dict) -> None:
-    path = response_file(request_id)
-    path.write_text(json.dumps(response, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-
-
-def rofi_answer(prompt: str, options: list[str]) -> str | None:
-    rofi = "rofi-wayland"
-    try:
-        subprocess.run([rofi, "-version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=0.5)
-    except Exception:
-        rofi = "rofi"
-    input_text = "\n".join(options) + ("\n" if options else "")
-    try:
-        proc = subprocess.run(
-            [rofi, "-dmenu", "-p", prompt[:80]],
-            input=input_text,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True,
-            timeout=3600,
-        )
-    except Exception:
-        return None
-    if proc.returncode != 0:
-        return None
-    answer = proc.stdout.strip()
-    return answer or None
+from agent_island import is_agent_focus_client, locked_state
 
 
 def hypr_clients() -> list[dict]:
@@ -181,56 +132,15 @@ def focus_session(session: dict) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("action", choices=["approve", "deny", "answer", "reply", "dismiss", "focus"])
-    parser.add_argument("id", nargs="?", default="current")
-    parser.add_argument("value", nargs="?", default="")
+    parser.add_argument("action", choices=["focus"])
+    parser.add_argument("id")
     args = parser.parse_args()
 
-    with locked_state(write=True) as state:
-        if args.action == "focus":
-            session = state.get("sessions", {}).get(args.id)
-            return focus_session(session) if isinstance(session, dict) else 1
+    # Copy before making window/terminal calls so a slow focus never blocks hooks.
+    with locked_state(write=False) as state:
+        session = state.get("sessions", {}).get(args.id)
+    return focus_session(session) if isinstance(session, dict) else 1
 
-        request = current_request(state, args.id)
-        if not request:
-            return 1
-        request_id = str(request["id"])
-
-        if args.action == "dismiss":
-            state.get("pending_requests", {}).pop(request_id, None)
-            sid = request.get("session_id")
-            if sid in state.get("sessions", {}):
-                state["sessions"][sid]["status"] = "processing"
-                state["sessions"][sid]["pending_request_id"] = ""
-                state["sessions"][sid]["last_activity"] = time.time()
-            return 0
-
-        if args.action == "approve":
-            response = response_allow()
-        elif args.action == "deny":
-            response = response_deny("Denied from HyprV island")
-        else:
-            answer = args.value
-            if args.action == "reply":
-                question = str(request.get("question") or "Answer")
-                options = request.get("options") if isinstance(request.get("options"), list) else []
-                answer = rofi_answer(question, [str(v) for v in options]) or ""
-            if not answer:
-                return 1
-            if request.get("kind") == "question_from_permission":
-                response = response_answer_permission(str(request.get("answer_key") or "answer"), answer)
-            else:
-                response = response_answer_notification(answer)
-
-        write_response(request_id, response)
-        sid = request.get("session_id")
-        if sid in state.get("sessions", {}):
-            state["sessions"][sid]["status"] = "running" if args.action != "deny" else "idle"
-            state["sessions"][sid]["pending_request_id"] = ""
-            state["sessions"][sid]["last_activity"] = time.time()
-        state.get("pending_requests", {}).pop(request_id, None)
-
-    return 0
 
 
 if __name__ == "__main__":

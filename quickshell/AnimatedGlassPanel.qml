@@ -179,7 +179,8 @@ Item {
                 id: shadowLayer
 
                 anchors.fill: parent
-                layer.enabled: true
+                visible: root.surfaceOpacity > 0
+                layer.enabled: root.shadowColor.a > 0 && root.surfaceOpacity > 0
                 layer.smooth: true
                 layer.textureSize: Qt.size(Math.max(1, Math.round(width * root.devicePixelRatio)), Math.max(1, Math.round(height * root.devicePixelRatio)))
                 layer.textureMirroring: ShaderEffectSource.MirrorVertically

@@ -6,6 +6,9 @@ import Quickshell
 import Quickshell.Bluetooth
 import Quickshell.Hyprland
 import Quickshell.Io
+import Quickshell.Services.Mpris
+import Quickshell.Services.UPower
+import Quickshell.Services.Pipewire
 import Quickshell.Services.SystemTray
 import Quickshell.Wayland
 
@@ -60,17 +63,17 @@ ShellRoot {
         }
         function dataStatus(): string {
             return JSON.stringify({expanded: root.anyBarExpanded,
-                systemInterval: systemSnapshot.interval, detailedStats: root.detailedStatsVisible,
-                nativeAudio: barServices.audioAvailable, volume: root.audioVolumePercent,
-                nativeWifi: barServices.nativeWifi, wifiConnected: root.wifiConnected,
-                wifiScanning: barServices.wifiDevice ? barServices.wifiDevice.scannerEnabled : false,
+                systemInterval: 1000, detailedStats: root.detailedStatsVisible,
+                nativeAudio: root.audioAvailable, volume: root.audioVolumePercent,
+                nativeWifi: true, wifiConnected: root.wifiConnected,
+                wifiScanning: false,
                 wifiNetworkCount: root.wifiNetworks.length, networkInterface: root.defaultInterface,
                 dnd: root.dndEnabled, cpu: root.cpuUsage, memory: root.memoryUsage,
                 networkRxRate: root.networkRxRate, networkTxRate: root.networkTxRate,
                 mediaPlayer: root.mediaPlayerName, mediaPosition: root.mediaPositionSeconds,
                 mediaAvailable: root.mediaAvailable, mediaPlaying: root.mediaPlaying,
-                spectrum: audioSpectrumProcess.running, notifications: notificationWatcher.running,
-                agentWatcher: agentIslandWatcher.running, powerProfile: root.powerProfile,
+                spectrum: audioSpectrumProcess.running, notifications: true,
+                agentWatcher: true, powerProfile: root.powerProfile,
                 batteryAvailable: root.batteryAvailable, batteryPercent: root.batteryPercent,
                 darkMode: root.darkMode, panelPolling: controlPanelStatusPoll.active,
                 batteryDetailPolling: batteryInfoPoll.active});
@@ -155,6 +158,11 @@ ShellRoot {
     property string powerProfile: "balanced"
     property bool preventSleepEnabled: false
     property bool demoModeEnabled: false
+    readonly property var mediaPlayers: Array.from(Mpris.players.values || [])
+    onMediaPlayersChanged: {
+        if (mediaPlayers.length === 0) root.resetMediaState();
+        else mediaFollowupRefresh.restart();
+    }
     property bool mediaAvailable: false
     property bool mediaPlaying: false
     property string mediaTitle: ""
@@ -167,9 +175,7 @@ ShellRoot {
     property var audioSpectrumValues: []
     property bool agentIslandActive: false
     property int agentIslandCount: 0
-    property int agentIslandPendingCount: 0
     property var agentIslandSessions: []
-    property var agentIslandPending: null
     property var primaryBarWindow: null
     property var quickAdjustAnchorItem: null
     property var wifiPanelController: null
@@ -235,7 +241,9 @@ ShellRoot {
 
     readonly property var hyprWorkspaces: {
         const values = Array.from(Hyprland.workspaces?.values || []);
+        // Hyprland git reports special workspaces without a negative id.
         const filtered = values.filter(ws => (ws?.id ?? -1) > -1
+            && !String(ws?.name ?? "").startsWith("special:")
             && ws?.name !== "viewflow-underlay");
         filtered.sort((a, b) => (a?.id ?? 0) - (b?.id ?? 0));
         return filtered.length > 0 ? filtered : [{
@@ -251,9 +259,17 @@ ShellRoot {
     property bool audioAvailable: false
     property bool audioMuted: false
     property int audioVolumePercent: 0
-    readonly property bool batteryAvailable: barServices.batteryPresent
-    readonly property real batteryPercent: Math.max(0, Math.min(100, barServices.batteryPercent))
-    readonly property string batteryMode: barServices.batteryMode
+    readonly property bool batteryAvailable: batteryInfo?.available === true
+    readonly property real batteryPercent: {
+        if (batteryInfo?.available === true) {
+            const capacity = Number(batteryInfo?.capacity);
+            if (!isNaN(capacity)) {
+                return Math.max(0, Math.min(100, capacity));
+            }
+        }
+        return 0;
+    }
+    readonly property string batteryMode: batteryInfo?.available === true ? (batteryInfo?.mode || "") : ""
     readonly property bool batteryCharging: batteryMode === "charging"
     readonly property bool batteryPlugged: batteryMode === "charging" || batteryMode === "plugged" || batteryMode === "full"
     readonly property bool batteryCritical: batteryAvailable && batteryPercent <= 20
@@ -371,31 +387,6 @@ ShellRoot {
     onBluetoothDeviceObjectsChanged: syncBluetoothStatusFromModel()
 
     Component.onCompleted: syncBluetoothStatusFromModel()
-    function resetAudioState() {
-        root.audioAvailable = false;
-        root.audioMuted = false;
-        root.audioVolumePercent = 0;
-    }
-    function updateAudioState(output) {
-        let available = false;
-        let muted = false;
-        let volume = 0;
-        const lines = (output || "").split("\n");
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (line.startsWith("available=")) {
-                available = line.slice(10).trim() === "true";
-            } else if (line.startsWith("muted=")) {
-                muted = line.slice(6).trim() === "true";
-            } else if (line.startsWith("volume=")) {
-                const parsed = Number(line.slice(7).trim());
-                volume = isFinite(parsed) ? parsed : 0;
-            }
-        }
-        root.audioAvailable = available;
-        root.audioMuted = muted;
-        root.audioVolumePercent = Math.max(0, Math.round(volume));
-    }
     function resetMediaState() {
         root.mediaAvailable = false;
         root.mediaPlaying = false;
@@ -464,9 +455,7 @@ ShellRoot {
     function resetAgentIslandState() {
         root.agentIslandActive = false;
         root.agentIslandCount = 0;
-        root.agentIslandPendingCount = 0;
         root.agentIslandSessions = [];
-        root.agentIslandPending = null;
     }
     function updateAgentIslandState(raw) {
         if (!raw) {
@@ -474,12 +463,10 @@ ShellRoot {
             return;
         }
         try {
-            const data = JSON.parse(raw);
+            const data = typeof raw === "string" ? JSON.parse(raw) : raw;
             root.agentIslandActive = !!data.active;
             root.agentIslandCount = Number(data.count) || 0;
-            root.agentIslandPendingCount = Number(data.pending_count) || 0;
             root.agentIslandSessions = Array.isArray(data.sessions) ? data.sessions : [];
-            root.agentIslandPending = data.pending || null;
         } catch (_) {
             resetAgentIslandState();
         }
@@ -555,6 +542,7 @@ ShellRoot {
         property real highlightInset: 0
         readonly property real effectivePaddingLeft: Math.max(0, paddingLeft)
         readonly property real effectivePaddingRight: Math.max(0, paddingRight)
+        readonly property real labelImplicitWidth: labelText.implicitWidth
         readonly property real naturalImplicitWidth: Math.max(labelText.implicitWidth + effectivePaddingLeft + effectivePaddingRight, minimumWidth)
 
         signal leftClicked()
@@ -1983,6 +1971,7 @@ ShellRoot {
         try {
             const data = JSON.parse(raw);
             notificationAlt = data.alt || "none";
+            root.dndEnabled = notificationAlt.indexOf("dnd") >= 0;
             notificationTooltip = data.tooltip || "";
             dndEnabled = notificationAlt.indexOf("dnd") >= 0;
         } catch (_) {
@@ -2323,7 +2312,7 @@ ShellRoot {
     }
 
     function updateSystemStats() {
-        const sections = splitSections(systemSnapshot.output);
+        const sections = splitSections(root.systemSnapshotOutput);
         const statLines = sections.__STAT__ || [];
         const statLine = statLines[0] || "";
         if (statLine) {
@@ -2568,8 +2557,7 @@ ShellRoot {
     }
 
     function refreshWifiStatus() {
-        if (barServices.nativeWifi) barServices.syncWifi();
-        else wifiStatusPoll.refresh();
+        // NetworkManager pushes cached state changes through desktopState.
     }
 
     function openBluetoothManager() {
@@ -2870,7 +2858,7 @@ ShellRoot {
     }
 
     function refreshAudioStatus() {
-        barServices.syncAudio();
+        root.syncAudioStatus();
     }
 
     function scheduleAudioRefresh() {
@@ -2878,7 +2866,7 @@ ShellRoot {
     }
 
     function refreshMediaStatus() {
-        barServices.syncMedia();
+        mediaStatusPoll.refresh();
     }
 
     function seekMedia(positionSeconds) {
@@ -2933,20 +2921,6 @@ ShellRoot {
         runDetached(["sh", "-lc", focusScript, "focus-media-app", playerName]);
     }
 
-    function agentIslandAction(action, requestId, value) {
-        const command = ["/usr/bin/python3", root.configDir + "/quickshell/scripts/agent-island-action.py", action || "approve"];
-        if (requestId && String(requestId).length > 0) {
-            command.push(String(requestId));
-        } else {
-            command.push("current");
-        }
-        if (value && String(value).length > 0) {
-            command.push(String(value));
-        }
-        runDetached(command);
-        agentIslandFollowupRefresh.restart();
-    }
-
     function focusAgentIslandSession(sessionId) {
         if (!sessionId || String(sessionId).length === 0) {
             return;
@@ -2955,7 +2929,7 @@ ShellRoot {
     }
 
     function refreshPowerProfileStatus() {
-        barServices.syncPowerProfile();
+        root.syncPowerProfile();
     }
 
     Process {
@@ -3014,8 +2988,6 @@ ShellRoot {
             } else {
                 wifiActionMessage = stderr.length > 0 ? stderr : (stdout.length > 0 ? stdout : "Wi-Fi action failed");
             }
-            root.refreshWifiStatus();
-            wifiFollowupRefresh.restart();
         }
     }
 
@@ -3103,14 +3075,6 @@ ShellRoot {
     }
 
     Timer {
-        id: wifiFollowupRefresh
-
-        interval: 1500
-        repeat: false
-        onTriggered: root.refreshWifiStatus()
-    }
-
-    Timer {
         id: bluetoothActionTimeout
 
         interval: 12000
@@ -3139,7 +3103,7 @@ ShellRoot {
 
         interval: 150
         repeat: false
-        onTriggered: barServices.syncAudio()
+        onTriggered: root.syncAudioStatus()
     }
 
     Timer {
@@ -3147,17 +3111,7 @@ ShellRoot {
 
         interval: 180
         repeat: false
-        onTriggered: barServices.syncMedia()
-    }
-
-    Timer {
-        id: agentIslandFollowupRefresh
-
-        interval: 220
-        repeat: false
-        onTriggered: {
-            if (agentIslandWatcher.running) agentIslandWatcher.write("refresh\n");
-        }
+        onTriggered: mediaStatusPoll.refresh()
     }
 
     Connections {
@@ -3234,54 +3188,48 @@ ShellRoot {
         }
     }
 
-    Timer {
-        interval: root.mediaUiVisible ? 1000 : Math.max(1, 60000 - (root.now.getSeconds() * 1000 + root.now.getMilliseconds()))
-        repeat: true
-        running: true
-        triggeredOnStart: true
-        onTriggered: root.now = new Date()
+    SystemClock {
+        id: clock
+        precision: SystemClock.Minutes
+        onDateChanged: root.now = date
+        Component.onCompleted: root.now = date
     }
 
-    PollCommand {
-        id: systemSnapshot
+    property string systemSnapshotOutput: ""
 
-        interval: root.detailedStatsVisible ? 1000 : 5000
-        command: [root.configDir + "/quickshell/scripts/system-snapshot.sh", root.detailedStatsVisible ? "--full" : "--minimal"]
-        onUpdated: function(output, exitCode) {
-            if (exitCode === 0 && output.length > 0) {
-                root.updateSystemStats();
-            }
+    StreamCommand {
+        id: desktopState
+        command: ["/usr/bin/python3", root.configDir + "/quickshell/scripts/desktop-state.py"]
+        onReceived: line => {
+            try {
+                const message = JSON.parse(line);
+                if (message.type === "system") {
+                    root.systemSnapshotOutput = message.data;
+                    root.updateSystemStats();
+                } else if (message.type === "wifi") {
+                    root.applyWifiStatus(message.data);
+                } else if (message.type === "agent") {
+                    root.updateAgentIslandState(message.data);
+                }
+            } catch (error) { console.warn("Desktop state update failed:", error); }
         }
+        onStopped: root.resetAgentIslandState()
     }
 
-    BarServices {
-        id: barServices
-        shellRoot: root
-        mediaVisible: root.mediaUiVisible
-        wifiPageVisible: (controlPanelPopup.popupRequested && controlPanelPopup.wifiExpanded) || root.openWifiPanelCount > 0
-    }
+    FileView {
+        id: themeState
 
-    // Initialize/migrate the state file once; subsequent updates use FileView.
-    Process {
-        running: true
-        command: [root.configDir + "/quickshell/scripts/ui-state.sh", "print"]
-        onExited: barServices.refreshTheme()
-        stdout: StdioCollector {}
-        stderr: StdioCollector {}
-    }
-
-    onDetailedStatsVisibleChanged: {
-        _previousRxBytes = -1;
-        _previousTxBytes = -1;
-        _previousNetworkSampleTime = 0;
-        systemSnapshot.refresh(true);
+        path: (Quickshell.env("XDG_STATE_HOME") || root.homeDir + "/.local/state") + "/hyprv/quickshell/ui-state.env"
+        watchChanges: true
+        onFileChanged: reload()
+        onLoaded: root.darkMode = text().split("\n").some(line => line.trim() === "theme=dark")
     }
 
     Process {
         id: cavaAvailabilityProbe
 
         running: true
-        command: ["sh", "-lc", "command -v cava >/dev/null 2>&1"]
+        command: ["sh", "-c", "command -v cava >/dev/null 2>&1"]
         onExited: function(exitCode) {
             root.audioSpectrumCavaAvailable = exitCode === 0;
         }
@@ -3327,59 +3275,65 @@ ShellRoot {
         stderr: StdioCollector {}
     }
 
-    Process {
-        id: codexAppServerWatcher
+    StreamCommand {
+        id: notificationStream
 
-        running: true
-        command: ["/usr/bin/python3", root.configDir + "/quickshell/scripts/agent-island-codex-appserver.py"]
-        stderr: StdioCollector {}
-    }
-
-    // Fallback for builds without the NetworkManager backend. No shell queries
-    // are launched on the native path, including after user actions.
-    PollCommand {
-        id: wifiStatusPoll
-        active: !barServices.nativeWifi
-        interval: root.openWifiPanelCount > 0 ? 8000 : 30000
-        command: ["sh", root.configDir + "/quickshell/scripts/wifi-status.sh"]
-        onUpdated: function(output, exitCode) {
-            if (exitCode === 0) root.updateWifiStatus(output);
-        }
-    }
-
-    Process {
-        id: notificationWatcher
-        running: true
         command: ["swaync-client", "-swb"]
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => root.updateNotificationState(data)
-        }
-        stderr: StdioCollector {}
-        onExited: notificationRestart.restart()
-    }
-    Timer {
-        id: notificationRestart
-        interval: 3000
-        onTriggered: notificationWatcher.running = true
+        onReceived: line => root.updateNotificationState(line)
     }
 
-    Process {
-        id: agentIslandWatcher
-        running: true
-        stdinEnabled: true
-        command: ["/usr/bin/python3", root.configDir + "/quickshell/scripts/agent-island-watch.py"]
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => root.updateAgentIslandState(data)
-        }
-        stderr: StdioCollector {}
-        onExited: agentWatcherRestart.restart()
+    PwObjectTracker {
+        objects: Pipewire.defaultAudioSink ? [Pipewire.defaultAudioSink] : []
     }
-    Timer {
-        id: agentWatcherRestart
-        interval: 3000
-        onTriggered: agentIslandWatcher.running = true
+
+    readonly property var defaultAudioSink: Pipewire.defaultAudioSink
+    readonly property var defaultSinkAudio: defaultAudioSink?.audio ?? null
+
+    function syncAudioStatus() {
+        root.audioAvailable = !!(Pipewire.ready && defaultAudioSink?.ready && defaultSinkAudio);
+        root.audioMuted = root.audioAvailable && defaultSinkAudio.muted;
+        root.audioVolumePercent = root.audioAvailable ? Math.max(0, Math.round(defaultSinkAudio.volume * 100)) : 0;
+    }
+
+    Connections {
+        target: Pipewire
+        function onReadyChanged() { root.syncAudioStatus(); }
+    }
+    onDefaultAudioSinkChanged: root.syncAudioStatus()
+    onDefaultSinkAudioChanged: root.syncAudioStatus()
+    Connections {
+        target: root.defaultAudioSink
+        function onReadyChanged() { root.syncAudioStatus(); }
+    }
+    Connections {
+        target: root.defaultSinkAudio
+        function onMutedChanged() { root.syncAudioStatus(); }
+        function onVolumesChanged() { root.syncAudioStatus(); }
+    }
+
+    PollCommand {
+        id: mediaStatusPoll
+
+        active: root.mediaUiVisible && root.mediaPlayers.length > 0
+        interval: 1000
+        command: ["sh", root.configDir + "/quickshell/scripts/media-status.sh"]
+        onUpdated: function(output, exitCode) {
+            if (exitCode === 0) {
+                root.updateMediaState(output);
+            } else {
+                root.resetMediaState();
+            }
+        }
+    }
+
+    readonly property int currentPowerProfile: PowerProfiles.profile
+    onCurrentPowerProfileChanged: root.syncPowerProfile()
+
+    function syncPowerProfile() {
+        root.powerProfile = currentPowerProfile === PowerProfile.Performance ? "performance"
+            : (currentPowerProfile === PowerProfile.PowerSaver ? "power-saver" : "balanced");
+        root.powerProfileText = currentPowerProfile === PowerProfile.Performance ? "⚡"
+            : (currentPowerProfile === PowerProfile.PowerSaver ? "🔋" : "⚖️");
     }
 
     PollCommand {
@@ -3425,7 +3379,7 @@ ShellRoot {
         id: controlPanelStatusPoll
 
         active: controlPanelPopup.popupRequested
-        interval: 2000
+        interval: 1500
         command: ["sh", root.configDir + "/quickshell/scripts/control-panel-status.sh"]
         onUpdated: function(output, exitCode) {
             if (exitCode === 0) {
@@ -3499,6 +3453,8 @@ ShellRoot {
         }
     }
 
+    // Four tiny surfaces replace a screen-sized transparent swapchain used only
+    // to draw 27px corners. Preserve the pixels without allocating full-screen buffers.
     Variants {
         model: Quickshell.screens
         BarScreenState {
@@ -3621,11 +3577,11 @@ ShellRoot {
                 + networkTrigger.naturalImplicitWidth
             readonly property real fullRightWidth: rightSection.edgeMargin
                 + temperatureTrigger.naturalImplicitWidth
-                + batteryTrigger.implicitWidth
+                + Math.max(batteryModule.minimumWidth, batteryModule.labelImplicitWidth + 5 + 12)
                 + fullSectionSpacing
-                + previousMediaButton.naturalImplicitWidth
+                + Math.max(previousMediaButton.minimumWidth, previousMediaButton.labelImplicitWidth + 9 + 5)
                 + playPauseMediaButton.naturalImplicitWidth
-                + nextMediaButton.naturalImplicitWidth
+                + Math.max(nextMediaButton.minimumWidth, nextMediaButton.labelImplicitWidth + 5)
                 + volumeButton.naturalImplicitWidth
                 + fullSectionSpacing
                 + systemLeadingSpacer.implicitWidth
@@ -3678,8 +3634,8 @@ ShellRoot {
             anchors.left: true
             anchors.right: true
 
-            implicitHeight: Math.min(modelData.height, 820)
-            exclusiveZone: Math.round(25 + 33 * reveal) // Compact: 15+10; expanded: 10+38+10
+            implicitHeight: Math.min(modelData.height, barWindow.calendarPanelPresented || barWindow.islandExpanded ? 820 : 58)
+            exclusiveZone: Math.round(25 + 33 * reveal)
             focusable: false
             color: "transparent"
             surfaceFormat.opaque: false
@@ -3953,12 +3909,6 @@ ShellRoot {
                         NumberAnimation { duration: 210; easing.type: Easing.OutCubic }
                     }
 
-                    CalendarBridge {
-                        id: calendarBridge
-                        weekStart: new Date()
-                        onChildWindowRequested: root.beginCalendarChild()
-                    }
-
                     DynamicIsland {
                         id: dynamicIsland
 
@@ -3979,8 +3929,6 @@ ShellRoot {
                         mediaLengthSeconds: root.mediaLengthSeconds
                         spectrumValues: root.audioSpectrumValues
                         agentSessions: root.agentIslandSessions
-                        agentPending: root.agentIslandPending
-                        agentPendingCount: root.agentIslandPendingCount
 
                         onExpandedChanged: {
                             if (expanded) {
@@ -4001,18 +3949,6 @@ ShellRoot {
                         onAgentFocusRequested: function(sessionId) {
                             root.focusAgentIslandSession(sessionId);
                         }
-                        onAgentApproveRequested: function(requestId) {
-                            root.agentIslandAction("approve", requestId, "");
-                        }
-                        onAgentDenyRequested: function(requestId) {
-                            root.agentIslandAction("deny", requestId, "");
-                        }
-                        onAgentReplyRequested: function(requestId) {
-                            root.agentIslandAction("reply", requestId, "");
-                        }
-                        onAgentAnswerRequested: function(requestId, answer) {
-                            root.agentIslandAction("answer", requestId, answer);
-                        }
                         onPreviousClicked: root.runDetached(["playerctl", "previous"])
                         onPlayPauseClicked: {
                             root.mediaPlaying = !root.mediaPlaying;
@@ -4021,33 +3957,41 @@ ShellRoot {
                         onNextClicked: root.runDetached(["playerctl", "next"])
                     }
 
-                    WeekCalendarPanel {
+                    Loader {
                         id: calendarPanel
 
+                        readonly property bool pointerInside: item?.pointerInside ?? false
+                        active: barWindow.calendarPanelPresented
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: Math.min(520, contentRoot.width - 48)
                         height: Math.min(500, barWindow.height - 78)
-                        shellRoot: root
-                        bridge: calendarBridge
-                        embeddedSurface: true
-                        visible: barWindow.calendarPanelPresented
+                        visible: active
                         opacity: barWindow.calendarProgress
                         transformOrigin: Item.Top
+                        sourceComponent: WeekCalendarPanel {
+                            anchors.fill: parent
+                            shellRoot: root
+                            bridge: calendarBridge
+                            embeddedSurface: true
 
-                        onPointerInsideChanged: {
-                            if (!barWindow.calendarVisible)
-                                return;
-                            if (pointerInside) {
-                                calendarLeaveTimer.stop();
-                            } else if (!root.calendarChildOpening && !root.calendarChildActive) {
-                                calendarLeaveTimer.restart();
+                            CalendarBridge {
+                                id: calendarBridge
+                                weekStart: new Date()
+                                onChildWindowRequested: root.beginCalendarChild()
                             }
-                        }
-                        onCloseRequested: root.requestCalendarClose()
-                        onExpandRequested: {
-                            root.requestCalendarClose(true);
-                            calendarBridge.showFullApp();
+
+                            onPointerInsideChanged: {
+                                if (!barWindow.calendarVisible) return;
+                                if (pointerInside) calendarLeaveTimer.stop();
+                                else if (!root.calendarChildOpening && !root.calendarChildActive)
+                                    calendarLeaveTimer.restart();
+                            }
+                            onCloseRequested: root.requestCalendarClose()
+                            onExpandRequested: {
+                                root.requestCalendarClose(true);
+                                calendarBridge.showFullApp();
+                            }
                         }
                     }
                 }
@@ -4406,7 +4350,6 @@ ShellRoot {
                                         root.runDetached(["swaync-client", "-t", "-sw"]);
                                     } else if (mouse.button === Qt.RightButton) {
                                         root.runDetached(["swaync-client", "-d", "-sw"]);
-                                        notificationRefresh.restart();
                                     }
                                 }
                             }
@@ -4422,14 +4365,6 @@ ShellRoot {
                 }
             }
         }
-    }
-
-    Timer {
-        id: themeRefresh
-
-        interval: 350
-        repeat: false
-        onTriggered: barServices.refreshTheme()
     }
 
     Timer {
@@ -4467,18 +4402,10 @@ ShellRoot {
     }
 
     Timer {
-        id: notificationRefresh
-
-        interval: 350
-        repeat: false
-        onTriggered: root.refreshControlPanelStatus()
-    }
-
-    Timer {
         id: powerProfileRefresh
 
         interval: 350
         repeat: false
-        onTriggered: barServices.syncPowerProfile()
+        onTriggered: root.syncPowerProfile()
     }
 }
