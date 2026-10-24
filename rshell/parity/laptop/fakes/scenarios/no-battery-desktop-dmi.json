@@ -1,0 +1,21 @@
+{
+ "note": "profile auto-detect must choose desktop",
+ "state": {
+  "on_battery": false,
+  "battery_present": false,
+  "battery": {
+   "IsPresent": false,
+   "Percentage": 0.0,
+   "State": 0
+  }
+ },
+ "sysfs": {
+  "dmi": {
+   "sys_vendor": "Micro-Star International Co., Ltd.",
+   "product_name": "MS-7E12",
+   "product_family": "Default string",
+   "chassis_type": "3"
+  },
+  "battery": null
+ }
+}

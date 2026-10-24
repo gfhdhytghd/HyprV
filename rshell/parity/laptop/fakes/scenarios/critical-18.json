@@ -1,0 +1,23 @@
+{
+ "state": {
+  "on_battery": true,
+  "battery": {
+   "Percentage": 18.0,
+   "State": 2,
+   "TimeToEmpty": 2400,
+   "WarningLevel": 3
+  }
+ },
+ "sysfs": {
+  "battery": {
+   "type": "Battery",
+   "present": "1",
+   "status": "Discharging",
+   "capacity": "18",
+   "energy_now": "9720000",
+   "energy_full": "54000000",
+   "power_now": "14600000",
+   "voltage_now": "11200000"
+  }
+ }
+}

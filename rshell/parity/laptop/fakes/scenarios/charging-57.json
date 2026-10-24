@@ -1,0 +1,27 @@
+{
+ "state": {
+  "on_battery": false,
+  "battery": {
+   "Percentage": 57.0,
+   "State": 1,
+   "EnergyRate": 31.5,
+   "TimeToFull": 3600
+  }
+ },
+ "sysfs": {
+  "battery": {
+   "type": "Battery",
+   "present": "1",
+   "status": "Charging",
+   "capacity": "57",
+   "energy_now": "30780000",
+   "energy_full": "54000000",
+   "power_now": "31500000",
+   "voltage_now": "12600000"
+  },
+  "ac": {
+   "type": "Mains",
+   "online": "1"
+  }
+ }
+}

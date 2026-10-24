@@ -1,0 +1,71 @@
+{
+ "component": "laptop-island-legacy",
+ "scene": "island.qml",
+ "source_ref": "origin/laptop@24972f7",
+ "spec": "docs/spec/laptop-island.md §9 (expected divergence, D1 = read-only)",
+ "note": "question with 4 options (max 3 shown)",
+ "canvas": {
+  "width": 640,
+  "height": 248
+ },
+ "fonts": [
+  "JetBrainsMono Nerd Font"
+ ],
+ "props": {
+  "mediaAvailable": false,
+  "mediaPlaying": false,
+  "mediaTitle": "",
+  "mediaArtist": "",
+  "mediaPlayerName": "",
+  "mediaArtUrl": "",
+  "mediaLengthSeconds": 0,
+  "mediaPositionSeconds": 0,
+  "spectrumValues": [],
+  "mediaManuallyHidden": false,
+  "now": "09:41",
+  "agentSessions": [
+   {
+    "id": "claude-session-0",
+    "source": "claude",
+    "source_label": "Claude Code",
+    "title": "Session 0",
+    "project": "rshell",
+    "status": "waitingQuestion",
+    "current_tool": "AskUserQuestion",
+    "detail": "Which crate?",
+    "progress": 0.82
+   }
+  ],
+  "agentPending": {
+   "id": "claude-claude-session-0-call_2",
+   "kind": "question_from_permission",
+   "session_id": "claude-session-0",
+   "source": "claude",
+   "question": "Which crate should own the battery history?",
+   "options": [
+    "Option 1",
+    "Option 2",
+    "Option 3",
+    "Option 4"
+   ],
+   "answer_key": "Crate",
+   "created_at": 2
+  },
+  "agentPendingCount": 1
+ },
+ "steps": [
+  {
+   "hover": {
+    "item": "island",
+    "x": 10,
+    "y": 19
+   }
+  },
+  {
+   "advance": 600
+  },
+  {
+   "capture": ""
+  }
+ ]
+}

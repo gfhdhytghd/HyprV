@@ -1,0 +1,12 @@
+{
+ "note": "default minimal-state budget world: on battery, 57 %, balanced",
+ "state": {
+  "on_battery": true,
+  "profile": "balanced",
+  "battery": {
+   "Percentage": 57.0,
+   "State": 2
+  }
+ },
+ "sysfs": {}
+}

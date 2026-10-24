@@ -1,0 +1,11 @@
+{
+ "state": {},
+ "sysfs": {
+  "thermal_zones": [
+   {
+    "type": "acpitz",
+    "temp": "38000"
+   }
+  ]
+ }
+}

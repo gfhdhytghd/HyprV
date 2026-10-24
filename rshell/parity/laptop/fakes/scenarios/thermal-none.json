@@ -1,0 +1,7 @@
+{
+ "state": {},
+ "sysfs": {
+  "thermal_zones": [],
+  "hwmon": []
+ }
+}

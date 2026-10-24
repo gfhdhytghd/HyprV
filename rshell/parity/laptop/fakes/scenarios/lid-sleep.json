@@ -1,0 +1,28 @@
+{
+ "note": "lap.lid.close_open + lap.sleep.resume",
+ "state": {
+  "on_battery": true
+ },
+ "sysfs": {},
+ "steps": [
+  {
+   "at_ms": 3000,
+   "lid_closed": true
+  },
+  {
+   "at_ms": 4000,
+   "lid_closed": false
+  },
+  {
+   "at_ms": 6000,
+   "prepare_for_sleep": true
+  },
+  {
+   "at_ms": 8000,
+   "prepare_for_sleep": false,
+   "battery": {
+    "Percentage": 55.0
+   }
+  }
+ ]
+}

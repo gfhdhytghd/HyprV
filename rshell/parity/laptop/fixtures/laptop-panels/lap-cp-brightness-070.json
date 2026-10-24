@@ -1,0 +1,487 @@
+{
+ "component": "laptop-panels",
+ "scene": "desktop.qml",
+ "entry": "shell.qml",
+ "source_ref": "origin/laptop@24972f7",
+ "spec": "docs/verify/laptop-qa-plan.md §3",
+ "note": "CP brightness slider level (1 % UI step)",
+ "now": "2026-10-23T09:41:00",
+ "fonts": [
+  "JetBrainsMono Nerd Font"
+ ],
+ "crop": [
+  0,
+  0,
+  1440,
+  900
+ ],
+ "settle_ms": 5600,
+ "services": {
+  "screens": [
+   {
+    "name": "eDP-1",
+    "width": 1440,
+    "height": 900,
+    "x": 0,
+    "y": 0,
+    "scale": 2
+   }
+  ],
+  "hyprland": {
+   "workspaces": [
+    {
+     "id": 1,
+     "name": "1"
+    },
+    {
+     "id": 2,
+     "name": "2"
+    },
+    {
+     "id": 3,
+     "name": "3"
+    },
+    {
+     "id": 4,
+     "name": "4"
+    },
+    {
+     "id": 5,
+     "name": "5"
+    }
+   ],
+   "focusedWorkspace": 2,
+   "activeToplevel": {
+    "title": "Firefox — laptop profile"
+   },
+   "fullscreen": false
+  },
+  "audio": {
+   "available": true,
+   "volume": 0.35,
+   "muted": false
+  },
+  "mpris": {
+   "players": []
+  },
+  "tray": [
+   {
+    "id": "chrome_status_icon_1",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   }
+  ],
+  "bluetooth": {
+   "enabled": true,
+   "devices": []
+  },
+  "powerProfile": "balanced",
+  "upower": {
+   "onBattery": true,
+   "displayDevice": {
+    "ready": true,
+    "isPresent": true,
+    "isLaptopBattery": true,
+    "percentage": 0.57,
+    "state": 2
+   }
+  },
+  "wifi": {
+   "enabled": true,
+   "hardwareEnabled": true,
+   "devices": [
+    {
+     "name": "wlan0",
+     "type": "wifi",
+     "connected": true,
+     "networks": [
+      {
+       "name": "Home-5G",
+       "signal": 0.75,
+       "security": "Wpa2Psk",
+       "known": true,
+       "connected": true
+      },
+      {
+       "name": "Cafe",
+       "signal": 0.4,
+       "security": "Open",
+       "known": false,
+       "connected": false
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "processes": [
+  {
+   "match": "system-snapshot.sh --minimal",
+   "sequence": [
+    {
+     "stdout": "__STAT__\ncpu  100000 0 0 900000 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100070 0 0 900930 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100140 0 0 901860 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100210 0 0 902790 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100280 0 0 903720 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100350 0 0 904650 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100420 0 0 905580 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100490 0 0 906510 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100560 0 0 907440 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100630 0 0 908370 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100700 0 0 909300 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100770 0 0 910230 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100840 0 0 911160 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100910 0 0 912090 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  100980 0 0 913020 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101050 0 0 913950 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101120 0 0 914880 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101190 0 0 915810 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101260 0 0 916740 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101330 0 0 917670 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101400 0 0 918600 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101470 0 0 919530 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101540 0 0 920460 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101610 0 0 921390 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101680 0 0 922320 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101750 0 0 923250 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101820 0 0 924180 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101890 0 0 925110 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  101960 0 0 926040 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102030 0 0 926970 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102100 0 0 927900 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102170 0 0 928830 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102240 0 0 929760 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102310 0 0 930690 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102380 0 0 931620 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102450 0 0 932550 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102520 0 0 933480 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102590 0 0 934410 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102660 0 0 935340 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  102730 0 0 936270 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0"
+    }
+   ]
+  },
+  {
+   "match": "system-snapshot.sh --full",
+   "sequence": [
+    {
+     "stdout": "__STAT__\ncpu  170000 0 0 1830000 0 0 0 0 0 0\ncpu0 42500 0 0 457500 0 0 0 0 0 0\ncpu1 52500 0 0 447500 0 0 0 0 0 0\ncpu2 62500 0 0 437500 0 0 0 0 0 0\ncpu3 72500 0 0 427500 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170070 0 0 1830930 0 0 0 0 0 0\ncpu0 42517 0 0 457732 0 0 0 0 0 0\ncpu1 52527 0 0 447722 0 0 0 0 0 0\ncpu2 62537 0 0 437712 0 0 0 0 0 0\ncpu3 72547 0 0 427702 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170140 0 0 1831860 0 0 0 0 0 0\ncpu0 42535 0 0 457965 0 0 0 0 0 0\ncpu1 52555 0 0 447945 0 0 0 0 0 0\ncpu2 62575 0 0 437925 0 0 0 0 0 0\ncpu3 72595 0 0 427905 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170210 0 0 1832790 0 0 0 0 0 0\ncpu0 42552 0 0 458197 0 0 0 0 0 0\ncpu1 52582 0 0 448167 0 0 0 0 0 0\ncpu2 62612 0 0 438137 0 0 0 0 0 0\ncpu3 72642 0 0 428107 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170280 0 0 1833720 0 0 0 0 0 0\ncpu0 42570 0 0 458430 0 0 0 0 0 0\ncpu1 52610 0 0 448390 0 0 0 0 0 0\ncpu2 62650 0 0 438350 0 0 0 0 0 0\ncpu3 72690 0 0 428310 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170350 0 0 1834650 0 0 0 0 0 0\ncpu0 42587 0 0 458662 0 0 0 0 0 0\ncpu1 52637 0 0 448612 0 0 0 0 0 0\ncpu2 62687 0 0 438562 0 0 0 0 0 0\ncpu3 72737 0 0 428512 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170420 0 0 1835580 0 0 0 0 0 0\ncpu0 42605 0 0 458895 0 0 0 0 0 0\ncpu1 52665 0 0 448835 0 0 0 0 0 0\ncpu2 62725 0 0 438775 0 0 0 0 0 0\ncpu3 72785 0 0 428715 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170490 0 0 1836510 0 0 0 0 0 0\ncpu0 42622 0 0 459127 0 0 0 0 0 0\ncpu1 52692 0 0 449057 0 0 0 0 0 0\ncpu2 62762 0 0 438987 0 0 0 0 0 0\ncpu3 72832 0 0 428917 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170560 0 0 1837440 0 0 0 0 0 0\ncpu0 42640 0 0 459360 0 0 0 0 0 0\ncpu1 52720 0 0 449280 0 0 0 0 0 0\ncpu2 62800 0 0 439200 0 0 0 0 0 0\ncpu3 72880 0 0 429120 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170630 0 0 1838370 0 0 0 0 0 0\ncpu0 42657 0 0 459592 0 0 0 0 0 0\ncpu1 52747 0 0 449502 0 0 0 0 0 0\ncpu2 62837 0 0 439412 0 0 0 0 0 0\ncpu3 72927 0 0 429322 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170700 0 0 1839300 0 0 0 0 0 0\ncpu0 42675 0 0 459825 0 0 0 0 0 0\ncpu1 52775 0 0 449725 0 0 0 0 0 0\ncpu2 62875 0 0 439625 0 0 0 0 0 0\ncpu3 72975 0 0 429525 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170770 0 0 1840230 0 0 0 0 0 0\ncpu0 42692 0 0 460057 0 0 0 0 0 0\ncpu1 52802 0 0 449947 0 0 0 0 0 0\ncpu2 62912 0 0 439837 0 0 0 0 0 0\ncpu3 73022 0 0 429727 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170840 0 0 1841160 0 0 0 0 0 0\ncpu0 42710 0 0 460290 0 0 0 0 0 0\ncpu1 52830 0 0 450170 0 0 0 0 0 0\ncpu2 62950 0 0 440050 0 0 0 0 0 0\ncpu3 73070 0 0 429930 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170910 0 0 1842090 0 0 0 0 0 0\ncpu0 42727 0 0 460522 0 0 0 0 0 0\ncpu1 52857 0 0 450392 0 0 0 0 0 0\ncpu2 62987 0 0 440262 0 0 0 0 0 0\ncpu3 73117 0 0 430132 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  170980 0 0 1843020 0 0 0 0 0 0\ncpu0 42745 0 0 460755 0 0 0 0 0 0\ncpu1 52885 0 0 450615 0 0 0 0 0 0\ncpu2 63025 0 0 440475 0 0 0 0 0 0\ncpu3 73165 0 0 430335 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171050 0 0 1843950 0 0 0 0 0 0\ncpu0 42762 0 0 460987 0 0 0 0 0 0\ncpu1 52912 0 0 450837 0 0 0 0 0 0\ncpu2 63062 0 0 440687 0 0 0 0 0 0\ncpu3 73212 0 0 430537 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171120 0 0 1844880 0 0 0 0 0 0\ncpu0 42780 0 0 461220 0 0 0 0 0 0\ncpu1 52940 0 0 451060 0 0 0 0 0 0\ncpu2 63100 0 0 440900 0 0 0 0 0 0\ncpu3 73260 0 0 430740 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171190 0 0 1845810 0 0 0 0 0 0\ncpu0 42797 0 0 461452 0 0 0 0 0 0\ncpu1 52967 0 0 451282 0 0 0 0 0 0\ncpu2 63137 0 0 441112 0 0 0 0 0 0\ncpu3 73307 0 0 430942 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171260 0 0 1846740 0 0 0 0 0 0\ncpu0 42815 0 0 461685 0 0 0 0 0 0\ncpu1 52995 0 0 451505 0 0 0 0 0 0\ncpu2 63175 0 0 441325 0 0 0 0 0 0\ncpu3 73355 0 0 431145 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171330 0 0 1847670 0 0 0 0 0 0\ncpu0 42832 0 0 461917 0 0 0 0 0 0\ncpu1 53022 0 0 451727 0 0 0 0 0 0\ncpu2 63212 0 0 441537 0 0 0 0 0 0\ncpu3 73402 0 0 431347 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171400 0 0 1848600 0 0 0 0 0 0\ncpu0 42850 0 0 462150 0 0 0 0 0 0\ncpu1 53050 0 0 451950 0 0 0 0 0 0\ncpu2 63250 0 0 441750 0 0 0 0 0 0\ncpu3 73450 0 0 431550 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171470 0 0 1849530 0 0 0 0 0 0\ncpu0 42867 0 0 462382 0 0 0 0 0 0\ncpu1 53077 0 0 452172 0 0 0 0 0 0\ncpu2 63287 0 0 441962 0 0 0 0 0 0\ncpu3 73497 0 0 431752 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171540 0 0 1850460 0 0 0 0 0 0\ncpu0 42885 0 0 462615 0 0 0 0 0 0\ncpu1 53105 0 0 452395 0 0 0 0 0 0\ncpu2 63325 0 0 442175 0 0 0 0 0 0\ncpu3 73545 0 0 431955 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171610 0 0 1851390 0 0 0 0 0 0\ncpu0 42902 0 0 462847 0 0 0 0 0 0\ncpu1 53132 0 0 452617 0 0 0 0 0 0\ncpu2 63362 0 0 442387 0 0 0 0 0 0\ncpu3 73592 0 0 432157 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171680 0 0 1852320 0 0 0 0 0 0\ncpu0 42920 0 0 463080 0 0 0 0 0 0\ncpu1 53160 0 0 452840 0 0 0 0 0 0\ncpu2 63400 0 0 442600 0 0 0 0 0 0\ncpu3 73640 0 0 432360 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171750 0 0 1853250 0 0 0 0 0 0\ncpu0 42937 0 0 463312 0 0 0 0 0 0\ncpu1 53187 0 0 453062 0 0 0 0 0 0\ncpu2 63437 0 0 442812 0 0 0 0 0 0\ncpu3 73687 0 0 432562 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171820 0 0 1854180 0 0 0 0 0 0\ncpu0 42955 0 0 463545 0 0 0 0 0 0\ncpu1 53215 0 0 453285 0 0 0 0 0 0\ncpu2 63475 0 0 443025 0 0 0 0 0 0\ncpu3 73735 0 0 432765 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171890 0 0 1855110 0 0 0 0 0 0\ncpu0 42972 0 0 463777 0 0 0 0 0 0\ncpu1 53242 0 0 453507 0 0 0 0 0 0\ncpu2 63512 0 0 443237 0 0 0 0 0 0\ncpu3 73782 0 0 432967 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  171960 0 0 1856040 0 0 0 0 0 0\ncpu0 42990 0 0 464010 0 0 0 0 0 0\ncpu1 53270 0 0 453730 0 0 0 0 0 0\ncpu2 63550 0 0 443450 0 0 0 0 0 0\ncpu3 73830 0 0 433170 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172030 0 0 1856970 0 0 0 0 0 0\ncpu0 43007 0 0 464242 0 0 0 0 0 0\ncpu1 53297 0 0 453952 0 0 0 0 0 0\ncpu2 63587 0 0 443662 0 0 0 0 0 0\ncpu3 73877 0 0 433372 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172100 0 0 1857900 0 0 0 0 0 0\ncpu0 43025 0 0 464475 0 0 0 0 0 0\ncpu1 53325 0 0 454175 0 0 0 0 0 0\ncpu2 63625 0 0 443875 0 0 0 0 0 0\ncpu3 73925 0 0 433575 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172170 0 0 1858830 0 0 0 0 0 0\ncpu0 43042 0 0 464707 0 0 0 0 0 0\ncpu1 53352 0 0 454397 0 0 0 0 0 0\ncpu2 63662 0 0 444087 0 0 0 0 0 0\ncpu3 73972 0 0 433777 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172240 0 0 1859760 0 0 0 0 0 0\ncpu0 43060 0 0 464940 0 0 0 0 0 0\ncpu1 53380 0 0 454620 0 0 0 0 0 0\ncpu2 63700 0 0 444300 0 0 0 0 0 0\ncpu3 74020 0 0 433980 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172310 0 0 1860690 0 0 0 0 0 0\ncpu0 43077 0 0 465172 0 0 0 0 0 0\ncpu1 53407 0 0 454842 0 0 0 0 0 0\ncpu2 63737 0 0 444512 0 0 0 0 0 0\ncpu3 74067 0 0 434182 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172380 0 0 1861620 0 0 0 0 0 0\ncpu0 43095 0 0 465405 0 0 0 0 0 0\ncpu1 53435 0 0 455065 0 0 0 0 0 0\ncpu2 63775 0 0 444725 0 0 0 0 0 0\ncpu3 74115 0 0 434385 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172450 0 0 1862550 0 0 0 0 0 0\ncpu0 43112 0 0 465637 0 0 0 0 0 0\ncpu1 53462 0 0 455287 0 0 0 0 0 0\ncpu2 63812 0 0 444937 0 0 0 0 0 0\ncpu3 74162 0 0 434587 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172520 0 0 1863480 0 0 0 0 0 0\ncpu0 43130 0 0 465870 0 0 0 0 0 0\ncpu1 53490 0 0 455510 0 0 0 0 0 0\ncpu2 63850 0 0 445150 0 0 0 0 0 0\ncpu3 74210 0 0 434790 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172590 0 0 1864410 0 0 0 0 0 0\ncpu0 43147 0 0 466102 0 0 0 0 0 0\ncpu1 53517 0 0 455732 0 0 0 0 0 0\ncpu2 63887 0 0 445362 0 0 0 0 0 0\ncpu3 74257 0 0 434992 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172660 0 0 1865340 0 0 0 0 0 0\ncpu0 43165 0 0 466335 0 0 0 0 0 0\ncpu1 53545 0 0 455955 0 0 0 0 0 0\ncpu2 63925 0 0 445575 0 0 0 0 0 0\ncpu3 74305 0 0 435195 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    },
+    {
+     "stdout": "__STAT__\ncpu  172730 0 0 1866270 0 0 0 0 0 0\ncpu0 43182 0 0 466567 0 0 0 0 0 0\ncpu1 53572 0 0 456177 0 0 0 0 0 0\ncpu2 63962 0 0 445787 0 0 0 0 0 0\ncpu3 74352 0 0 435397 0 0 0 0 0 0\n__MEM__\nMemTotal:       65536000 kB\nMemFree:        19005440 kB\nMemAvailable:   38010880 kB\n__TEMP__\n45000\n__CPU_POWER__\n\n__ROUTE__\nIface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0101A8C0\t0003\t0\t0\t100\t00000000\t0\t0\t0\n__NET__\nInter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0"
+    }
+   ]
+  },
+  {
+   "match": "agent-island-watch.py",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"version\":1,\"active\":false,\"count\":0,\"sessions\":[],\"pending\":null,\"pending_count\":0,\"updated_at\":0}"
+    }
+   ]
+  },
+  {
+   "match": "agent-island-codex-appserver.py",
+   "exitCode": 0
+  },
+  {
+   "match": "swaync-client -swb",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"text\": \"\", \"alt\": \"none\", \"tooltip\": \"\", \"class\": \"none\"}"
+    }
+   ]
+  },
+  {
+   "match": "command -v cava",
+   "exitCode": 0
+  },
+  {
+   "match": "hyprctl -j animations",
+   "stdout": "[[{\"name\": \"global\", \"overridden\": true, \"bezier\": \"default\", \"enabled\": true, \"speed\": 8.0, \"style\": \"\"}, {\"name\": \"windows\", \"overridden\": true, \"bezier\": \"myBezier\", \"enabled\": true, \"speed\": 7.0, \"style\": \"slide\"}, {\"name\": \"windowsMove\", \"overridden\": false, \"bezier\": \"\", \"enabled\": true, \"speed\": 0.0, \"style\": \"\"}], [{\"name\": \"myBezier\", \"X0\": 0.1, \"Y0\": 0.9, \"X1\": 0.1, \"Y1\": 1.05}, {\"name\": \"default\", \"X0\": 0.0, \"Y0\": 0.75, \"X1\": 0.15, \"Y1\": 1.0}]]"
+  },
+  {
+   "match": "Fluent-light",
+   "stdout": "light=@HOME@/.local/share/icons/Fluent-light\ndark=@HOME@/.local/share/icons/Fluent-dark\nbase=@HOME@/.local/share/icons/Fluent\n"
+  },
+  {
+   "match": "ui-state.sh print",
+   "stdout": "theme=light\n"
+  },
+  {
+   "match": "audio-spectrum.sh",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "12;38;74;92;66;41;58;80;95;61;33;47;70;52;28;15;"
+    }
+   ]
+  },
+  {
+   "match": "media-status.sh",
+   "stdout": "available=false\nplaying=false\n",
+   "exitCode": 1
+  },
+  {
+   "match": "control-panel-status.sh",
+   "stdout": "brightness=70\ndnd=false\nrecording=false\npower_profile=balanced\nprevent_sleep=false\ndemo_mode=false\nfan_available=false\n"
+  },
+  {
+   "match": "brightness_get",
+   "stdout": "70\n"
+  },
+  {
+   "match": "brightness_set",
+   "stdout": ""
+  },
+  {
+   "match": "brightness_finish",
+   "stdout": ""
+  },
+  {
+   "match": "battery-info.sh",
+   "stdout": "{\"available\": true, \"status\": \"Discharging\", \"mode\": \"discharging\", \"capacity\": 57, \"powerW\": -8.4, \"averagePowerW\": -7.9, \"sampleCount\": 40, \"sampleWindowSeconds\": 1800, \"windowComplete\": true, \"estimateSeconds\": 14400, \"estimateBasis\": \"average\", \"energyNowWh\": 30.78, \"energyFullWh\": 54.0}"
+  },
+  {
+   "match": "dcal --json socket",
+   "exitCode": 1
+  }
+ ],
+ "props": {},
+ "steps": [
+  {
+   "set": {
+    "ipc": [
+     "bar",
+     "toggle",
+     "eDP-1"
+    ]
+   }
+  },
+  {
+   "advance": 1500
+  },
+  {
+   "set": {
+    "ipc": [
+     "controlPanel",
+     "toggle"
+    ]
+   }
+  },
+  {
+   "advance": 900
+  },
+  {
+   "capture": ""
+  }
+ ]
+}

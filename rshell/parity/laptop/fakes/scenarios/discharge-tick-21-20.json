@@ -1,0 +1,19 @@
+{
+ "note": "lap.battery.discharge.tick",
+ "state": {
+  "on_battery": true,
+  "battery": {
+   "Percentage": 21.0,
+   "State": 2
+  }
+ },
+ "sysfs": {},
+ "steps": [
+  {
+   "at_ms": 3000,
+   "battery": {
+    "Percentage": 20.0
+   }
+  }
+ ]
+}

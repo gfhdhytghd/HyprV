@@ -1,0 +1,20 @@
+{
+ "note": "lap.battery.plug",
+ "state": {
+  "on_battery": true,
+  "battery": {
+   "Percentage": 57.0,
+   "State": 2
+  }
+ },
+ "sysfs": {},
+ "steps": [
+  {
+   "at_ms": 3000,
+   "on_battery": false,
+   "battery": {
+    "State": 1
+   }
+  }
+ ]
+}

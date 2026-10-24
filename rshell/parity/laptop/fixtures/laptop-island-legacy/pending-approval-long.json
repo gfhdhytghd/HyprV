@@ -1,0 +1,65 @@
+{
+ "component": "laptop-island-legacy",
+ "scene": "island.qml",
+ "source_ref": "origin/laptop@24972f7",
+ "spec": "docs/spec/laptop-island.md §9 (expected divergence, D1 = read-only)",
+ "note": "approval with a long detail (elide)",
+ "canvas": {
+  "width": 640,
+  "height": 248
+ },
+ "fonts": [
+  "JetBrainsMono Nerd Font"
+ ],
+ "props": {
+  "mediaAvailable": false,
+  "mediaPlaying": false,
+  "mediaTitle": "",
+  "mediaArtist": "",
+  "mediaPlayerName": "",
+  "mediaArtUrl": "",
+  "mediaLengthSeconds": 0,
+  "mediaPositionSeconds": 0,
+  "spectrumValues": [],
+  "mediaManuallyHidden": false,
+  "now": "09:41",
+  "agentSessions": [
+   {
+    "id": "codex-session-0",
+    "source": "codex",
+    "source_label": "Codex",
+    "title": "Session 0",
+    "project": "rshell",
+    "status": "waitingApproval",
+    "current_tool": "Bash",
+    "detail": "rm -rf target",
+    "progress": 0.82
+   }
+  ],
+  "agentPending": {
+   "id": "codex-codex-session-0-call_1",
+   "kind": "approval",
+   "session_id": "codex-session-0",
+   "source": "codex",
+   "tool": "Bash",
+   "detail": "cargo test -p hyprv-svc-power --release -- --nocapture battery_history_window",
+   "created_at": 1
+  },
+  "agentPendingCount": 1
+ },
+ "steps": [
+  {
+   "hover": {
+    "item": "island",
+    "x": 10,
+    "y": 19
+   }
+  },
+  {
+   "advance": 600
+  },
+  {
+   "capture": ""
+  }
+ ]
+}
