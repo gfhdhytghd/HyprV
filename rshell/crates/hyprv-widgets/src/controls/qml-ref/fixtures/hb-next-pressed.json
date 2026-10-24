@@ -1,0 +1,48 @@
+{
+ "component": "header",
+ "kind": "inline",
+ "inline": {
+  "file": "WeekCalendarPanel.qml",
+  "name": "HeaderButton"
+ },
+ "canvas": {
+  "width": 250,
+  "height": 44
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "label": "\"›\""
+ },
+ "extra_qml": "    readonly property var shellRoot: root\n    readonly property color textColor: primaryText\n    readonly property color accentColor: launchColor\n    readonly property color lineColor: withAlpha(textColor, darkMode ? 0.11 : 0.09)\n    readonly property color elevatedColor: withAlpha(\"#ffffff\", darkMode ? 0.055 : 0.30)",
+ "fonts": [
+  "JetBrainsMono Nerd Font"
+ ],
+ "steps": [
+  {
+   "hover": {
+    "item": "target",
+    "x": 18,
+    "y": 17
+   }
+  },
+  {
+   "advance": 20
+  },
+  {
+   "press": {
+    "item": "target",
+    "x": 18,
+    "y": 17
+   }
+  },
+  {
+   "advance": 200
+  },
+  {
+   "capture": ""
+  }
+ ]
+}

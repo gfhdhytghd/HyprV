@@ -1,0 +1,29 @@
+{
+ "component": "textmodule",
+ "kind": "inline",
+ "inline": {
+  "file": "shell.qml",
+  "name": "TextModule"
+ },
+ "canvas": {
+  "width": 110,
+  "height": 48
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "label": "\"\\u{f303}\"",
+  "fontPixelSize": "17",
+  "textColor": "root.launchColor",
+  "paddingLeft": "7",
+  "paddingRight": "4",
+  "interactive": "true"
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

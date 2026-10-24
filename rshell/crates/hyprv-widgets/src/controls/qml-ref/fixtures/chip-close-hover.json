@@ -1,0 +1,36 @@
+{
+ "component": "chip",
+ "kind": "file",
+ "file": "WifiActionChip.qml",
+ "canvas": {
+  "width": 150,
+  "height": 44
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "cornerRadius": "9",
+  "label": "\"Close\"",
+  "minimumWidth": "76",
+  "fillColor": "root.withAlpha(root.primaryText, root.darkMode ? 0.08 : 0.12)",
+  "strokeColor": "root.withAlpha(root.primaryText, root.darkMode ? 0.12 : 0.08)"
+ },
+ "steps": [
+  {
+   "hover": {
+    "item": "target",
+    "x": 20,
+    "y": 17
+   }
+  },
+  {
+   "advance": 40
+  },
+  {
+   "capture": ""
+  }
+ ]
+}

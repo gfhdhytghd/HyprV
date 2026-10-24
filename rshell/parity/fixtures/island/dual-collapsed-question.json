@@ -1,0 +1,61 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.12",
+  "canvas": {
+    "width": 640,
+    "height": 58
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [
+      {
+        "id": "claude-session-0",
+        "source": "claude",
+        "source_label": "Claude Code",
+        "title": "Session 0",
+        "project": "rshell",
+        "status": "waitingQuestion",
+        "current_tool": "AskUserQuestion",
+        "detail": "Which crate?",
+        "progress": 0.82
+      }
+    ],
+    "now": "09:41",
+    "mediaAvailable": true,
+    "mediaPlaying": true,
+    "mediaTitle": "Midnight City",
+    "mediaArtist": "M83",
+    "mediaPlayerName": "spotify",
+    "mediaArtUrl": "@asset:cover-warm.png",
+    "mediaLengthSeconds": 225,
+    "mediaPositionSeconds": 83,
+    "spectrumValues": [
+      12,
+      38,
+      74,
+      92,
+      66,
+      41,
+      58,
+      80,
+      95,
+      61,
+      33,
+      47,
+      70,
+      52,
+      28,
+      15
+    ]
+  },
+  "steps": [
+    {
+      "capture": ""
+    }
+  ]
+}

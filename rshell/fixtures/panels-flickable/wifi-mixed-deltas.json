@@ -1,0 +1,10 @@
+[
+  {
+    "t": 320,
+    "type": "wheel",
+    "pixel": true,
+    "py": -17,
+    "ay": -120,
+    "phase": 2
+  }
+]

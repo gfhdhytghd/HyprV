@@ -1,0 +1,17 @@
+{
+  "qt_version": "6.12.0",
+  "traces": 48,
+  "frame_samples": 10952,
+  "maximum_content_y_error_px": 2.217421e-06,
+  "tolerance_px": 1e-05,
+  "second_independent_content_y_capture_identical": true,
+  "passed_tests_by_log": {
+    "cargo-widgets.log": 5,
+    "cargo-integration.log": 29,
+    "cargo-bar-regressions.log": 4
+  },
+  "total_selected_passed_tests": 38,
+  "library_clippy_warnings_denied": "passed",
+  "runtime_device_or_visual_proof": "not claimed",
+  "host_handoff": "forward native touchpad pixels/phases to Island::wheel and Popups::menu_wheel; shell/engine outside assigned edit paths"
+}

@@ -1,0 +1,29 @@
+{
+ "component": "toggle",
+ "kind": "file",
+ "file": "ControlPanelToggle.qml",
+ "canvas": {
+  "width": 72,
+  "height": 82
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "width": "62",
+  "height": "72",
+  "iconOnly": "false",
+  "icon": "\"\\u{f0ec3}\"",
+  "label": "\"Screen\\nrecord\""
+ },
+ "props": {
+  "active": false
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

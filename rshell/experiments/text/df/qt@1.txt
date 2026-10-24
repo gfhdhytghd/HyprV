@@ -1,0 +1,59 @@
+api=3 dpr=1.00 highdpiActive=1 size=320x220
+TEXT st_title | family=HarmonyOS Sans SC px=16 w=500 | implicit=96.000x19.000 fm.asc=14.844 desc=3.891 height=18.734 leading=0.000 hadv=96.000
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=HarmonyOS Sans SC style=Medium px=16.00 hint=0 glyphs=6 pos=[0.000 16.000 32.000 48.000 64.000 80.000 ] y=14.844
+TEXT st_body | family=HarmonyOS Sans SC px=14 w=400 | implicit=209.766x17.000 fm.asc=12.984 desc=3.406 height=16.391 leading=0.000 hadv=209.766
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=HarmonyOS Sans SC style=Regular px=14.00 hint=0 glyphs=15 pos=[0.000 13.984 27.969 41.953 55.938 69.922 83.906 97.891 111.875 125.859 139.844 153.828 167.813 181.797 195.781 ] y=12.984
+TEXT st_btn | family=HarmonyOS Sans SC px=13 w=500 | implicit=52.000x16.000 fm.asc=12.062 desc=3.172 height=15.234 leading=0.000 hadv=52.000
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=HarmonyOS Sans SC style=Medium px=13.00 hint=0 glyphs=4 pos=[0.000 13.000 26.000 39.000 ] y=12.062
+TEXT st_btn2 | family=HarmonyOS Sans SC px=13 w=500 | implicit=26.000x16.000 fm.asc=12.062 desc=3.172 height=15.234 leading=0.000 hadv=26.000
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=HarmonyOS Sans SC style=Medium px=13.00 hint=0 glyphs=2 pos=[0.000 13.000 ] y=12.062
+TEXT mh_title | family=JetBrainsMono Nerd Font px=12 w=700 | implicit=93.438x16.000 fm.asc=12.234 desc=3.594 height=15.828 leading=0.000 hadv=93.438
+   df narrow=0 glyphCount=12608 base=54 scale=16 radius=80
+   run font=JetBrainsMono Nerd Font style=Bold px=12.00 hint=0 glyphs=13 pos=[0.000 7.188 14.375 21.563 28.750 35.938 43.125 50.313 57.500 64.688 71.875 79.063 86.250 ] y=12.234
+TEXT mh_sub | family=JetBrainsMono Nerd Font px=9 w=400 | implicit=113.203x12.000 fm.asc=9.172 desc=2.688 height=11.859 leading=0.000 hadv=113.203
+   df narrow=0 glyphCount=12608 base=54 scale=16 radius=80
+   run font=JetBrainsMono Nerd Font style=Regular px=9.00 hint=0 glyphs=21 pos=[0.000 5.391 10.781 16.172 21.563 26.953 32.344 37.734 43.125 48.516 53.906 59.297 64.688 70.078 75.469 80.859 86.250 91.641 97.031 102.422 107.813 ] y=9.172
+TEXT mh_on | family=sans-serif px=9 w=700 | implicit=13.781x11.000 fm.asc=8.719 desc=2.156 height=10.875 leading=0.000 hadv=13.781
+   df narrow=0 glyphCount=2937 base=54 scale=16 radius=80
+   run font=Inter style=Bold px=9.00 hint=0 glyphs=2 pos=[0.000 6.922 ] y=8.719
+TEXT mh_rate | family=JetBrainsMono Nerd Font px=11 w=700 | implicit=46.156x15.000 fm.asc=11.219 desc=3.297 height=14.516 leading=0.000 hadv=46.156
+   df narrow=0 glyphCount=12608 base=54 scale=16 radius=80
+   run font=JetBrainsMono Nerd Font style=Bold px=11.00 hint=0 glyphs=7 pos=[0.000 6.594 13.188 19.781 26.375 32.969 39.563 ] y=11.219
+TEXT mh_lbl | family=JetBrainsMono Nerd Font px=8 w=400 | implicit=38.375x11.000 fm.asc=8.156 desc=2.391 height=10.547 leading=0.000 hadv=38.375
+   df narrow=0 glyphCount=12608 base=54 scale=16 radius=80
+   run font=JetBrainsMono Nerd Font style=Regular px=8.00 hint=0 glyphs=8 pos=[0.000 4.797 9.594 14.391 19.188 23.984 28.781 33.578 ] y=8.156
+TEXT mh_refresh | family=sans-serif px=10 w=700 | implicit=37.938x13.000 fm.asc=9.688 desc=2.406 height=12.094 leading=0.000 hadv=37.938
+   df narrow=0 glyphCount=2937 base=54 scale=16 radius=80
+   run font=Inter style=Bold px=10.00 hint=0 glyphs=7 pos=[0.000 6.438 12.391 16.359 20.172 26.125 31.719 ] y=9.688
+TEXT mh_global | family=sans-serif px=10 w=400 | implicit=30.094x13.000 fm.asc=9.688 desc=2.406 height=12.094 leading=0.000 hadv=30.094
+   df narrow=0 glyphCount=2937 base=54 scale=16 radius=80
+   run font=Inter style=Regular px=10.00 hint=0 glyphs=6 pos=[0.000 7.453 9.875 15.859 22.063 27.672 ] y=9.688
+TEXT mh_dash | family=sans-serif px=10 w=700 | implicit=65.781x13.000 fm.asc=9.688 desc=2.406 height=12.094 leading=0.000 hadv=65.781
+   df narrow=0 glyphCount=2937 base=54 scale=16 radius=80
+   run font=Inter style=Bold px=10.00 hint=0 glyphs=12 pos=[0.000 7.219 13.016 18.609 24.828 31.125 37.344 43.141 46.953 53.250 55.609 57.969 ] y=9.688
+TEXT mh_ls | family=JetBrainsMono Nerd Font px=8 w=700 | implicit=46.781x11.000 fm.asc=8.156 desc=2.391 height=10.547 leading=0.000 hadv=46.781
+   df narrow=0 glyphCount=12608 base=54 scale=16 radius=80
+   run font=JetBrainsMono Nerd Font style=Bold px=8.00 hint=0 glyphs=6 pos=[0.000 7.797 15.594 23.391 31.188 38.984 ] y=8.156
+TEXT cal_a | family=sans-serif px=13 w=600 | implicit=92.188x16.000 fm.asc=12.594 desc=3.125 height=15.719 leading=0.000 hadv=92.188
+   df narrow=0 glyphCount=2937 base=54 scale=16 radius=80
+   run font=Inter style=SemiBold px=13.00 hint=0 glyphs=10 pos=[0.000 12.594 20.266 27.938 35.328 38.594 47.250 55.516 58.781 62.922 ] y=12.594
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=鸿蒙黑体 style=SemiBold px=13.00 hint=0 glyphs=2 pos=[66.188 79.188 ] y=12.594
+TEXT cal_b | family=sans-serif px=14 w=700 | implicit=49.125x17.000 fm.asc=13.562 desc=3.375 height=16.938 leading=0.000 hadv=49.125
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=鸿蒙黑体 style=Bold px=14.00 hint=0 glyphs=2 pos=[0.000 13.984 ] y=13.562
+   df narrow=0 glyphCount=2937 base=54 scale=16 radius=80
+   run font=Inter style=Bold px=14.00 hint=0 glyphs=3 pos=[27.969 31.281 40.094 ] y=13.562
+TEXT cal_c | family=sans-serif px=10 w=600 | implicit=82.297x13.000 fm.asc=9.688 desc=2.406 height=12.094 leading=0.000 hadv=82.297
+   df narrow=0 glyphCount=2937 base=54 scale=16 radius=80
+   run font=Inter style=SemiBold px=10.00 hint=0 glyphs=15 pos=[0.000 6.500 10.063 15.797 21.906 28.141 34.250 40.484 43.000 52.000 57.906 63.813 67.328 69.938 76.047 ] y=9.688
+TEXT cal_d | family=sans-serif px=9 w=400 | implicit=57.859x11.000 fm.asc=8.719 desc=2.156 height=10.875 leading=0.000 hadv=57.859
+   df narrow=0 glyphCount=2937 base=54 scale=16 radius=80
+   run font=Inter style=Regular px=9.00 hint=0 glyphs=13 pos=[0.000 5.672 11.250 13.828 19.375 25.047 27.578 32.078 34.609 38.266 43.938 46.516 52.188 ] y=8.719
+TEXT cal_e | family=sans-serif px=11 w=400 | implicit=21.969x14.000 fm.asc=10.656 desc=2.641 height=13.297 leading=0.000 hadv=21.969
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=鸿蒙黑体 style=Regular px=11.00 hint=0 glyphs=2 pos=[0.000 10.984 ] y=10.656

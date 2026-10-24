@@ -1,0 +1,94 @@
+{
+ "calendar-tooltip": {
+  "2/hover": [
+   1607,
+   275
+  ]
+ },
+ "cp-brightness-drag": {
+  "2/press": [
+   2856,
+   377
+  ],
+  "3/drag": [
+   2891,
+   377
+  ]
+ },
+ "cp-bt-many": {
+  "2/click": [
+   2877,
+   153
+  ]
+ },
+ "cp-bt-off": {
+  "2/click": [
+   2877,
+   153
+  ]
+ },
+ "cp-bt-scanning-empty": {
+  "2/click": [
+   2877,
+   153
+  ]
+ },
+ "cp-bt-three": {
+  "2/click": [
+   2877,
+   153
+  ]
+ },
+ "cp-hover-toggle": {
+  "2/hover": [
+   3031,
+   233
+  ],
+  "5/hover": [
+   2959,
+   233
+  ]
+ },
+ "cp-page-switch": {
+  "2/click": [
+   2877,
+   153
+  ]
+ },
+ "cp-press-splittile": {
+  "2/press": [
+   2822,
+   81
+  ]
+ },
+ "cp-press-toggle": {
+  "2/press": [
+   3031,
+   233
+  ]
+ },
+ "startup-confirm-hover": {
+  "1/hover": [
+   1648,
+   902
+  ]
+ },
+ "startup-confirm-press": {
+  "1/press": [
+   1648,
+   902
+  ]
+ },
+ "wifi-expanded-secure": {
+  "2/click": [
+   3016,
+   467
+  ]
+ },
+ "wifi-off": {
+  "2/click": [
+   2877,
+   81
+  ]
+ }
+}

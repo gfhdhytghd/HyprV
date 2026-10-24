@@ -1,0 +1,73 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.17 swipe right from the clock. Reference shows NO change: under Qt 6.12 DragHandler resets translation before activeChanged(false), so DynamicIsland.qml:1524-1540 always reads dx = 0 (live bug)",
+  "canvas": {
+    "width": 640,
+    "height": 58
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [],
+    "now": "09:41",
+    "mediaAvailable": true,
+    "mediaPlaying": true,
+    "mediaTitle": "Midnight City",
+    "mediaArtist": "M83",
+    "mediaPlayerName": "spotify",
+    "mediaArtUrl": "@asset:cover-warm.png",
+    "mediaLengthSeconds": 225,
+    "mediaPositionSeconds": 83,
+    "spectrumValues": [
+      12,
+      38,
+      74,
+      92,
+      66,
+      41,
+      58,
+      80,
+      95,
+      61,
+      33,
+      47,
+      70,
+      52,
+      28,
+      15
+    ]
+  },
+  "steps": [
+    {
+      "press": {
+        "item": "island",
+        "x": 60,
+        "y": 19
+      }
+    },
+    {
+      "drag": {
+        "item": "island",
+        "x": 130,
+        "y": 21
+      }
+    },
+    {
+      "release": true
+    },
+    {
+      "frames": {
+        "name": "after",
+        "at": [
+          0,
+          120,
+          400
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+[package]
+name = "hyprv-parity-gpu"
+version = "0.1.0"
+edition = "2021"
+description = "Parity QA: render a hyprv-ui Scene through the production EGL/GL path (offscreen)"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+hyprv-ui = { path = "../../crates/hyprv-ui" }
+
+[[example]]
+name = "selftest"
+path = "examples/selftest.rs"
+[workspace]

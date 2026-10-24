@@ -1,0 +1,32 @@
+[package]
+name = "hyprv-ui-panels"
+version.workspace = true
+edition.workspace = true
+license = "MIT AND LGPL-3.0-only"
+description = "HyprV panels and popups (control panel, Wi-Fi, quick adjust, stats, calendar, startup confirm)"
+
+[dependencies]
+zeroize = "1.9"
+hyprv-ui = { path = "../hyprv-ui" }
+# runtime profile only (latched `profile()`; no I/O beyond its one-time detection)
+hyprv-core = { path = "../hyprv-core" }
+# foundations/containers only: the controls feature is owned by another agent and in flux.
+hyprv-widgets = { path = "../hyprv-widgets", default-features = false }
+hyprv-svc-net = { path = "../hyprv-svc-net", optional = true }
+hyprv-svc-media = { path = "../hyprv-svc-media", optional = true }
+hyprv-svc-power = { path = "../hyprv-svc-power", optional = true }
+hyprv-svc-sys = { path = "../hyprv-svc-sys", optional = true }
+hyprv-svc-desktop = { path = "../hyprv-svc-desktop", optional = true }
+hyprv-privhelper = { path = "../hyprv-privhelper", optional = true }
+freetype-rs = "0.38"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+
+[dev-dependencies]
+serde_json = "1"
+# Parity GPU hook (parity/gpu/src/lib.rs included by the parity harness).
+wayland-client = { version = "0.31", features = ["system"] }
+
+[features]
+default = ["services"]
+# Conversions from hyprv-svc-* State types and into their Action enums.
+services = ["dep:hyprv-svc-net", "dep:hyprv-svc-media", "dep:hyprv-svc-power", "dep:hyprv-svc-sys", "dep:hyprv-svc-desktop", "dep:hyprv-privhelper"]

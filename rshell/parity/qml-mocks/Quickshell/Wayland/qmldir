@@ -1,0 +1,2 @@
+module Quickshell.Wayland
+# Types are registered in C++ by parity-host (host/wayland_mocks.h).

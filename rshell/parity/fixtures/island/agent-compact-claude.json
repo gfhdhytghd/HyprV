@@ -1,0 +1,44 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.10 claude logo",
+  "canvas": {
+    "width": 640,
+    "height": 58
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [
+      {
+        "id": "claude-session-0",
+        "source": "claude",
+        "source_label": "Claude Code",
+        "title": "Session 0",
+        "project": "rshell",
+        "status": "processing",
+        "current_tool": "",
+        "detail": "",
+        "progress": 0.34
+      }
+    ],
+    "now": "09:41",
+    "mediaAvailable": false,
+    "mediaPlaying": false,
+    "mediaTitle": "",
+    "mediaArtist": "",
+    "mediaPlayerName": "",
+    "mediaArtUrl": "",
+    "mediaLengthSeconds": 0,
+    "mediaPositionSeconds": 0,
+    "spectrumValues": []
+  },
+  "steps": [
+    {
+      "capture": ""
+    }
+  ]
+}

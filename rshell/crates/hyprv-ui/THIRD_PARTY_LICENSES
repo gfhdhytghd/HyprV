@@ -1,0 +1,71 @@
+Disclaimer for Robert Penner's Easing Equations license:
+
+TERMS OF USE - EASING EQUATIONS
+
+Open source under the BSD License.
+
+Copyright © 2001 Robert Penner
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the author nor the names of contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Qt-derived implementations (LGPL-3.0-only option):
+
+src/qt_bezier.rs:
+  Copyright (C) 2016 The Qt Company Ltd.
+  Derived from qtbase/src/corelib/tools/qeasingcurve.cpp (v6.12.0).
+
+src/effects.rs:
+  Copyright (C) 2023 The Qt Company Ltd.
+  Derived from qtdeclarative/src/effects/qquickmultieffect.cpp and
+  src/effects/data/shaders/{bluritems,multieffect}.{vert,frag} (v6.12.0).
+
+See licenses/LGPL-3.0.txt and licenses/GPL-3.0.txt for full license terms.
+The remaining original engine source is MIT; see LICENSE.
+
+
+Additional Qt-derived implementations (LGPL-3.0-only option):
+
+csrc/{distance_field.cpp,path_simplifier.cpp,qt_rbtree.h,qt_compat.h},
+src/distance_field.rs and the distance-field path in src/text.rs:
+  Copyright (C) 2016 The Qt Company Ltd.
+  Derived from qtbase v6.12.0 src/gui/text/qdistancefield.cpp,
+  src/gui/painting/qpathsimplifier.cpp, qrbtree_p.h and Qt font outline walking.
+  C++ runtime storage is standalone standard C++; no Qt runtime linkage.
+
+src/canvas.rs:
+  Copyright (C) 2016 The Qt Company Ltd.
+  Derived from qtdeclarative v6.12.0 src/quick/items/context2d/qquickcontext2d.cpp
+  and qtbase v6.12.0 src/gui/painting/qstroker.cpp (path geometry only).
+
+src/qt_rect.rs:
+  Copyright (C) 2016 The Qt Company Ltd.
+  Derived from qtdeclarative v6.12.0 scenegraph rectangle geometry and
+  shaders_ng/smoothcolor vertex/fragment shaders.
+
+src/scroll.rs and native scroll handling in src/wayland.rs:
+  Copyright (C) 2016 The Qt Company Ltd.
+  Copyright (C) 2024 Jie Liu <liujie01@kylinos.cn>
+  Derived from qtbase v6.12.0
+  src/plugins/platforms/wayland/qwaylandinputdevice.cpp.
+
+Upstream Qt source: https://code.qt.io/cgit/qt/qtbase.git/tree/?h=v6.12.0
+and https://code.qt.io/cgit/qt/qtdeclarative.git/tree/?h=v6.12.0
+The LGPL-3.0 and GPL-3.0 texts remain in licenses/.
+
+src/qt_painter.rs and csrc/raster_line.cpp (Canvas stroker/coverage):
+  Qt-derived stroker, Bezier, outline mapper, span blending and analytic line AA:
+  Copyright (C) 2016 The Qt Company Ltd., LGPL-3.0-only option.
+  Derived from qtbase v6.12.0 qstroker.cpp, qbezier.cpp, qoutlinemapper.cpp,
+  qdrawhelper.cpp, qcosmeticstroker.cpp and qrasterizer.cpp.
+  The gray raster portion derives from qgrayraster.c / FreeType ftgrays.c:
+  Copyright (C) 2000-2016 David Turner, Robert Wilhelm, and Werner Lemberg.
+  This software uses the FreeType Project, distributed under the FreeType
+  Project License (FTL); see licenses/FTL.txt. Qt's adaptation is Copyright
+  (C) 2016 The Qt Company Ltd. No Qt runtime dependency is introduced.

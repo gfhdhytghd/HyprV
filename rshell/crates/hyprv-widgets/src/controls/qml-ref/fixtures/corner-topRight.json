@@ -1,0 +1,24 @@
+{
+ "component": "corner",
+ "kind": "file",
+ "file": "ScreenCornerShade.qml",
+ "canvas": {
+  "width": 27,
+  "height": 27
+ },
+ "at": [
+  0,
+  0
+ ],
+ "bind": {
+  "width": "27",
+  "height": "27",
+  "corner": "\"topRight\"",
+  "shadeColor": "\"#000000\""
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "component": "textmodule",
+ "kind": "inline",
+ "inline": {
+  "file": "shell.qml",
+  "name": "TextModule"
+ },
+ "canvas": {
+  "width": 110,
+  "height": 48
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "label": "\"2\"",
+  "moduleHeight": "32",
+  "paddingLeft": "5",
+  "paddingRight": "5",
+  "minimumWidth": "32",
+  "interactive": "true",
+  "hoverable": "true",
+  "textColor": "root.mutedWorkspaceText"
+ },
+ "steps": [
+  {
+   "hover": {
+    "item": "target",
+    "x": 16,
+    "y": 16
+   }
+  },
+  {
+   "advance": 40
+  },
+  {
+   "capture": ""
+  }
+ ]
+}

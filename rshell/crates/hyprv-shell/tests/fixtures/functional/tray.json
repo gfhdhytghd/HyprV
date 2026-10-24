@@ -1,0 +1,1381 @@
+{
+  "component": "fullscreen",
+  "scene": "desktop.qml",
+  "spec": "docs/spec/ui-panels.md \u00a75",
+  "note": "Production Assembly smoke: original QA legacy provider inputs, host IPC and real input routing; no reference acceptance without QA capture.",
+  "now": "2026-10-23T09:41:00",
+  "settle_ms": 2500,
+  "services": {
+    "screens": [
+      {
+        "name": "DP-4",
+        "width": 3072,
+        "height": 1728,
+        "x": 0,
+        "y": 0,
+        "scale": 2
+      }
+    ],
+    "hyprland": {
+      "workspaces": [
+        {
+          "id": 1,
+          "name": "1"
+        },
+        {
+          "id": 2,
+          "name": "2"
+        },
+        {
+          "id": 3,
+          "name": "3"
+        },
+        {
+          "id": 4,
+          "name": "4"
+        },
+        {
+          "id": 5,
+          "name": "5"
+        }
+      ],
+      "focusedWorkspace": 1,
+      "activeToplevel": {
+        "title": "Firefox \u2014 Quickshell spec"
+      },
+      "fullscreen": false
+    },
+    "audio": {
+      "available": true,
+      "volume": 0.35,
+      "muted": false
+    },
+    "mpris": {
+      "players": [
+        {
+          "identity": "Spotify"
+        }
+      ]
+    },
+    "tray": [
+      {
+        "id": "app-00",
+        "title": "Test app 0",
+        "icon": "discord",
+        "hasMenu": true,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": 1,
+              "checked": false,
+              "checkState": 0
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            },
+            {
+              "text": "Submenu",
+              "enabled": true,
+              "entries": [
+                {
+                  "text": "Child action",
+                  "enabled": true
+                }
+              ]
+            },
+            {
+              "text": "Long item 0",
+              "enabled": true
+            },
+            {
+              "text": "Long item 1",
+              "enabled": true
+            },
+            {
+              "text": "Long item 2",
+              "enabled": true
+            },
+            {
+              "text": "Long item 3",
+              "enabled": true
+            },
+            {
+              "text": "Long item 4",
+              "enabled": true
+            },
+            {
+              "text": "Long item 5",
+              "enabled": true
+            },
+            {
+              "text": "Long item 6",
+              "enabled": true
+            },
+            {
+              "text": "Long item 7",
+              "enabled": true
+            },
+            {
+              "text": "Long item 8",
+              "enabled": true
+            },
+            {
+              "text": "Long item 9",
+              "enabled": true
+            },
+            {
+              "text": "Long item 10",
+              "enabled": true
+            },
+            {
+              "text": "Long item 11",
+              "enabled": true
+            },
+            {
+              "text": "Long item 12",
+              "enabled": true
+            },
+            {
+              "text": "Long item 13",
+              "enabled": true
+            },
+            {
+              "text": "Long item 14",
+              "enabled": true
+            },
+            {
+              "text": "Long item 15",
+              "enabled": true
+            },
+            {
+              "text": "Long item 16",
+              "enabled": true
+            },
+            {
+              "text": "Long item 17",
+              "enabled": true
+            },
+            {
+              "text": "Long item 18",
+              "enabled": true
+            },
+            {
+              "text": "Long item 19",
+              "enabled": true
+            },
+            {
+              "text": "Long item 20",
+              "enabled": true
+            },
+            {
+              "text": "Long item 21",
+              "enabled": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-01",
+        "title": "Test app 1",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-02",
+        "title": "Test app 2",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-03",
+        "title": "Test app 3",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-04",
+        "title": "Test app 4",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-05",
+        "title": "Test app 5",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-06",
+        "title": "Test app 6",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-07",
+        "title": "Test app 7",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-08",
+        "title": "Test app 8",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-09",
+        "title": "Test app 9",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-10",
+        "title": "Test app 10",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-11",
+        "title": "Test app 11",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-12",
+        "title": "Test app 12",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-13",
+        "title": "Test app 13",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-14",
+        "title": "Test app 14",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-15",
+        "title": "Test app 15",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-16",
+        "title": "Test app 16",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-17",
+        "title": "Test app 17",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-18",
+        "title": "Test app 18",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-19",
+        "title": "Test app 19",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-20",
+        "title": "Test app 20",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-21",
+        "title": "Test app 21",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-22",
+        "title": "Test app 22",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-23",
+        "title": "Test app 23",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-24",
+        "title": "Test app 24",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-25",
+        "title": "Test app 25",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-26",
+        "title": "Test app 26",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-27",
+        "title": "Test app 27",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-28",
+        "title": "Test app 28",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-29",
+        "title": "Test app 29",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-30",
+        "title": "Test app 30",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-31",
+        "title": "Test app 31",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-32",
+        "title": "Test app 32",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-33",
+        "title": "Test app 33",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-34",
+        "title": "Test app 34",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-35",
+        "title": "Test app 35",
+        "icon": "discord",
+        "hasMenu": false,
+        "menu": {
+          "entries": [
+            {
+              "id": 1,
+              "text": "Open test item",
+              "enabled": true
+            },
+            {
+              "id": 2,
+              "text": "Toggle test",
+              "enabled": true,
+              "buttonType": "CheckBox",
+              "checked": false
+            },
+            {
+              "id": 3,
+              "text": "Disabled item",
+              "enabled": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "app-36",
+        "title": "Test app 36",
+        "icon": "discord"
+      },
+      {
+        "id": "app-37",
+        "title": "Test app 37",
+        "icon": "discord"
+      },
+      {
+        "id": "app-38",
+        "title": "Test app 38",
+        "icon": "discord"
+      },
+      {
+        "id": "app-39",
+        "title": "Test app 39",
+        "icon": "discord"
+      },
+      {
+        "id": "app-40",
+        "title": "Test app 40",
+        "icon": "discord"
+      },
+      {
+        "id": "app-41",
+        "title": "Test app 41",
+        "icon": "discord"
+      },
+      {
+        "id": "app-42",
+        "title": "Test app 42",
+        "icon": "discord"
+      },
+      {
+        "id": "app-43",
+        "title": "Test app 43",
+        "icon": "discord"
+      },
+      {
+        "id": "app-44",
+        "title": "Test app 44",
+        "icon": "discord"
+      },
+      {
+        "id": "app-45",
+        "title": "Test app 45",
+        "icon": "discord"
+      },
+      {
+        "id": "app-46",
+        "title": "Test app 46",
+        "icon": "discord"
+      },
+      {
+        "id": "app-47",
+        "title": "Test app 47",
+        "icon": "discord"
+      },
+      {
+        "id": "app-48",
+        "title": "Test app 48",
+        "icon": "discord"
+      },
+      {
+        "id": "app-49",
+        "title": "Test app 49",
+        "icon": "discord"
+      },
+      {
+        "id": "app-50",
+        "title": "Test app 50",
+        "icon": "discord"
+      },
+      {
+        "id": "app-51",
+        "title": "Test app 51",
+        "icon": "discord"
+      },
+      {
+        "id": "app-52",
+        "title": "Test app 52",
+        "icon": "discord"
+      },
+      {
+        "id": "app-53",
+        "title": "Test app 53",
+        "icon": "discord"
+      },
+      {
+        "id": "app-54",
+        "title": "Test app 54",
+        "icon": "discord"
+      },
+      {
+        "id": "app-55",
+        "title": "Test app 55",
+        "icon": "discord"
+      },
+      {
+        "id": "app-56",
+        "title": "Test app 56",
+        "icon": "discord"
+      },
+      {
+        "id": "app-57",
+        "title": "Test app 57",
+        "icon": "discord"
+      },
+      {
+        "id": "app-58",
+        "title": "Test app 58",
+        "icon": "discord"
+      },
+      {
+        "id": "app-59",
+        "title": "Test app 59",
+        "icon": "discord"
+      }
+    ],
+    "bluetooth": {
+      "enabled": true,
+      "devices": [
+        {
+          "name": "WH-1000XM5",
+          "address": "AC:80:0A:11:22:33",
+          "connected": true,
+          "paired": true,
+          "icon": "audio-headset",
+          "battery": 80
+        }
+      ]
+    },
+    "powerProfile": "balanced"
+  },
+  "processes": [
+    {
+      "match": "desktop-state.py",
+      "stream": true,
+      "lines": [
+        {
+          "at": 0,
+          "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100000 0 0 900000 0 0 0 0 0 0\\ncpu0 25000 0 0 225000 0 0 0 0 0 0\\ncpu1 25000 0 0 225000 0 0 0 0 0 0\\ncpu2 25000 0 0 225000 0 0 0 0 0 0\\ncpu3 25000 0 0 225000 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemFree:        19005440 kB\\nMemAvailable:   38010880 kB\\n__TEMP__\\n45000\\n__CPU_POWER__\\n\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nwlan0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|   Receive                                                |  Transmit\\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0\"}"
+        },
+        {
+          "at": 1000,
+          "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100070 0 0 900930 0 0 0 0 0 0\\ncpu0 25017 0 0 225232 0 0 0 0 0 0\\ncpu1 25027 0 0 225222 0 0 0 0 0 0\\ncpu2 25037 0 0 225212 0 0 0 0 0 0\\ncpu3 25047 0 0 225202 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemFree:        19005440 kB\\nMemAvailable:   38010880 kB\\n__TEMP__\\n45000\\n__CPU_POWER__\\n\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nwlan0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|   Receive                                                |  Transmit\\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nwlan0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0\"}"
+        },
+        {
+          "at": 0,
+          "data": "{\"type\": \"wifi\", \"data\": {\"present\": true, \"hardwareEnabled\": true, \"enabled\": true, \"connected\": true, \"iface\": \"wlan0\", \"ssid\": \"Home-5G\", \"security\": \"WPA2\", \"signal\": 75, \"networks\": [{\"active\": true, \"ssid\": \"Home-5G\", \"signal\": 75, \"security\": \"WPA2\", \"bars\": \"\", \"secure\": true, \"known\": true, \"enterprise\": false}, {\"active\": false, \"ssid\": \"Cafe\", \"signal\": 40, \"security\": \"\", \"bars\": \"\", \"secure\": false, \"known\": false, \"enterprise\": false}]}}"
+        },
+        {
+          "at": 0,
+          "data": "{\"type\": \"agent\", \"data\": {\"active\": false, \"count\": 0, \"sessions\": []}}"
+        }
+      ]
+    },
+    {
+      "match": "swaync-client",
+      "stream": true,
+      "lines": [
+        {
+          "at": 0,
+          "data": "{\"text\": \"\", \"alt\": \"none\", \"tooltip\": \"\", \"class\": \"none\"}"
+        }
+      ]
+    },
+    {
+      "match": "command -v cava",
+      "exitCode": 0
+    },
+    {
+      "match": "hyprctl -j animations",
+      "stdout": "[[{\"name\": \"global\", \"overridden\": true, \"bezier\": \"default\", \"enabled\": true, \"speed\": 8.0, \"style\": \"\"}, {\"name\": \"windows\", \"overridden\": true, \"bezier\": \"myBezier\", \"enabled\": true, \"speed\": 7.0, \"style\": \"slide\"}, {\"name\": \"windowsMove\", \"overridden\": false, \"bezier\": \"\", \"enabled\": true, \"speed\": 0.0, \"style\": \"\"}], [{\"name\": \"myBezier\", \"X0\": 0.1, \"Y0\": 0.9, \"X1\": 0.1, \"Y1\": 1.05}, {\"name\": \"default\", \"X0\": 0.0, \"Y0\": 0.75, \"X1\": 0.15, \"Y1\": 1.0}]]"
+    },
+    {
+      "match": "Fluent-light",
+      "stdout": "light=@HOME@/.local/share/icons/Fluent-light\ndark=@HOME@/.local/share/icons/Fluent-dark\nbase=@HOME@/.local/share/icons/Fluent\n"
+    },
+    {
+      "match": "media-status.sh",
+      "exitCode": 0,
+      "stdout": "cider=false\navailable=true\nplaying=false\ntitle=Midnight City\nartist=M83\nplayer=spotify\nart_url=file://@ASSETS@/cover-warm.png\nposition=83\nlength=225\n"
+    },
+    {
+      "match": "audio-spectrum.sh",
+      "stream": true,
+      "lines": [
+        {
+          "at": 0,
+          "data": "12;38;74;92;66;41;58;80;95;61;33;47;70;52;28;15;"
+        }
+      ]
+    },
+    {
+      "match": "control-panel-status.sh",
+      "stdout": "brightness=50\ndnd=false\nrecording=false\npower_profile=balanced\nprevent_sleep=false\ndemo_mode=false\nfan_available=true\nfan_chassis_percent=40\nfan_chassis_rpm=1200\nfan_pump_percent=60\nfan_pump_rpm=2400\n"
+    },
+    {
+      "match": "brightness_get",
+      "stdout": "50\n"
+    },
+    {
+      "match": "brightness_set",
+      "stdout": ""
+    },
+    {
+      "match": "brightness_finish",
+      "stdout": ""
+    },
+    {
+      "match": "windows-vm-control.sh status",
+      "stdout": "stopped\n"
+    },
+    {
+      "match": "windows-vm-control.sh start",
+      "delay_ms": 600000
+    },
+    {
+      "match": "viewflow-target.sh status",
+      "stdout": "windows\n"
+    },
+    {
+      "match": "deskflow-target.sh status",
+      "stdout": "windows\n"
+    },
+    {
+      "match": "mihomo-control.sh status",
+      "stdout": "{\"online\": true, \"service\": \"user\", \"version\": \"v1.19.2\", \"mode\": \"rule\", \"connections\": 37, \"upload\": 2048, \"download\": 48000, \"dashboard\": \"http://127.0.0.1:9090/ui\"}"
+    },
+    {
+      "match": "dcal --json socket",
+      "stdout": "{\"path\": \"/run/user/1000/dcal/parity.sock\"}"
+    }
+  ],
+  "props": {
+    "root": {
+      "batteryInfo": {
+        "available": true,
+        "mode": "discharging",
+        "capacity": 67,
+        "powerW": 10
+      },
+      "mediaPlaying": false
+    }
+  },
+  "steps": []
+}

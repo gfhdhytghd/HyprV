@@ -1,0 +1,2882 @@
+[
+  {
+    "icon": "control-panel-dark",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 1,
+    "source_sha256": "1d23e70d79f3a6b42b9c7758eafe06636ae57067e3f4d3dc6327f07b43fbf8c1",
+    "file": "control-panel-dark--16@1--source.png"
+  },
+  {
+    "icon": "control-panel-dark",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 1.25,
+    "source_sha256": "1d23e70d79f3a6b42b9c7758eafe06636ae57067e3f4d3dc6327f07b43fbf8c1",
+    "file": "control-panel-dark--16@1.25--source.png"
+  },
+  {
+    "icon": "control-panel-dark",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 1.5,
+    "source_sha256": "1d23e70d79f3a6b42b9c7758eafe06636ae57067e3f4d3dc6327f07b43fbf8c1",
+    "file": "control-panel-dark--16@1.5--source.png"
+  },
+  {
+    "icon": "control-panel-dark",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 1.75,
+    "source_sha256": "1d23e70d79f3a6b42b9c7758eafe06636ae57067e3f4d3dc6327f07b43fbf8c1",
+    "file": "control-panel-dark--16@1.75--source.png"
+  },
+  {
+    "icon": "control-panel-dark",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 2,
+    "source_sha256": "1d23e70d79f3a6b42b9c7758eafe06636ae57067e3f4d3dc6327f07b43fbf8c1",
+    "file": "control-panel-dark--16@2--source.png"
+  },
+  {
+    "icon": "control-panel-dark",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 2.5,
+    "source_sha256": "1d23e70d79f3a6b42b9c7758eafe06636ae57067e3f4d3dc6327f07b43fbf8c1",
+    "file": "control-panel-dark--16@2.5--source.png"
+  },
+  {
+    "icon": "control-panel-dark",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 3,
+    "source_sha256": "1d23e70d79f3a6b42b9c7758eafe06636ae57067e3f4d3dc6327f07b43fbf8c1",
+    "file": "control-panel-dark--16@3--source.png"
+  },
+  {
+    "icon": "control-panel-dark",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 4,
+    "source_sha256": "1d23e70d79f3a6b42b9c7758eafe06636ae57067e3f4d3dc6327f07b43fbf8c1",
+    "file": "control-panel-dark--16@4--source.png"
+  },
+  {
+    "icon": "control-panel-light",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 1,
+    "source_sha256": "11bafe8d58f9219f73f9e71cf038f33e78d8a6e3e878483feff03662a78b03e6",
+    "file": "control-panel-light--16@1--source.png"
+  },
+  {
+    "icon": "control-panel-light",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 1.25,
+    "source_sha256": "11bafe8d58f9219f73f9e71cf038f33e78d8a6e3e878483feff03662a78b03e6",
+    "file": "control-panel-light--16@1.25--source.png"
+  },
+  {
+    "icon": "control-panel-light",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 1.5,
+    "source_sha256": "11bafe8d58f9219f73f9e71cf038f33e78d8a6e3e878483feff03662a78b03e6",
+    "file": "control-panel-light--16@1.5--source.png"
+  },
+  {
+    "icon": "control-panel-light",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 1.75,
+    "source_sha256": "11bafe8d58f9219f73f9e71cf038f33e78d8a6e3e878483feff03662a78b03e6",
+    "file": "control-panel-light--16@1.75--source.png"
+  },
+  {
+    "icon": "control-panel-light",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 2,
+    "source_sha256": "11bafe8d58f9219f73f9e71cf038f33e78d8a6e3e878483feff03662a78b03e6",
+    "file": "control-panel-light--16@2--source.png"
+  },
+  {
+    "icon": "control-panel-light",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 2.5,
+    "source_sha256": "11bafe8d58f9219f73f9e71cf038f33e78d8a6e3e878483feff03662a78b03e6",
+    "file": "control-panel-light--16@2.5--source.png"
+  },
+  {
+    "icon": "control-panel-light",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 3,
+    "source_sha256": "11bafe8d58f9219f73f9e71cf038f33e78d8a6e3e878483feff03662a78b03e6",
+    "file": "control-panel-light--16@3--source.png"
+  },
+  {
+    "icon": "control-panel-light",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 32,
+    "raster_scale": 4,
+    "source_sha256": "11bafe8d58f9219f73f9e71cf038f33e78d8a6e3e878483feff03662a78b03e6",
+    "file": "control-panel-light--16@4--source.png"
+  },
+  {
+    "icon": "network-wired-light",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "c44e60b462ea3d7359d2953f07bc581ade5bcbb2525cd0ac5c4a009f86caae5d",
+    "file": "network-wired-light--24@1--source.png"
+  },
+  {
+    "icon": "network-wired-light",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "c44e60b462ea3d7359d2953f07bc581ade5bcbb2525cd0ac5c4a009f86caae5d",
+    "file": "network-wired-light--24@1.25--source.png"
+  },
+  {
+    "icon": "network-wired-light",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "c44e60b462ea3d7359d2953f07bc581ade5bcbb2525cd0ac5c4a009f86caae5d",
+    "file": "network-wired-light--24@1.5--source.png"
+  },
+  {
+    "icon": "network-wired-light",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "c44e60b462ea3d7359d2953f07bc581ade5bcbb2525cd0ac5c4a009f86caae5d",
+    "file": "network-wired-light--24@1.75--source.png"
+  },
+  {
+    "icon": "network-wired-light",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "c44e60b462ea3d7359d2953f07bc581ade5bcbb2525cd0ac5c4a009f86caae5d",
+    "file": "network-wired-light--24@2--source.png"
+  },
+  {
+    "icon": "network-wired-light",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "c44e60b462ea3d7359d2953f07bc581ade5bcbb2525cd0ac5c4a009f86caae5d",
+    "file": "network-wired-light--24@2.5--source.png"
+  },
+  {
+    "icon": "network-wired-light",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "c44e60b462ea3d7359d2953f07bc581ade5bcbb2525cd0ac5c4a009f86caae5d",
+    "file": "network-wired-light--24@3--source.png"
+  },
+  {
+    "icon": "network-wired-light",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "c44e60b462ea3d7359d2953f07bc581ade5bcbb2525cd0ac5c4a009f86caae5d",
+    "file": "network-wired-light--24@4--source.png"
+  },
+  {
+    "icon": "network-wireless-offline",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "1a9caf54d260243194042201eba86420d969dfaeb0cd3adcb9f0e282fc3fdfb2",
+    "file": "network-wireless-offline--24@1--source.png"
+  },
+  {
+    "icon": "network-wireless-offline",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "1a9caf54d260243194042201eba86420d969dfaeb0cd3adcb9f0e282fc3fdfb2",
+    "file": "network-wireless-offline--24@1.25--source.png"
+  },
+  {
+    "icon": "network-wireless-offline",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "1a9caf54d260243194042201eba86420d969dfaeb0cd3adcb9f0e282fc3fdfb2",
+    "file": "network-wireless-offline--24@1.5--source.png"
+  },
+  {
+    "icon": "network-wireless-offline",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "1a9caf54d260243194042201eba86420d969dfaeb0cd3adcb9f0e282fc3fdfb2",
+    "file": "network-wireless-offline--24@1.75--source.png"
+  },
+  {
+    "icon": "network-wireless-offline",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "1a9caf54d260243194042201eba86420d969dfaeb0cd3adcb9f0e282fc3fdfb2",
+    "file": "network-wireless-offline--24@2--source.png"
+  },
+  {
+    "icon": "network-wireless-offline",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "1a9caf54d260243194042201eba86420d969dfaeb0cd3adcb9f0e282fc3fdfb2",
+    "file": "network-wireless-offline--24@2.5--source.png"
+  },
+  {
+    "icon": "network-wireless-offline",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "1a9caf54d260243194042201eba86420d969dfaeb0cd3adcb9f0e282fc3fdfb2",
+    "file": "network-wireless-offline--24@3--source.png"
+  },
+  {
+    "icon": "network-wireless-offline",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "1a9caf54d260243194042201eba86420d969dfaeb0cd3adcb9f0e282fc3fdfb2",
+    "file": "network-wireless-offline--24@4--source.png"
+  },
+  {
+    "icon": "network-wireless-off",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "723076958e58632636003a90e1695795b2ef8f87dedfa7b1572b692943ce9c98",
+    "file": "network-wireless-off--24@1--source.png"
+  },
+  {
+    "icon": "network-wireless-off",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "723076958e58632636003a90e1695795b2ef8f87dedfa7b1572b692943ce9c98",
+    "file": "network-wireless-off--24@1.25--source.png"
+  },
+  {
+    "icon": "network-wireless-off",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "723076958e58632636003a90e1695795b2ef8f87dedfa7b1572b692943ce9c98",
+    "file": "network-wireless-off--24@1.5--source.png"
+  },
+  {
+    "icon": "network-wireless-off",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "723076958e58632636003a90e1695795b2ef8f87dedfa7b1572b692943ce9c98",
+    "file": "network-wireless-off--24@1.75--source.png"
+  },
+  {
+    "icon": "network-wireless-off",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "723076958e58632636003a90e1695795b2ef8f87dedfa7b1572b692943ce9c98",
+    "file": "network-wireless-off--24@2--source.png"
+  },
+  {
+    "icon": "network-wireless-off",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "723076958e58632636003a90e1695795b2ef8f87dedfa7b1572b692943ce9c98",
+    "file": "network-wireless-off--24@2.5--source.png"
+  },
+  {
+    "icon": "network-wireless-off",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "723076958e58632636003a90e1695795b2ef8f87dedfa7b1572b692943ce9c98",
+    "file": "network-wireless-off--24@3--source.png"
+  },
+  {
+    "icon": "network-wireless-off",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "723076958e58632636003a90e1695795b2ef8f87dedfa7b1572b692943ce9c98",
+    "file": "network-wireless-off--24@4--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "a8535a1a93b937bf1f7e2b54df4add7431214d5b15a443db6db8483ac83fb82e",
+    "file": "network-wireless-disconnected--24@1--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "a8535a1a93b937bf1f7e2b54df4add7431214d5b15a443db6db8483ac83fb82e",
+    "file": "network-wireless-disconnected--24@1.25--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "a8535a1a93b937bf1f7e2b54df4add7431214d5b15a443db6db8483ac83fb82e",
+    "file": "network-wireless-disconnected--24@1.5--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "a8535a1a93b937bf1f7e2b54df4add7431214d5b15a443db6db8483ac83fb82e",
+    "file": "network-wireless-disconnected--24@1.75--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "a8535a1a93b937bf1f7e2b54df4add7431214d5b15a443db6db8483ac83fb82e",
+    "file": "network-wireless-disconnected--24@2--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "a8535a1a93b937bf1f7e2b54df4add7431214d5b15a443db6db8483ac83fb82e",
+    "file": "network-wireless-disconnected--24@2.5--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "a8535a1a93b937bf1f7e2b54df4add7431214d5b15a443db6db8483ac83fb82e",
+    "file": "network-wireless-disconnected--24@3--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "a8535a1a93b937bf1f7e2b54df4add7431214d5b15a443db6db8483ac83fb82e",
+    "file": "network-wireless-disconnected--24@4--source.png"
+  },
+  {
+    "icon": "network-wired",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "85dda8275c12e7547d5808397ba598401f0d303ce7f2fcc76c7ac75c53c8867c",
+    "file": "network-wired--24@1--source.png"
+  },
+  {
+    "icon": "network-wired",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "85dda8275c12e7547d5808397ba598401f0d303ce7f2fcc76c7ac75c53c8867c",
+    "file": "network-wired--24@1.25--source.png"
+  },
+  {
+    "icon": "network-wired",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "85dda8275c12e7547d5808397ba598401f0d303ce7f2fcc76c7ac75c53c8867c",
+    "file": "network-wired--24@1.5--source.png"
+  },
+  {
+    "icon": "network-wired",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "85dda8275c12e7547d5808397ba598401f0d303ce7f2fcc76c7ac75c53c8867c",
+    "file": "network-wired--24@1.75--source.png"
+  },
+  {
+    "icon": "network-wired",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "85dda8275c12e7547d5808397ba598401f0d303ce7f2fcc76c7ac75c53c8867c",
+    "file": "network-wired--24@2--source.png"
+  },
+  {
+    "icon": "network-wired",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "85dda8275c12e7547d5808397ba598401f0d303ce7f2fcc76c7ac75c53c8867c",
+    "file": "network-wired--24@2.5--source.png"
+  },
+  {
+    "icon": "network-wired",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "85dda8275c12e7547d5808397ba598401f0d303ce7f2fcc76c7ac75c53c8867c",
+    "file": "network-wired--24@3--source.png"
+  },
+  {
+    "icon": "network-wired",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "85dda8275c12e7547d5808397ba598401f0d303ce7f2fcc76c7ac75c53c8867c",
+    "file": "network-wired--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-0",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "bbbe293ee75748740c463ec3262fdb5c331fca2cccc86658a415e68c9d09fc07",
+    "file": "nm-signal-0--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-0",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "bbbe293ee75748740c463ec3262fdb5c331fca2cccc86658a415e68c9d09fc07",
+    "file": "nm-signal-0--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-0",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "bbbe293ee75748740c463ec3262fdb5c331fca2cccc86658a415e68c9d09fc07",
+    "file": "nm-signal-0--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-0",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "bbbe293ee75748740c463ec3262fdb5c331fca2cccc86658a415e68c9d09fc07",
+    "file": "nm-signal-0--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-0",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "bbbe293ee75748740c463ec3262fdb5c331fca2cccc86658a415e68c9d09fc07",
+    "file": "nm-signal-0--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-0",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "bbbe293ee75748740c463ec3262fdb5c331fca2cccc86658a415e68c9d09fc07",
+    "file": "nm-signal-0--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-0",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "bbbe293ee75748740c463ec3262fdb5c331fca2cccc86658a415e68c9d09fc07",
+    "file": "nm-signal-0--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-0",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "bbbe293ee75748740c463ec3262fdb5c331fca2cccc86658a415e68c9d09fc07",
+    "file": "nm-signal-0--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "9cc862b1b6b66ee64decf42fee036fb10dd9d0caf00e942c1db690369e2dedd3",
+    "file": "nm-signal-0-secure--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "9cc862b1b6b66ee64decf42fee036fb10dd9d0caf00e942c1db690369e2dedd3",
+    "file": "nm-signal-0-secure--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "9cc862b1b6b66ee64decf42fee036fb10dd9d0caf00e942c1db690369e2dedd3",
+    "file": "nm-signal-0-secure--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "9cc862b1b6b66ee64decf42fee036fb10dd9d0caf00e942c1db690369e2dedd3",
+    "file": "nm-signal-0-secure--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "9cc862b1b6b66ee64decf42fee036fb10dd9d0caf00e942c1db690369e2dedd3",
+    "file": "nm-signal-0-secure--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "9cc862b1b6b66ee64decf42fee036fb10dd9d0caf00e942c1db690369e2dedd3",
+    "file": "nm-signal-0-secure--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "9cc862b1b6b66ee64decf42fee036fb10dd9d0caf00e942c1db690369e2dedd3",
+    "file": "nm-signal-0-secure--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "9cc862b1b6b66ee64decf42fee036fb10dd9d0caf00e942c1db690369e2dedd3",
+    "file": "nm-signal-0-secure--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-25",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "27adef4be2ca04a00c0c1934e6e52017ee0133009ed1fb036f1b169d7e2573f0",
+    "file": "nm-signal-25--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-25",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "27adef4be2ca04a00c0c1934e6e52017ee0133009ed1fb036f1b169d7e2573f0",
+    "file": "nm-signal-25--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-25",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "27adef4be2ca04a00c0c1934e6e52017ee0133009ed1fb036f1b169d7e2573f0",
+    "file": "nm-signal-25--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-25",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "27adef4be2ca04a00c0c1934e6e52017ee0133009ed1fb036f1b169d7e2573f0",
+    "file": "nm-signal-25--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-25",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "27adef4be2ca04a00c0c1934e6e52017ee0133009ed1fb036f1b169d7e2573f0",
+    "file": "nm-signal-25--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-25",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "27adef4be2ca04a00c0c1934e6e52017ee0133009ed1fb036f1b169d7e2573f0",
+    "file": "nm-signal-25--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-25",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "27adef4be2ca04a00c0c1934e6e52017ee0133009ed1fb036f1b169d7e2573f0",
+    "file": "nm-signal-25--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-25",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "27adef4be2ca04a00c0c1934e6e52017ee0133009ed1fb036f1b169d7e2573f0",
+    "file": "nm-signal-25--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "e79e74d99ce556fea7b354323fad989cda07f4fb3f4d5d5be7ed49dd612e3f8f",
+    "file": "nm-signal-25-secure--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "e79e74d99ce556fea7b354323fad989cda07f4fb3f4d5d5be7ed49dd612e3f8f",
+    "file": "nm-signal-25-secure--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "e79e74d99ce556fea7b354323fad989cda07f4fb3f4d5d5be7ed49dd612e3f8f",
+    "file": "nm-signal-25-secure--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "e79e74d99ce556fea7b354323fad989cda07f4fb3f4d5d5be7ed49dd612e3f8f",
+    "file": "nm-signal-25-secure--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "e79e74d99ce556fea7b354323fad989cda07f4fb3f4d5d5be7ed49dd612e3f8f",
+    "file": "nm-signal-25-secure--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "e79e74d99ce556fea7b354323fad989cda07f4fb3f4d5d5be7ed49dd612e3f8f",
+    "file": "nm-signal-25-secure--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "e79e74d99ce556fea7b354323fad989cda07f4fb3f4d5d5be7ed49dd612e3f8f",
+    "file": "nm-signal-25-secure--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "e79e74d99ce556fea7b354323fad989cda07f4fb3f4d5d5be7ed49dd612e3f8f",
+    "file": "nm-signal-25-secure--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-50",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "9f0c7410bef0df26fa49acf3ac8d7b6694c6f0a38ddf87606600532ebc30537f",
+    "file": "nm-signal-50--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-50",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "9f0c7410bef0df26fa49acf3ac8d7b6694c6f0a38ddf87606600532ebc30537f",
+    "file": "nm-signal-50--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-50",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "9f0c7410bef0df26fa49acf3ac8d7b6694c6f0a38ddf87606600532ebc30537f",
+    "file": "nm-signal-50--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-50",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "9f0c7410bef0df26fa49acf3ac8d7b6694c6f0a38ddf87606600532ebc30537f",
+    "file": "nm-signal-50--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-50",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "9f0c7410bef0df26fa49acf3ac8d7b6694c6f0a38ddf87606600532ebc30537f",
+    "file": "nm-signal-50--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-50",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "9f0c7410bef0df26fa49acf3ac8d7b6694c6f0a38ddf87606600532ebc30537f",
+    "file": "nm-signal-50--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-50",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "9f0c7410bef0df26fa49acf3ac8d7b6694c6f0a38ddf87606600532ebc30537f",
+    "file": "nm-signal-50--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-50",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "9f0c7410bef0df26fa49acf3ac8d7b6694c6f0a38ddf87606600532ebc30537f",
+    "file": "nm-signal-50--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "3a31dddf1aa2ee50b695542483e015055cfadaab7df6110ad30e84a0d36fb21b",
+    "file": "nm-signal-50-secure--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "3a31dddf1aa2ee50b695542483e015055cfadaab7df6110ad30e84a0d36fb21b",
+    "file": "nm-signal-50-secure--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "3a31dddf1aa2ee50b695542483e015055cfadaab7df6110ad30e84a0d36fb21b",
+    "file": "nm-signal-50-secure--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "3a31dddf1aa2ee50b695542483e015055cfadaab7df6110ad30e84a0d36fb21b",
+    "file": "nm-signal-50-secure--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "3a31dddf1aa2ee50b695542483e015055cfadaab7df6110ad30e84a0d36fb21b",
+    "file": "nm-signal-50-secure--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "3a31dddf1aa2ee50b695542483e015055cfadaab7df6110ad30e84a0d36fb21b",
+    "file": "nm-signal-50-secure--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "3a31dddf1aa2ee50b695542483e015055cfadaab7df6110ad30e84a0d36fb21b",
+    "file": "nm-signal-50-secure--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "3a31dddf1aa2ee50b695542483e015055cfadaab7df6110ad30e84a0d36fb21b",
+    "file": "nm-signal-50-secure--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-75",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "474269885fa90abd4420ca4800b1eac48d89c8dafd24cfef1a818059f36d30a5",
+    "file": "nm-signal-75--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-75",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "474269885fa90abd4420ca4800b1eac48d89c8dafd24cfef1a818059f36d30a5",
+    "file": "nm-signal-75--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-75",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "474269885fa90abd4420ca4800b1eac48d89c8dafd24cfef1a818059f36d30a5",
+    "file": "nm-signal-75--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-75",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "474269885fa90abd4420ca4800b1eac48d89c8dafd24cfef1a818059f36d30a5",
+    "file": "nm-signal-75--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-75",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "474269885fa90abd4420ca4800b1eac48d89c8dafd24cfef1a818059f36d30a5",
+    "file": "nm-signal-75--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-75",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "474269885fa90abd4420ca4800b1eac48d89c8dafd24cfef1a818059f36d30a5",
+    "file": "nm-signal-75--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-75",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "474269885fa90abd4420ca4800b1eac48d89c8dafd24cfef1a818059f36d30a5",
+    "file": "nm-signal-75--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-75",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "474269885fa90abd4420ca4800b1eac48d89c8dafd24cfef1a818059f36d30a5",
+    "file": "nm-signal-75--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "ba914c7007e7f89fe8decb50862d7a6635df150497ff3bedc9119d9d739ddfca",
+    "file": "nm-signal-75-secure--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "ba914c7007e7f89fe8decb50862d7a6635df150497ff3bedc9119d9d739ddfca",
+    "file": "nm-signal-75-secure--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "ba914c7007e7f89fe8decb50862d7a6635df150497ff3bedc9119d9d739ddfca",
+    "file": "nm-signal-75-secure--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "ba914c7007e7f89fe8decb50862d7a6635df150497ff3bedc9119d9d739ddfca",
+    "file": "nm-signal-75-secure--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "ba914c7007e7f89fe8decb50862d7a6635df150497ff3bedc9119d9d739ddfca",
+    "file": "nm-signal-75-secure--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "ba914c7007e7f89fe8decb50862d7a6635df150497ff3bedc9119d9d739ddfca",
+    "file": "nm-signal-75-secure--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "ba914c7007e7f89fe8decb50862d7a6635df150497ff3bedc9119d9d739ddfca",
+    "file": "nm-signal-75-secure--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "ba914c7007e7f89fe8decb50862d7a6635df150497ff3bedc9119d9d739ddfca",
+    "file": "nm-signal-75-secure--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-100",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "f23098e24245497e4075ffa82af2a5044d559f9ef073e3001c00fc33383d9d80",
+    "file": "nm-signal-100--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-100",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "f23098e24245497e4075ffa82af2a5044d559f9ef073e3001c00fc33383d9d80",
+    "file": "nm-signal-100--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-100",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "f23098e24245497e4075ffa82af2a5044d559f9ef073e3001c00fc33383d9d80",
+    "file": "nm-signal-100--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-100",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "f23098e24245497e4075ffa82af2a5044d559f9ef073e3001c00fc33383d9d80",
+    "file": "nm-signal-100--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-100",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "f23098e24245497e4075ffa82af2a5044d559f9ef073e3001c00fc33383d9d80",
+    "file": "nm-signal-100--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-100",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "f23098e24245497e4075ffa82af2a5044d559f9ef073e3001c00fc33383d9d80",
+    "file": "nm-signal-100--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-100",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "f23098e24245497e4075ffa82af2a5044d559f9ef073e3001c00fc33383d9d80",
+    "file": "nm-signal-100--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-100",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "f23098e24245497e4075ffa82af2a5044d559f9ef073e3001c00fc33383d9d80",
+    "file": "nm-signal-100--24@4--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure",
+    "size": 24,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1,
+    "source_sha256": "dbfb5a1e13c56bb82885acdae79da7aff65798a6751442c363b9916649a325a1",
+    "file": "nm-signal-100-secure--24@1--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure",
+    "size": 24,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.25,
+    "source_sha256": "dbfb5a1e13c56bb82885acdae79da7aff65798a6751442c363b9916649a325a1",
+    "file": "nm-signal-100-secure--24@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure",
+    "size": 24,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.5,
+    "source_sha256": "dbfb5a1e13c56bb82885acdae79da7aff65798a6751442c363b9916649a325a1",
+    "file": "nm-signal-100-secure--24@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure",
+    "size": 24,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 1.75,
+    "source_sha256": "dbfb5a1e13c56bb82885acdae79da7aff65798a6751442c363b9916649a325a1",
+    "file": "nm-signal-100-secure--24@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure",
+    "size": 24,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2,
+    "source_sha256": "dbfb5a1e13c56bb82885acdae79da7aff65798a6751442c363b9916649a325a1",
+    "file": "nm-signal-100-secure--24@2--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure",
+    "size": 24,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 2.5,
+    "source_sha256": "dbfb5a1e13c56bb82885acdae79da7aff65798a6751442c363b9916649a325a1",
+    "file": "nm-signal-100-secure--24@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure",
+    "size": 24,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 3,
+    "source_sha256": "dbfb5a1e13c56bb82885acdae79da7aff65798a6751442c363b9916649a325a1",
+    "file": "nm-signal-100-secure--24@3--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure",
+    "size": 24,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 24,
+    "raster_scale": 4,
+    "source_sha256": "dbfb5a1e13c56bb82885acdae79da7aff65798a6751442c363b9916649a325a1",
+    "file": "nm-signal-100-secure--24@4--source.png"
+  },
+  {
+    "icon": "network-wireless-hardware-disabled-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "5a6f1b65be7aac7ba78456c64af86febd02bff85208effa7d43aebf7e844cad4",
+    "file": "network-wireless-hardware-disabled-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "network-wireless-hardware-disabled-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "5a6f1b65be7aac7ba78456c64af86febd02bff85208effa7d43aebf7e844cad4",
+    "file": "network-wireless-hardware-disabled-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "network-wireless-hardware-disabled-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "5a6f1b65be7aac7ba78456c64af86febd02bff85208effa7d43aebf7e844cad4",
+    "file": "network-wireless-hardware-disabled-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "network-wireless-hardware-disabled-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "5a6f1b65be7aac7ba78456c64af86febd02bff85208effa7d43aebf7e844cad4",
+    "file": "network-wireless-hardware-disabled-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "network-wireless-hardware-disabled-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "5a6f1b65be7aac7ba78456c64af86febd02bff85208effa7d43aebf7e844cad4",
+    "file": "network-wireless-hardware-disabled-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "network-wireless-hardware-disabled-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "5a6f1b65be7aac7ba78456c64af86febd02bff85208effa7d43aebf7e844cad4",
+    "file": "network-wireless-hardware-disabled-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "network-wireless-hardware-disabled-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "5a6f1b65be7aac7ba78456c64af86febd02bff85208effa7d43aebf7e844cad4",
+    "file": "network-wireless-hardware-disabled-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "network-wireless-hardware-disabled-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "5a6f1b65be7aac7ba78456c64af86febd02bff85208effa7d43aebf7e844cad4",
+    "file": "network-wireless-hardware-disabled-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "network-wireless-disabled-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "a486b40f4f95de0a5ffb6f3ca7786d62c0ca2fae4215b04fc2cc470255071a06",
+    "file": "network-wireless-disabled-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "network-wireless-disabled-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "a486b40f4f95de0a5ffb6f3ca7786d62c0ca2fae4215b04fc2cc470255071a06",
+    "file": "network-wireless-disabled-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "network-wireless-disabled-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "a486b40f4f95de0a5ffb6f3ca7786d62c0ca2fae4215b04fc2cc470255071a06",
+    "file": "network-wireless-disabled-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "network-wireless-disabled-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "a486b40f4f95de0a5ffb6f3ca7786d62c0ca2fae4215b04fc2cc470255071a06",
+    "file": "network-wireless-disabled-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "network-wireless-disabled-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "a486b40f4f95de0a5ffb6f3ca7786d62c0ca2fae4215b04fc2cc470255071a06",
+    "file": "network-wireless-disabled-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "network-wireless-disabled-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "a486b40f4f95de0a5ffb6f3ca7786d62c0ca2fae4215b04fc2cc470255071a06",
+    "file": "network-wireless-disabled-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "network-wireless-disabled-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "a486b40f4f95de0a5ffb6f3ca7786d62c0ca2fae4215b04fc2cc470255071a06",
+    "file": "network-wireless-disabled-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "network-wireless-disabled-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "a486b40f4f95de0a5ffb6f3ca7786d62c0ca2fae4215b04fc2cc470255071a06",
+    "file": "network-wireless-disabled-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "network-wireless-offline-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "be6e982a0bb6385369729afa6412d6c4558498853985ab2fbda67faf323ae5f1",
+    "file": "network-wireless-offline-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "network-wireless-offline-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "be6e982a0bb6385369729afa6412d6c4558498853985ab2fbda67faf323ae5f1",
+    "file": "network-wireless-offline-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "network-wireless-offline-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "be6e982a0bb6385369729afa6412d6c4558498853985ab2fbda67faf323ae5f1",
+    "file": "network-wireless-offline-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "network-wireless-offline-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "be6e982a0bb6385369729afa6412d6c4558498853985ab2fbda67faf323ae5f1",
+    "file": "network-wireless-offline-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "network-wireless-offline-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "be6e982a0bb6385369729afa6412d6c4558498853985ab2fbda67faf323ae5f1",
+    "file": "network-wireless-offline-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "network-wireless-offline-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "be6e982a0bb6385369729afa6412d6c4558498853985ab2fbda67faf323ae5f1",
+    "file": "network-wireless-offline-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "network-wireless-offline-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "be6e982a0bb6385369729afa6412d6c4558498853985ab2fbda67faf323ae5f1",
+    "file": "network-wireless-offline-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "network-wireless-offline-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "be6e982a0bb6385369729afa6412d6c4558498853985ab2fbda67faf323ae5f1",
+    "file": "network-wireless-offline-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "890d7770ffc02d7a888dbb97e7e815679d3924a5c019431953abcef236b6b3d1",
+    "file": "network-wireless-disconnected-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "890d7770ffc02d7a888dbb97e7e815679d3924a5c019431953abcef236b6b3d1",
+    "file": "network-wireless-disconnected-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "890d7770ffc02d7a888dbb97e7e815679d3924a5c019431953abcef236b6b3d1",
+    "file": "network-wireless-disconnected-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "890d7770ffc02d7a888dbb97e7e815679d3924a5c019431953abcef236b6b3d1",
+    "file": "network-wireless-disconnected-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "890d7770ffc02d7a888dbb97e7e815679d3924a5c019431953abcef236b6b3d1",
+    "file": "network-wireless-disconnected-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "890d7770ffc02d7a888dbb97e7e815679d3924a5c019431953abcef236b6b3d1",
+    "file": "network-wireless-disconnected-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "890d7770ffc02d7a888dbb97e7e815679d3924a5c019431953abcef236b6b3d1",
+    "file": "network-wireless-disconnected-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "network-wireless-disconnected-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "890d7770ffc02d7a888dbb97e7e815679d3924a5c019431953abcef236b6b3d1",
+    "file": "network-wireless-disconnected-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "network-wired-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "22da5ac565da22647c92df312125141b3580e46bbef47b0aff747da34ab365e7",
+    "file": "network-wired-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "network-wired-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "22da5ac565da22647c92df312125141b3580e46bbef47b0aff747da34ab365e7",
+    "file": "network-wired-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "network-wired-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "22da5ac565da22647c92df312125141b3580e46bbef47b0aff747da34ab365e7",
+    "file": "network-wired-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "network-wired-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "22da5ac565da22647c92df312125141b3580e46bbef47b0aff747da34ab365e7",
+    "file": "network-wired-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "network-wired-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "22da5ac565da22647c92df312125141b3580e46bbef47b0aff747da34ab365e7",
+    "file": "network-wired-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "network-wired-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "22da5ac565da22647c92df312125141b3580e46bbef47b0aff747da34ab365e7",
+    "file": "network-wired-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "network-wired-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "22da5ac565da22647c92df312125141b3580e46bbef47b0aff747da34ab365e7",
+    "file": "network-wired-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "network-wired-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "22da5ac565da22647c92df312125141b3580e46bbef47b0aff747da34ab365e7",
+    "file": "network-wired-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-0-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "dcae0fbe03f231e867b935e3a02febe95269c2b6ff21532d424fdc25c7fd9697",
+    "file": "nm-signal-0-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-0-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "dcae0fbe03f231e867b935e3a02febe95269c2b6ff21532d424fdc25c7fd9697",
+    "file": "nm-signal-0-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-0-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "dcae0fbe03f231e867b935e3a02febe95269c2b6ff21532d424fdc25c7fd9697",
+    "file": "nm-signal-0-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-0-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "dcae0fbe03f231e867b935e3a02febe95269c2b6ff21532d424fdc25c7fd9697",
+    "file": "nm-signal-0-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-0-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "dcae0fbe03f231e867b935e3a02febe95269c2b6ff21532d424fdc25c7fd9697",
+    "file": "nm-signal-0-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-0-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "dcae0fbe03f231e867b935e3a02febe95269c2b6ff21532d424fdc25c7fd9697",
+    "file": "nm-signal-0-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-0-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "dcae0fbe03f231e867b935e3a02febe95269c2b6ff21532d424fdc25c7fd9697",
+    "file": "nm-signal-0-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-0-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "dcae0fbe03f231e867b935e3a02febe95269c2b6ff21532d424fdc25c7fd9697",
+    "file": "nm-signal-0-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "490dcb63b63e890af481bd3e5642c25a1c53f9f2221539388fc2fb04c9531b17",
+    "file": "nm-signal-0-secure-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "490dcb63b63e890af481bd3e5642c25a1c53f9f2221539388fc2fb04c9531b17",
+    "file": "nm-signal-0-secure-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "490dcb63b63e890af481bd3e5642c25a1c53f9f2221539388fc2fb04c9531b17",
+    "file": "nm-signal-0-secure-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "490dcb63b63e890af481bd3e5642c25a1c53f9f2221539388fc2fb04c9531b17",
+    "file": "nm-signal-0-secure-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "490dcb63b63e890af481bd3e5642c25a1c53f9f2221539388fc2fb04c9531b17",
+    "file": "nm-signal-0-secure-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "490dcb63b63e890af481bd3e5642c25a1c53f9f2221539388fc2fb04c9531b17",
+    "file": "nm-signal-0-secure-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "490dcb63b63e890af481bd3e5642c25a1c53f9f2221539388fc2fb04c9531b17",
+    "file": "nm-signal-0-secure-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-0-secure-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "490dcb63b63e890af481bd3e5642c25a1c53f9f2221539388fc2fb04c9531b17",
+    "file": "nm-signal-0-secure-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-25-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "863bf52ca9917d962dd3366d1fb6c6558d1ef0f34de38e176f12c03378af0a47",
+    "file": "nm-signal-25-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-25-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "863bf52ca9917d962dd3366d1fb6c6558d1ef0f34de38e176f12c03378af0a47",
+    "file": "nm-signal-25-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-25-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "863bf52ca9917d962dd3366d1fb6c6558d1ef0f34de38e176f12c03378af0a47",
+    "file": "nm-signal-25-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-25-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "863bf52ca9917d962dd3366d1fb6c6558d1ef0f34de38e176f12c03378af0a47",
+    "file": "nm-signal-25-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-25-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "863bf52ca9917d962dd3366d1fb6c6558d1ef0f34de38e176f12c03378af0a47",
+    "file": "nm-signal-25-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-25-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "863bf52ca9917d962dd3366d1fb6c6558d1ef0f34de38e176f12c03378af0a47",
+    "file": "nm-signal-25-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-25-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "863bf52ca9917d962dd3366d1fb6c6558d1ef0f34de38e176f12c03378af0a47",
+    "file": "nm-signal-25-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-25-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "863bf52ca9917d962dd3366d1fb6c6558d1ef0f34de38e176f12c03378af0a47",
+    "file": "nm-signal-25-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "dbb149c2a54b993965fd4f180644b05ccf5f9ef1f5f6b3d37310dbf352c98585",
+    "file": "nm-signal-25-secure-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "dbb149c2a54b993965fd4f180644b05ccf5f9ef1f5f6b3d37310dbf352c98585",
+    "file": "nm-signal-25-secure-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "dbb149c2a54b993965fd4f180644b05ccf5f9ef1f5f6b3d37310dbf352c98585",
+    "file": "nm-signal-25-secure-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "dbb149c2a54b993965fd4f180644b05ccf5f9ef1f5f6b3d37310dbf352c98585",
+    "file": "nm-signal-25-secure-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "dbb149c2a54b993965fd4f180644b05ccf5f9ef1f5f6b3d37310dbf352c98585",
+    "file": "nm-signal-25-secure-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "dbb149c2a54b993965fd4f180644b05ccf5f9ef1f5f6b3d37310dbf352c98585",
+    "file": "nm-signal-25-secure-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "dbb149c2a54b993965fd4f180644b05ccf5f9ef1f5f6b3d37310dbf352c98585",
+    "file": "nm-signal-25-secure-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-25-secure-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "dbb149c2a54b993965fd4f180644b05ccf5f9ef1f5f6b3d37310dbf352c98585",
+    "file": "nm-signal-25-secure-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-50-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "a03a1f657f1a02120ff58ef3894d7c228f1b612816485c00c283266c784cb6b5",
+    "file": "nm-signal-50-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-50-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "a03a1f657f1a02120ff58ef3894d7c228f1b612816485c00c283266c784cb6b5",
+    "file": "nm-signal-50-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-50-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "a03a1f657f1a02120ff58ef3894d7c228f1b612816485c00c283266c784cb6b5",
+    "file": "nm-signal-50-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-50-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "a03a1f657f1a02120ff58ef3894d7c228f1b612816485c00c283266c784cb6b5",
+    "file": "nm-signal-50-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-50-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "a03a1f657f1a02120ff58ef3894d7c228f1b612816485c00c283266c784cb6b5",
+    "file": "nm-signal-50-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-50-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "a03a1f657f1a02120ff58ef3894d7c228f1b612816485c00c283266c784cb6b5",
+    "file": "nm-signal-50-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-50-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "a03a1f657f1a02120ff58ef3894d7c228f1b612816485c00c283266c784cb6b5",
+    "file": "nm-signal-50-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-50-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "a03a1f657f1a02120ff58ef3894d7c228f1b612816485c00c283266c784cb6b5",
+    "file": "nm-signal-50-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "29f77b14fbfcc0f72e83a1bb5a64849b40212d21261c3bc8350150a06dd8eefa",
+    "file": "nm-signal-50-secure-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "29f77b14fbfcc0f72e83a1bb5a64849b40212d21261c3bc8350150a06dd8eefa",
+    "file": "nm-signal-50-secure-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "29f77b14fbfcc0f72e83a1bb5a64849b40212d21261c3bc8350150a06dd8eefa",
+    "file": "nm-signal-50-secure-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "29f77b14fbfcc0f72e83a1bb5a64849b40212d21261c3bc8350150a06dd8eefa",
+    "file": "nm-signal-50-secure-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "29f77b14fbfcc0f72e83a1bb5a64849b40212d21261c3bc8350150a06dd8eefa",
+    "file": "nm-signal-50-secure-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "29f77b14fbfcc0f72e83a1bb5a64849b40212d21261c3bc8350150a06dd8eefa",
+    "file": "nm-signal-50-secure-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "29f77b14fbfcc0f72e83a1bb5a64849b40212d21261c3bc8350150a06dd8eefa",
+    "file": "nm-signal-50-secure-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-50-secure-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "29f77b14fbfcc0f72e83a1bb5a64849b40212d21261c3bc8350150a06dd8eefa",
+    "file": "nm-signal-50-secure-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-75-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "b4b1c847a1c0a73abe5b4394665d297571d7a104ea31bf2c8e5a5a1035c50fd2",
+    "file": "nm-signal-75-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-75-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "b4b1c847a1c0a73abe5b4394665d297571d7a104ea31bf2c8e5a5a1035c50fd2",
+    "file": "nm-signal-75-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-75-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "b4b1c847a1c0a73abe5b4394665d297571d7a104ea31bf2c8e5a5a1035c50fd2",
+    "file": "nm-signal-75-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-75-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "b4b1c847a1c0a73abe5b4394665d297571d7a104ea31bf2c8e5a5a1035c50fd2",
+    "file": "nm-signal-75-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-75-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "b4b1c847a1c0a73abe5b4394665d297571d7a104ea31bf2c8e5a5a1035c50fd2",
+    "file": "nm-signal-75-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-75-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "b4b1c847a1c0a73abe5b4394665d297571d7a104ea31bf2c8e5a5a1035c50fd2",
+    "file": "nm-signal-75-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-75-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "b4b1c847a1c0a73abe5b4394665d297571d7a104ea31bf2c8e5a5a1035c50fd2",
+    "file": "nm-signal-75-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-75-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "b4b1c847a1c0a73abe5b4394665d297571d7a104ea31bf2c8e5a5a1035c50fd2",
+    "file": "nm-signal-75-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "24d1aaf8ea409cee934db8a92833c94bbae967c84ec0664357ec7c4badf932b5",
+    "file": "nm-signal-75-secure-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "24d1aaf8ea409cee934db8a92833c94bbae967c84ec0664357ec7c4badf932b5",
+    "file": "nm-signal-75-secure-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "24d1aaf8ea409cee934db8a92833c94bbae967c84ec0664357ec7c4badf932b5",
+    "file": "nm-signal-75-secure-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "24d1aaf8ea409cee934db8a92833c94bbae967c84ec0664357ec7c4badf932b5",
+    "file": "nm-signal-75-secure-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "24d1aaf8ea409cee934db8a92833c94bbae967c84ec0664357ec7c4badf932b5",
+    "file": "nm-signal-75-secure-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "24d1aaf8ea409cee934db8a92833c94bbae967c84ec0664357ec7c4badf932b5",
+    "file": "nm-signal-75-secure-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "24d1aaf8ea409cee934db8a92833c94bbae967c84ec0664357ec7c4badf932b5",
+    "file": "nm-signal-75-secure-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-75-secure-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "24d1aaf8ea409cee934db8a92833c94bbae967c84ec0664357ec7c4badf932b5",
+    "file": "nm-signal-75-secure-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-100-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "2acbae5fd1316ebe8a0e3b7ae528729aafcceb373947b73ee10f4a66715dec6f",
+    "file": "nm-signal-100-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-100-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "2acbae5fd1316ebe8a0e3b7ae528729aafcceb373947b73ee10f4a66715dec6f",
+    "file": "nm-signal-100-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-100-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "2acbae5fd1316ebe8a0e3b7ae528729aafcceb373947b73ee10f4a66715dec6f",
+    "file": "nm-signal-100-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-100-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "2acbae5fd1316ebe8a0e3b7ae528729aafcceb373947b73ee10f4a66715dec6f",
+    "file": "nm-signal-100-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-100-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "2acbae5fd1316ebe8a0e3b7ae528729aafcceb373947b73ee10f4a66715dec6f",
+    "file": "nm-signal-100-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-100-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "2acbae5fd1316ebe8a0e3b7ae528729aafcceb373947b73ee10f4a66715dec6f",
+    "file": "nm-signal-100-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-100-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "2acbae5fd1316ebe8a0e3b7ae528729aafcceb373947b73ee10f4a66715dec6f",
+    "file": "nm-signal-100-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-100-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "2acbae5fd1316ebe8a0e3b7ae528729aafcceb373947b73ee10f4a66715dec6f",
+    "file": "nm-signal-100-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure-symbolic",
+    "size": 16,
+    "scale": 1,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1,
+    "source_sha256": "ec27a47d0cd134718262a0ceec1e0a756f462b9e3ec28866efa7327c5af3a4ac",
+    "file": "nm-signal-100-secure-symbolic--16@1--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure-symbolic",
+    "size": 16,
+    "scale": 1.25,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.25,
+    "source_sha256": "ec27a47d0cd134718262a0ceec1e0a756f462b9e3ec28866efa7327c5af3a4ac",
+    "file": "nm-signal-100-secure-symbolic--16@1.25--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure-symbolic",
+    "size": 16,
+    "scale": 1.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.5,
+    "source_sha256": "ec27a47d0cd134718262a0ceec1e0a756f462b9e3ec28866efa7327c5af3a4ac",
+    "file": "nm-signal-100-secure-symbolic--16@1.5--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure-symbolic",
+    "size": 16,
+    "scale": 1.75,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 1.75,
+    "source_sha256": "ec27a47d0cd134718262a0ceec1e0a756f462b9e3ec28866efa7327c5af3a4ac",
+    "file": "nm-signal-100-secure-symbolic--16@1.75--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure-symbolic",
+    "size": 16,
+    "scale": 2,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2,
+    "source_sha256": "ec27a47d0cd134718262a0ceec1e0a756f462b9e3ec28866efa7327c5af3a4ac",
+    "file": "nm-signal-100-secure-symbolic--16@2--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure-symbolic",
+    "size": 16,
+    "scale": 2.5,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 2.5,
+    "source_sha256": "ec27a47d0cd134718262a0ceec1e0a756f462b9e3ec28866efa7327c5af3a4ac",
+    "file": "nm-signal-100-secure-symbolic--16@2.5--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure-symbolic",
+    "size": 16,
+    "scale": 3,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 3,
+    "source_sha256": "ec27a47d0cd134718262a0ceec1e0a756f462b9e3ec28866efa7327c5af3a4ac",
+    "file": "nm-signal-100-secure-symbolic--16@3--source.png"
+  },
+  {
+    "icon": "nm-signal-100-secure-symbolic",
+    "size": 16,
+    "scale": 4,
+    "color": "source",
+    "raster_size": 16,
+    "raster_scale": 4,
+    "source_sha256": "ec27a47d0cd134718262a0ceec1e0a756f462b9e3ec28866efa7327c5af3a4ac",
+    "file": "nm-signal-100-secure-symbolic--16@4--source.png"
+  },
+  {
+    "icon": "corner-top-left",
+    "size": 27,
+    "scale": 1,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-left--27@1--000000ff.png"
+  },
+  {
+    "icon": "corner-top-left",
+    "size": 27,
+    "scale": 1.25,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.25,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-left--27@1.25--000000ff.png"
+  },
+  {
+    "icon": "corner-top-left",
+    "size": 27,
+    "scale": 1.5,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.5,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-left--27@1.5--000000ff.png"
+  },
+  {
+    "icon": "corner-top-left",
+    "size": 27,
+    "scale": 1.75,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.75,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-left--27@1.75--000000ff.png"
+  },
+  {
+    "icon": "corner-top-left",
+    "size": 27,
+    "scale": 2,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 2,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-left--27@2--000000ff.png"
+  },
+  {
+    "icon": "corner-top-left",
+    "size": 27,
+    "scale": 2.5,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 2.5,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-left--27@2.5--000000ff.png"
+  },
+  {
+    "icon": "corner-top-left",
+    "size": 27,
+    "scale": 3,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 3,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-left--27@3--000000ff.png"
+  },
+  {
+    "icon": "corner-top-left",
+    "size": 27,
+    "scale": 4,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 4,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-left--27@4--000000ff.png"
+  },
+  {
+    "icon": "corner-top-right",
+    "size": 27,
+    "scale": 1,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-right--27@1--000000ff.png"
+  },
+  {
+    "icon": "corner-top-right",
+    "size": 27,
+    "scale": 1.25,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.25,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-right--27@1.25--000000ff.png"
+  },
+  {
+    "icon": "corner-top-right",
+    "size": 27,
+    "scale": 1.5,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.5,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-right--27@1.5--000000ff.png"
+  },
+  {
+    "icon": "corner-top-right",
+    "size": 27,
+    "scale": 1.75,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.75,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-right--27@1.75--000000ff.png"
+  },
+  {
+    "icon": "corner-top-right",
+    "size": 27,
+    "scale": 2,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 2,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-right--27@2--000000ff.png"
+  },
+  {
+    "icon": "corner-top-right",
+    "size": 27,
+    "scale": 2.5,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 2.5,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-right--27@2.5--000000ff.png"
+  },
+  {
+    "icon": "corner-top-right",
+    "size": 27,
+    "scale": 3,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 3,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-right--27@3--000000ff.png"
+  },
+  {
+    "icon": "corner-top-right",
+    "size": 27,
+    "scale": 4,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 4,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-top-right--27@4--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-left",
+    "size": 27,
+    "scale": 1,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-left--27@1--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-left",
+    "size": 27,
+    "scale": 1.25,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.25,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-left--27@1.25--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-left",
+    "size": 27,
+    "scale": 1.5,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.5,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-left--27@1.5--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-left",
+    "size": 27,
+    "scale": 1.75,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.75,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-left--27@1.75--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-left",
+    "size": 27,
+    "scale": 2,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 2,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-left--27@2--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-left",
+    "size": 27,
+    "scale": 2.5,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 2.5,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-left--27@2.5--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-left",
+    "size": 27,
+    "scale": 3,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 3,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-left--27@3--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-left",
+    "size": 27,
+    "scale": 4,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 4,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-left--27@4--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-right",
+    "size": 27,
+    "scale": 1,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-right--27@1--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-right",
+    "size": 27,
+    "scale": 1.25,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.25,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-right--27@1.25--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-right",
+    "size": 27,
+    "scale": 1.5,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.5,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-right--27@1.5--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-right",
+    "size": 27,
+    "scale": 1.75,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 1.75,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-right--27@1.75--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-right",
+    "size": 27,
+    "scale": 2,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 2,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-right--27@2--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-right",
+    "size": 27,
+    "scale": 2.5,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 2.5,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-right--27@2.5--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-right",
+    "size": 27,
+    "scale": 3,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 3,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-right--27@3--000000ff.png"
+  },
+  {
+    "icon": "corner-bottom-right",
+    "size": 27,
+    "scale": 4,
+    "color": "000000ff",
+    "raster_size": 27,
+    "raster_scale": 4,
+    "source_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+    "file": "corner-bottom-right--27@4--000000ff.png"
+  }
+]

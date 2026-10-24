@@ -1,0 +1,76 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.11 n=3",
+  "canvas": {
+    "width": 640,
+    "height": 270
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [
+      {
+        "id": "s0",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 0",
+        "project": "rshell",
+        "status": "waitingApproval",
+        "current_tool": "Bash",
+        "detail": "rm -rf target",
+        "progress": 0.82
+      },
+      {
+        "id": "s1",
+        "source": "claude",
+        "source_label": "Claude Code",
+        "title": "Session 0",
+        "project": "quickshell",
+        "status": "waitingQuestion",
+        "current_tool": "AskUserQuestion",
+        "detail": "Which crate?",
+        "progress": 0.82
+      },
+      {
+        "id": "s2",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 0",
+        "project": "hypr",
+        "status": "running",
+        "current_tool": "Bash",
+        "detail": "cargo build",
+        "progress": 0.58
+      }
+    ],
+    "now": "09:41",
+    "mediaAvailable": false,
+    "mediaPlaying": false,
+    "mediaTitle": "",
+    "mediaArtist": "",
+    "mediaPlayerName": "",
+    "mediaArtUrl": "",
+    "mediaLengthSeconds": 0,
+    "mediaPositionSeconds": 0,
+    "spectrumValues": []
+  },
+  "steps": [
+    {
+      "hover": {
+        "item": "island",
+        "x": 10,
+        "y": 19
+      }
+    },
+    {
+      "advance": 600
+    },
+    {
+      "capture": ""
+    }
+  ]
+}

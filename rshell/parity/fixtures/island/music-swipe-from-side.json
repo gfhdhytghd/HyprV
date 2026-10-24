@@ -1,0 +1,73 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§4.3 swipe starting on the right hotspot: the hover expands the island first",
+  "canvas": {
+    "width": 640,
+    "height": 58
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [],
+    "now": "09:41",
+    "mediaAvailable": true,
+    "mediaPlaying": true,
+    "mediaTitle": "Midnight City",
+    "mediaArtist": "M83",
+    "mediaPlayerName": "spotify",
+    "mediaArtUrl": "@asset:cover-warm.png",
+    "mediaLengthSeconds": 225,
+    "mediaPositionSeconds": 83,
+    "spectrumValues": [
+      12,
+      38,
+      74,
+      92,
+      66,
+      41,
+      58,
+      80,
+      95,
+      61,
+      33,
+      47,
+      70,
+      52,
+      28,
+      15
+    ]
+  },
+  "steps": [
+    {
+      "press": {
+        "item": "island",
+        "x": 100,
+        "y": 19
+      }
+    },
+    {
+      "drag": {
+        "item": "island",
+        "x": 170,
+        "y": 21
+      }
+    },
+    {
+      "release": true
+    },
+    {
+      "frames": {
+        "name": "after",
+        "at": [
+          0,
+          120,
+          400
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+ "component": "chip",
+ "kind": "file",
+ "file": "WifiActionChip.qml",
+ "canvas": {
+  "width": 150,
+  "height": 44
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "cornerRadius": "9",
+  "label": "\"Turn Off\"",
+  "minimumWidth": "96",
+  "fillColor": "root.withAlpha(\"#ffffff\", root.darkMode ? 0.11 : 0.30)",
+  "foregroundColor": "root.launchColor",
+  "strokeColor": "root.withAlpha(root.launchColor, 0.18)"
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

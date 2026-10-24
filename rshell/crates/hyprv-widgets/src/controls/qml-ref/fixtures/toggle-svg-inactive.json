@@ -1,0 +1,28 @@
+{
+ "component": "toggle",
+ "kind": "file",
+ "file": "ControlPanelToggle.qml",
+ "canvas": {
+  "width": 72,
+  "height": 72
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "width": "62",
+  "height": "62",
+  "iconOnly": "true",
+  "iconSource": "\"file://\" + Harness.source + \"/assets/control-panel/light-dark.svg\""
+ },
+ "props": {
+  "active": false
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

@@ -1,0 +1,58 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§8.4 idle → single agent (offset 0 → -2)",
+  "canvas": {
+    "width": 640,
+    "height": 58
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [],
+    "now": "09:41",
+    "mediaAvailable": false,
+    "mediaPlaying": false,
+    "mediaTitle": "",
+    "mediaArtist": "",
+    "mediaPlayerName": "",
+    "mediaArtUrl": "",
+    "mediaLengthSeconds": 0,
+    "mediaPositionSeconds": 0,
+    "spectrumValues": []
+  },
+  "steps": [
+    {
+      "set": {
+        "agentSessions": [
+          {
+            "id": "codex-session-0",
+            "source": "codex",
+            "source_label": "Codex",
+            "title": "Session 0",
+            "project": "rshell",
+            "status": "running",
+            "current_tool": "Bash",
+            "detail": "cargo build",
+            "progress": 0.58
+          }
+        ]
+      }
+    },
+    {
+      "frames": {
+        "name": "appear",
+        "at": [
+          0,
+          60,
+          120,
+          210,
+          400
+        ]
+      }
+    }
+  ]
+}

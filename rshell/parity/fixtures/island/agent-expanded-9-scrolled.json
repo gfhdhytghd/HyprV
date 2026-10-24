@@ -1,0 +1,156 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.11 n=9 scroll + indicator",
+  "canvas": {
+    "width": 640,
+    "height": 514
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [
+      {
+        "id": "s0",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 0",
+        "project": "rshell",
+        "status": "waitingApproval",
+        "current_tool": "Bash",
+        "detail": "rm -rf target",
+        "progress": 0.82
+      },
+      {
+        "id": "s1",
+        "source": "claude",
+        "source_label": "Claude Code",
+        "title": "Session 0",
+        "project": "quickshell",
+        "status": "waitingQuestion",
+        "current_tool": "AskUserQuestion",
+        "detail": "Which crate?",
+        "progress": 0.82
+      },
+      {
+        "id": "s2",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 0",
+        "project": "hypr",
+        "status": "running",
+        "current_tool": "Bash",
+        "detail": "cargo build",
+        "progress": 0.58
+      },
+      {
+        "id": "s3",
+        "source": "claude",
+        "source_label": "Claude Code",
+        "title": "Session 0",
+        "project": "notes",
+        "status": "processing",
+        "current_tool": "",
+        "detail": "",
+        "progress": 0.34
+      },
+      {
+        "id": "s4",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 0",
+        "project": "dotfiles",
+        "status": "completed",
+        "current_tool": "",
+        "detail": "Finished",
+        "progress": 1.0
+      },
+      {
+        "id": "s5",
+        "source": "claude",
+        "source_label": "Claude Code",
+        "title": "Session 5",
+        "project": "website",
+        "status": "completed",
+        "current_tool": "",
+        "detail": "",
+        "progress": 1
+      },
+      {
+        "id": "s6",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 6",
+        "project": "infra",
+        "status": "running",
+        "current_tool": "",
+        "detail": "",
+        "progress": 0.3
+      },
+      {
+        "id": "s7",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 7",
+        "project": "paper",
+        "status": "processing",
+        "current_tool": "",
+        "detail": "",
+        "progress": 0.7
+      },
+      {
+        "id": "s8",
+        "source": "claude",
+        "source_label": "Claude Code",
+        "title": "Session 8",
+        "project": "scratch",
+        "status": "running",
+        "current_tool": "",
+        "detail": "",
+        "progress": 0.5
+      }
+    ],
+    "now": "09:41",
+    "mediaAvailable": false,
+    "mediaPlaying": false,
+    "mediaTitle": "",
+    "mediaArtist": "",
+    "mediaPlayerName": "",
+    "mediaArtUrl": "",
+    "mediaLengthSeconds": 0,
+    "mediaPositionSeconds": 0,
+    "spectrumValues": []
+  },
+  "steps": [
+    {
+      "hover": {
+        "item": "island",
+        "x": 10,
+        "y": 19
+      }
+    },
+    {
+      "advance": 600
+    },
+    {
+      "capture": "top"
+    },
+    {
+      "wheel": {
+        "item": "island",
+        "x": 200,
+        "y": 300,
+        "dy": -240
+      }
+    },
+    {
+      "advance": 1500
+    },
+    {
+      "capture": "scrolled"
+    }
+  ]
+}

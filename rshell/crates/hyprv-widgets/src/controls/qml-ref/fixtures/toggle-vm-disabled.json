@@ -1,0 +1,29 @@
+{
+ "component": "toggle",
+ "kind": "file",
+ "file": "ControlPanelToggle.qml",
+ "canvas": {
+  "width": 72,
+  "height": 72
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "width": "62",
+  "height": "62",
+  "iconOnly": "true",
+  "icon": "\"\\u{f05b3}\"",
+  "toggleEnabled": "false"
+ },
+ "props": {
+  "active": false
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

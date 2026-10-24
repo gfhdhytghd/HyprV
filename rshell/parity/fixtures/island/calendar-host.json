@@ -1,0 +1,80 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.16 host frame only; calendar panel content is blank",
+  "canvas": {
+    "width": 640,
+    "height": 524
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [],
+    "now": "09:41",
+    "mediaAvailable": true,
+    "mediaPlaying": true,
+    "mediaTitle": "Midnight City",
+    "mediaArtist": "M83",
+    "mediaPlayerName": "spotify",
+    "mediaArtUrl": "@asset:cover-warm.png",
+    "mediaLengthSeconds": 225,
+    "mediaPositionSeconds": 83,
+    "spectrumValues": [
+      12,
+      38,
+      74,
+      92,
+      66,
+      41,
+      58,
+      80,
+      95,
+      61,
+      33,
+      47,
+      70,
+      52,
+      28,
+      15
+    ]
+  },
+  "steps": [
+    {
+      "set": {
+        "calendar": true
+      }
+    },
+    {
+      "frames": {
+        "name": "open",
+        "at": [
+          0,
+          16,
+          105,
+          210,
+          400
+        ]
+      }
+    },
+    {
+      "set": {
+        "calendar": false
+      }
+    },
+    {
+      "frames": {
+        "name": "close",
+        "at": [
+          0,
+          105,
+          209,
+          211,
+          400
+        ]
+      }
+    }
+  ]
+}

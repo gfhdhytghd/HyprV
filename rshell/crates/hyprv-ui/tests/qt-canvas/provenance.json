@@ -1,0 +1,55 @@
+{
+  "source": "Original quickshell private idle fixture, actual pre-swap EGL window. No compositor or PNG alpha reconstruction.",
+  "output": [
+    3072,
+    1728
+  ],
+  "scale": 2,
+  "atlas": [
+    8192,
+    4096
+  ],
+  "uv_texels": [
+    1,
+    113,
+    54,
+    54
+  ],
+  "crop_device": [
+    0,
+    3402,
+    54,
+    54
+  ],
+  "pixel_format": "RGBA8 premultiplied, top-down",
+  "source_sha256": {
+    "/home/wilf/.config/HyprV/quickshell/ScreenCornerShade.qml": "42431c24f1ae7ebed906b1bd141eb9e3b631e722b91fa355bd1b47c585d94c0e",
+    "/home/wilf/.config/HyprV/quickshell/shell.qml": "8ec08f7332bd9ad1a3ec8f8632c52f6f12ac7b2f30eda87a72a372eb820fb20c",
+    "/home/wilf/.config/HyprV/rshell/crates/hyprv-ui-bar/.build/corner_readback.c": "6ec42396b1b93b875bcbfa559dc955200c4d6e53fa8985fdcf1c1be6efd1bdd2"
+  },
+  "packed_a8_sha256": "c49cf7abdeb13b7567a4c8d1f936e3e204d5342bb009528e82904ae3a2c1b2f8",
+  "right_row": {
+    "source": "Original Qt tray-overflow private pre-swap bar window",
+    "window_device": [
+      6144,
+      116
+    ],
+    "crop_device": [
+      6116,
+      0,
+      5,
+      84
+    ],
+    "batch_origin_logical": [
+      1603.65625,
+      10
+    ],
+    "pill_local_rect": [
+      244.3125,
+      0,
+      1214.53125,
+      38
+    ],
+    "pixel_format": "RGBA8 premultiplied top-down"
+  }
+}

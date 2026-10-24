@@ -1,0 +1,3 @@
+module Quickshell.Services.SystemTray
+singleton SystemTray 1.0 SystemTray.qml
+internal MenuEntry MenuEntry.qml

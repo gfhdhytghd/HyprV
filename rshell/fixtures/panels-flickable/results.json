@@ -1,0 +1,37 @@
+{
+  "panel_traces": 78,
+  "frame_samples": 17082,
+  "max_error_px": {
+    "wifi": 9.193791e-06,
+    "bluetooth": 9.193791e-06,
+    "calendar": 3.8809001e-05
+  },
+  "asserted_tolerance_px": 0.0001,
+  "repeat_capture": "78 complete CSV files byte-identical",
+  "library_tests_passed": 17,
+  "bar_island_consumer_tests_passed": 29,
+  "prior_shared_traces_passed": 48,
+  "prior_shared_frame_samples": 10952,
+  "default_feature_check": "passed",
+  "clippy": "passed with only pre-existing lint classes allowed; unfiltered -D warnings not clean",
+  "preexisting_lint_allowlist": [
+    "precedence",
+    "type_complexity",
+    "unnecessary_cast",
+    "if_same_then_else",
+    "unnecessary_unwrap",
+    "needless_range_loop",
+    "too_many_arguments",
+    "needless_bool",
+    "manual_is_multiple_of"
+  ],
+  "logs": [
+    "tests.log",
+    "panel-tests.log",
+    "consumers.log",
+    "clippy.log",
+    "default-check.log"
+  ],
+  "native_host_touchpad_forwarding": "handoff; legacy Pointer::Wheel lacks phase/source; native entry points tested",
+  "live_device_and_visual_validation": "not run"
+}

@@ -1,0 +1,5 @@
+api=3 dpr=2.00 highdpiActive=0 size=556x124
+TEXT  | family=JetBrainsMono Nerd Font px=21 w=700 | implicit=19.594x28.000 fm.asc=21.406 desc=6.297 height=27.703 leading=0.000 hadv=12.594
+   run font=JetBrainsMono Nerd Font style=Bold px=21.00 hint=0 glyphs=1 pos=[0.000 ] y=21.406
+TEXT  | family=JetBrainsMono Nerd Font px=21 w=700 | implicit=19.594x28.000 fm.asc=21.406 desc=6.297 height=27.703 leading=0.000 hadv=12.594
+   run font=JetBrainsMono Nerd Font style=Bold px=21.00 hint=0 glyphs=1 pos=[0.000 ] y=21.406

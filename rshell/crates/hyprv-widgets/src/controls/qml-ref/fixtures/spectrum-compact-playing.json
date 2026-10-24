@@ -1,0 +1,51 @@
+{
+ "component": "spectrum",
+ "kind": "file",
+ "file": "AudioSpectrum.qml",
+ "canvas": {
+  "width": 32,
+  "height": 32
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "width": "22",
+  "height": "22",
+  "barCount": "6",
+  "minimumBarRatio": "0.18",
+  "amplitudeGain": "2.05",
+  "heightRangeScale": "0.65",
+  "barColor": "root.launchColor",
+  "peakColor": "root.primaryText",
+  "quietColor": "root.withAlpha(root.primaryText, root.darkMode ? 0.68 : 0.62)"
+ },
+ "props": {
+  "values": [
+   12,
+   38,
+   74,
+   92,
+   66,
+   41,
+   58,
+   80,
+   95,
+   61,
+   33,
+   47,
+   70,
+   52,
+   28,
+   15
+  ],
+  "active": true
+ },
+ "settle_ms": 0,
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

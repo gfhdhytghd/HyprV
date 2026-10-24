@@ -1,0 +1,39 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.4 quiet idle wave, 66 ms timer steps",
+  "canvas": {
+    "width": 640,
+    "height": 58
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [],
+    "now": "09:41",
+    "mediaAvailable": true,
+    "mediaPlaying": false,
+    "mediaTitle": "Midnight City",
+    "mediaArtist": "M83",
+    "mediaPlayerName": "spotify",
+    "mediaArtUrl": "@asset:cover-warm.png",
+    "mediaLengthSeconds": 225,
+    "mediaPositionSeconds": 83,
+    "spectrumValues": []
+  },
+  "steps": [
+    {
+      "frames": {
+        "name": "wave",
+        "at": [
+          0,
+          66,
+          132
+        ]
+      }
+    }
+  ]
+}

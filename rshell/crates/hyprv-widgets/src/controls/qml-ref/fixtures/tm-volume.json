@@ -1,0 +1,28 @@
+{
+ "component": "textmodule",
+ "kind": "inline",
+ "inline": {
+  "file": "shell.qml",
+  "name": "TextModule"
+ },
+ "canvas": {
+  "width": 110,
+  "height": 48
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "label": "\"\\u{f028}\"",
+  "textColor": "root.launchColor",
+  "paddingLeft": "8",
+  "paddingRight": "12",
+  "interactive": "true"
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

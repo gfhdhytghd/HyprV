@@ -1,0 +1,19 @@
+--- a/parity/fixtures/island/music-expanded-playing.json
++++ b/parity/fixtures/island/music-expanded-playing.json
+@@ -53,6 +53,16 @@
+       "advance": 600
+     },
+     {
++      "hover": {
++        "item": "island",
++        "x": 26,
++        "y": 43
++      }
++    },
++    {
++      "advance": 300
++    },
++    {
+       "capture": ""
+     }
+   ]

@@ -1,0 +1,712 @@
+{
+ "component": "fullscreen",
+ "scene": "desktop.qml",
+ "spec": "docs/spec/ui-panels.md §5",
+ "note": "stats popup after 120 s of samples — full output; was: §5.15 SystemStats with 120 samples (CPU ~45 %, RAM ~70 %, bursty network)",
+ "now": "2026-10-23T09:41:00",
+ "crop": [
+  0,
+  0,
+  3072,
+  1728
+ ],
+ "settle_ms": 121000,
+ "services": {
+  "screens": [
+   {
+    "name": "DP-4",
+    "width": 3072,
+    "height": 1728,
+    "x": 0,
+    "y": 0,
+    "scale": 2
+   }
+  ],
+  "hyprland": {
+   "workspaces": [
+    {
+     "id": 1,
+     "name": "1"
+    },
+    {
+     "id": 2,
+     "name": "2"
+    },
+    {
+     "id": 3,
+     "name": "3"
+    },
+    {
+     "id": 4,
+     "name": "4"
+    },
+    {
+     "id": 5,
+     "name": "5"
+    }
+   ],
+   "focusedWorkspace": 1,
+   "activeToplevel": {
+    "title": "Firefox — Quickshell spec"
+   },
+   "fullscreen": false
+  },
+  "audio": {
+   "available": true,
+   "volume": 0.35,
+   "muted": false
+  },
+  "mpris": {
+   "players": []
+  },
+  "tray": [
+   {
+    "id": "chrome_status_icon_1",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram",
+    "title": "Telegram",
+    "icon": "telegram"
+   }
+  ],
+  "bluetooth": {
+   "enabled": true,
+   "devices": []
+  },
+  "powerProfile": "balanced"
+ },
+ "processes": [
+  {
+   "match": "desktop-state.py",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"type\": \"wifi\", \"data\": {\"present\": false, \"hardwareEnabled\": true, \"enabled\": true, \"connected\": false, \"iface\": \"\", \"ssid\": \"\", \"security\": \"\", \"signal\": 0, \"networks\": []}}"
+    },
+    {
+     "at": 0,
+     "data": "{\"type\": \"agent\", \"data\": {\"active\": false, \"count\": 0, \"sessions\": []}}"
+    },
+    {
+     "at": 0,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100000 0 0 900000 0 0 0 0 0 0\\ncpu0 12500 0 0 112500 0 0 0 0 0 0\\ncpu1 12500 0 0 112500 0 0 0 0 0 0\\ncpu2 12500 0 0 112500 0 0 0 0 0 0\\ncpu3 12500 0 0 112500 0 0 0 0 0 0\\ncpu4 12500 0 0 112500 0 0 0 0 0 0\\ncpu5 12500 0 0 112500 0 0 0 0 0 0\\ncpu6 12500 0 0 112500 0 0 0 0 0 0\\ncpu7 12500 0 0 112500 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 1000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100420 0 0 900580 0 0 0 0 0 0\\ncpu0 12710 0 0 113290 0 0 0 0 0 0\\ncpu1 12770 0 0 113230 0 0 0 0 0 0\\ncpu2 12830 0 0 113170 0 0 0 0 0 0\\ncpu3 12890 0 0 113110 0 0 0 0 0 0\\ncpu4 12950 0 0 113050 0 0 0 0 0 0\\ncpu5 13010 0 0 112990 0 0 0 0 0 0\\ncpu6 13070 0 0 112930 0 0 0 0 0 0\\ncpu7 13130 0 0 112870 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 5001536 100 0 0 0 0 0 0 1000512 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 2000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100960 0 0 901040 0 0 0 0 0 0\\ncpu0 13040 0 0 113960 0 0 0 0 0 0\\ncpu1 13160 0 0 113840 0 0 0 0 0 0\\ncpu2 13280 0 0 113720 0 0 0 0 0 0\\ncpu3 13400 0 0 113600 0 0 0 0 0 0\\ncpu4 13520 0 0 113480 0 0 0 0 0 0\\ncpu5 13640 0 0 113360 0 0 0 0 0 0\\ncpu6 13760 0 0 113240 0 0 0 0 0 0\\ncpu7 13880 0 0 113120 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 5385536 100 0 0 0 0 0 0 1128512 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 3000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  101290 0 0 901710 0 0 0 0 0 0\\ncpu0 13160 0 0 114840 0 0 0 0 0 0\\ncpu1 13340 0 0 114660 0 0 0 0 0 0\\ncpu2 13520 0 0 114480 0 0 0 0 0 0\\ncpu3 13700 0 0 114300 0 0 0 0 0 0\\ncpu4 13880 0 0 114120 0 0 0 0 0 0\\ncpu5 14060 0 0 113940 0 0 0 0 0 0\\ncpu6 14240 0 0 113760 0 0 0 0 0 0\\ncpu7 14420 0 0 113580 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 5433536 100 0 0 0 0 0 0 1144512 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 4000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  101740 0 0 902260 0 0 0 0 0 0\\ncpu0 13400 0 0 115600 0 0 0 0 0 0\\ncpu1 13640 0 0 115360 0 0 0 0 0 0\\ncpu2 13880 0 0 115120 0 0 0 0 0 0\\ncpu3 14120 0 0 114880 0 0 0 0 0 0\\ncpu4 14360 0 0 114640 0 0 0 0 0 0\\ncpu5 14600 0 0 114400 0 0 0 0 0 0\\ncpu6 14840 0 0 114160 0 0 0 0 0 0\\ncpu7 15080 0 0 113920 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 7683536 100 0 0 0 0 0 0 1894512 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 5000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  102310 0 0 902690 0 0 0 0 0 0\\ncpu0 13760 0 0 116240 0 0 0 0 0 0\\ncpu1 14060 0 0 115940 0 0 0 0 0 0\\ncpu2 14360 0 0 115640 0 0 0 0 0 0\\ncpu3 14660 0 0 115340 0 0 0 0 0 0\\ncpu4 14960 0 0 115040 0 0 0 0 0 0\\ncpu5 15260 0 0 114740 0 0 0 0 0 0\\ncpu6 15560 0 0 114440 0 0 0 0 0 0\\ncpu7 15860 0 0 114140 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 7684304 100 0 0 0 0 0 0 1894768 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 6000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  102670 0 0 903330 0 0 0 0 0 0\\ncpu0 13910 0 0 117090 0 0 0 0 0 0\\ncpu1 14270 0 0 116730 0 0 0 0 0 0\\ncpu2 14630 0 0 116370 0 0 0 0 0 0\\ncpu3 14990 0 0 116010 0 0 0 0 0 0\\ncpu4 15350 0 0 115650 0 0 0 0 0 0\\ncpu5 15710 0 0 115290 0 0 0 0 0 0\\ncpu6 16070 0 0 114930 0 0 0 0 0 0\\ncpu7 16430 0 0 114570 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 7684304 100 0 0 0 0 0 0 1894768 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 7000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  103150 0 0 903850 0 0 0 0 0 0\\ncpu0 14180 0 0 117820 0 0 0 0 0 0\\ncpu1 14600 0 0 117400 0 0 0 0 0 0\\ncpu2 15020 0 0 116980 0 0 0 0 0 0\\ncpu3 15440 0 0 116560 0 0 0 0 0 0\\ncpu4 15860 0 0 116140 0 0 0 0 0 0\\ncpu5 16280 0 0 115720 0 0 0 0 0 0\\ncpu6 16700 0 0 115300 0 0 0 0 0 0\\ncpu7 17120 0 0 114880 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 7685840 100 0 0 0 0 0 0 1895280 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 8000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  103750 0 0 904250 0 0 0 0 0 0\\ncpu0 14570 0 0 118430 0 0 0 0 0 0\\ncpu1 15050 0 0 117950 0 0 0 0 0 0\\ncpu2 15530 0 0 117470 0 0 0 0 0 0\\ncpu3 16010 0 0 116990 0 0 0 0 0 0\\ncpu4 16490 0 0 116510 0 0 0 0 0 0\\ncpu5 16970 0 0 116030 0 0 0 0 0 0\\ncpu6 17450 0 0 115550 0 0 0 0 0 0\\ncpu7 17930 0 0 115070 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 8069840 100 0 0 0 0 0 0 2023280 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 9000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  104140 0 0 904860 0 0 0 0 0 0\\ncpu0 14750 0 0 119250 0 0 0 0 0 0\\ncpu1 15290 0 0 118710 0 0 0 0 0 0\\ncpu2 15830 0 0 118170 0 0 0 0 0 0\\ncpu3 16370 0 0 117630 0 0 0 0 0 0\\ncpu4 16910 0 0 117090 0 0 0 0 0 0\\ncpu5 17450 0 0 116550 0 0 0 0 0 0\\ncpu6 17990 0 0 116010 0 0 0 0 0 0\\ncpu7 18530 0 0 115470 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 8117840 100 0 0 0 0 0 0 2039280 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 10000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  104650 0 0 905350 0 0 0 0 0 0\\ncpu0 15050 0 0 119950 0 0 0 0 0 0\\ncpu1 15650 0 0 119350 0 0 0 0 0 0\\ncpu2 16250 0 0 118750 0 0 0 0 0 0\\ncpu3 16850 0 0 118150 0 0 0 0 0 0\\ncpu4 17450 0 0 117550 0 0 0 0 0 0\\ncpu5 18050 0 0 116950 0 0 0 0 0 0\\ncpu6 18650 0 0 116350 0 0 0 0 0 0\\ncpu7 19250 0 0 115750 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 10367840 100 0 0 0 0 0 0 2789280 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 11000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  104950 0 0 906050 0 0 0 0 0 0\\ncpu0 15140 0 0 120860 0 0 0 0 0 0\\ncpu1 15800 0 0 120200 0 0 0 0 0 0\\ncpu2 16460 0 0 119540 0 0 0 0 0 0\\ncpu3 17120 0 0 118880 0 0 0 0 0 0\\ncpu4 17780 0 0 118220 0 0 0 0 0 0\\ncpu5 18440 0 0 117560 0 0 0 0 0 0\\ncpu6 19100 0 0 116900 0 0 0 0 0 0\\ncpu7 19760 0 0 116240 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 10368608 100 0 0 0 0 0 0 2789536 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 12000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  105370 0 0 906630 0 0 0 0 0 0\\ncpu0 15350 0 0 121650 0 0 0 0 0 0\\ncpu1 16070 0 0 120930 0 0 0 0 0 0\\ncpu2 16790 0 0 120210 0 0 0 0 0 0\\ncpu3 17510 0 0 119490 0 0 0 0 0 0\\ncpu4 18230 0 0 118770 0 0 0 0 0 0\\ncpu5 18950 0 0 118050 0 0 0 0 0 0\\ncpu6 19670 0 0 117330 0 0 0 0 0 0\\ncpu7 20390 0 0 116610 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 10368608 100 0 0 0 0 0 0 2789536 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 13000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  105910 0 0 907090 0 0 0 0 0 0\\ncpu0 15680 0 0 122320 0 0 0 0 0 0\\ncpu1 16460 0 0 121540 0 0 0 0 0 0\\ncpu2 17240 0 0 120760 0 0 0 0 0 0\\ncpu3 18020 0 0 119980 0 0 0 0 0 0\\ncpu4 18800 0 0 119200 0 0 0 0 0 0\\ncpu5 19580 0 0 118420 0 0 0 0 0 0\\ncpu6 20360 0 0 117640 0 0 0 0 0 0\\ncpu7 21140 0 0 116860 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 10370144 100 0 0 0 0 0 0 2790048 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 14000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  106240 0 0 907760 0 0 0 0 0 0\\ncpu0 15800 0 0 123200 0 0 0 0 0 0\\ncpu1 16640 0 0 122360 0 0 0 0 0 0\\ncpu2 17480 0 0 121520 0 0 0 0 0 0\\ncpu3 18320 0 0 120680 0 0 0 0 0 0\\ncpu4 19160 0 0 119840 0 0 0 0 0 0\\ncpu5 20000 0 0 119000 0 0 0 0 0 0\\ncpu6 20840 0 0 118160 0 0 0 0 0 0\\ncpu7 21680 0 0 117320 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 10754144 100 0 0 0 0 0 0 2918048 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 15000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  106690 0 0 908310 0 0 0 0 0 0\\ncpu0 16040 0 0 123960 0 0 0 0 0 0\\ncpu1 16940 0 0 123060 0 0 0 0 0 0\\ncpu2 17840 0 0 122160 0 0 0 0 0 0\\ncpu3 18740 0 0 121260 0 0 0 0 0 0\\ncpu4 19640 0 0 120360 0 0 0 0 0 0\\ncpu5 20540 0 0 119460 0 0 0 0 0 0\\ncpu6 21440 0 0 118560 0 0 0 0 0 0\\ncpu7 22340 0 0 117660 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 10802144 100 0 0 0 0 0 0 2934048 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 16000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  107260 0 0 908740 0 0 0 0 0 0\\ncpu0 16400 0 0 124600 0 0 0 0 0 0\\ncpu1 17360 0 0 123640 0 0 0 0 0 0\\ncpu2 18320 0 0 122680 0 0 0 0 0 0\\ncpu3 19280 0 0 121720 0 0 0 0 0 0\\ncpu4 20240 0 0 120760 0 0 0 0 0 0\\ncpu5 21200 0 0 119800 0 0 0 0 0 0\\ncpu6 22160 0 0 118840 0 0 0 0 0 0\\ncpu7 23120 0 0 117880 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 13052144 100 0 0 0 0 0 0 3684048 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 17000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  107620 0 0 909380 0 0 0 0 0 0\\ncpu0 16550 0 0 125450 0 0 0 0 0 0\\ncpu1 17570 0 0 124430 0 0 0 0 0 0\\ncpu2 18590 0 0 123410 0 0 0 0 0 0\\ncpu3 19610 0 0 122390 0 0 0 0 0 0\\ncpu4 20630 0 0 121370 0 0 0 0 0 0\\ncpu5 21650 0 0 120350 0 0 0 0 0 0\\ncpu6 22670 0 0 119330 0 0 0 0 0 0\\ncpu7 23690 0 0 118310 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 13052912 100 0 0 0 0 0 0 3684304 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 18000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  108100 0 0 909900 0 0 0 0 0 0\\ncpu0 16820 0 0 126180 0 0 0 0 0 0\\ncpu1 17900 0 0 125100 0 0 0 0 0 0\\ncpu2 18980 0 0 124020 0 0 0 0 0 0\\ncpu3 20060 0 0 122940 0 0 0 0 0 0\\ncpu4 21140 0 0 121860 0 0 0 0 0 0\\ncpu5 22220 0 0 120780 0 0 0 0 0 0\\ncpu6 23300 0 0 119700 0 0 0 0 0 0\\ncpu7 24380 0 0 118620 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 13052912 100 0 0 0 0 0 0 3684304 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 19000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  108700 0 0 910300 0 0 0 0 0 0\\ncpu0 17210 0 0 126790 0 0 0 0 0 0\\ncpu1 18350 0 0 125650 0 0 0 0 0 0\\ncpu2 19490 0 0 124510 0 0 0 0 0 0\\ncpu3 20630 0 0 123370 0 0 0 0 0 0\\ncpu4 21770 0 0 122230 0 0 0 0 0 0\\ncpu5 22910 0 0 121090 0 0 0 0 0 0\\ncpu6 24050 0 0 119950 0 0 0 0 0 0\\ncpu7 25190 0 0 118810 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 13054448 100 0 0 0 0 0 0 3684816 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 20000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  109090 0 0 910910 0 0 0 0 0 0\\ncpu0 17390 0 0 127610 0 0 0 0 0 0\\ncpu1 18590 0 0 126410 0 0 0 0 0 0\\ncpu2 19790 0 0 125210 0 0 0 0 0 0\\ncpu3 20990 0 0 124010 0 0 0 0 0 0\\ncpu4 22190 0 0 122810 0 0 0 0 0 0\\ncpu5 23390 0 0 121610 0 0 0 0 0 0\\ncpu6 24590 0 0 120410 0 0 0 0 0 0\\ncpu7 25790 0 0 119210 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 13438448 100 0 0 0 0 0 0 3812816 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 21000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  109600 0 0 911400 0 0 0 0 0 0\\ncpu0 17690 0 0 128310 0 0 0 0 0 0\\ncpu1 18950 0 0 127050 0 0 0 0 0 0\\ncpu2 20210 0 0 125790 0 0 0 0 0 0\\ncpu3 21470 0 0 124530 0 0 0 0 0 0\\ncpu4 22730 0 0 123270 0 0 0 0 0 0\\ncpu5 23990 0 0 122010 0 0 0 0 0 0\\ncpu6 25250 0 0 120750 0 0 0 0 0 0\\ncpu7 26510 0 0 119490 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 13486448 100 0 0 0 0 0 0 3828816 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 22000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  109900 0 0 912100 0 0 0 0 0 0\\ncpu0 17780 0 0 129220 0 0 0 0 0 0\\ncpu1 19100 0 0 127900 0 0 0 0 0 0\\ncpu2 20420 0 0 126580 0 0 0 0 0 0\\ncpu3 21740 0 0 125260 0 0 0 0 0 0\\ncpu4 23060 0 0 123940 0 0 0 0 0 0\\ncpu5 24380 0 0 122620 0 0 0 0 0 0\\ncpu6 25700 0 0 121300 0 0 0 0 0 0\\ncpu7 27020 0 0 119980 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 15736448 100 0 0 0 0 0 0 4578816 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 23000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  110320 0 0 912680 0 0 0 0 0 0\\ncpu0 17990 0 0 130010 0 0 0 0 0 0\\ncpu1 19370 0 0 128630 0 0 0 0 0 0\\ncpu2 20750 0 0 127250 0 0 0 0 0 0\\ncpu3 22130 0 0 125870 0 0 0 0 0 0\\ncpu4 23510 0 0 124490 0 0 0 0 0 0\\ncpu5 24890 0 0 123110 0 0 0 0 0 0\\ncpu6 26270 0 0 121730 0 0 0 0 0 0\\ncpu7 27650 0 0 120350 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 15737216 100 0 0 0 0 0 0 4579072 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 24000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  110860 0 0 913140 0 0 0 0 0 0\\ncpu0 18320 0 0 130680 0 0 0 0 0 0\\ncpu1 19760 0 0 129240 0 0 0 0 0 0\\ncpu2 21200 0 0 127800 0 0 0 0 0 0\\ncpu3 22640 0 0 126360 0 0 0 0 0 0\\ncpu4 24080 0 0 124920 0 0 0 0 0 0\\ncpu5 25520 0 0 123480 0 0 0 0 0 0\\ncpu6 26960 0 0 122040 0 0 0 0 0 0\\ncpu7 28400 0 0 120600 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 15737216 100 0 0 0 0 0 0 4579072 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 25000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  111190 0 0 913810 0 0 0 0 0 0\\ncpu0 18440 0 0 131560 0 0 0 0 0 0\\ncpu1 19940 0 0 130060 0 0 0 0 0 0\\ncpu2 21440 0 0 128560 0 0 0 0 0 0\\ncpu3 22940 0 0 127060 0 0 0 0 0 0\\ncpu4 24440 0 0 125560 0 0 0 0 0 0\\ncpu5 25940 0 0 124060 0 0 0 0 0 0\\ncpu6 27440 0 0 122560 0 0 0 0 0 0\\ncpu7 28940 0 0 121060 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 15738752 100 0 0 0 0 0 0 4579584 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 26000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  111640 0 0 914360 0 0 0 0 0 0\\ncpu0 18680 0 0 132320 0 0 0 0 0 0\\ncpu1 20240 0 0 130760 0 0 0 0 0 0\\ncpu2 21800 0 0 129200 0 0 0 0 0 0\\ncpu3 23360 0 0 127640 0 0 0 0 0 0\\ncpu4 24920 0 0 126080 0 0 0 0 0 0\\ncpu5 26480 0 0 124520 0 0 0 0 0 0\\ncpu6 28040 0 0 122960 0 0 0 0 0 0\\ncpu7 29600 0 0 121400 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 16122752 100 0 0 0 0 0 0 4707584 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 27000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  112210 0 0 914790 0 0 0 0 0 0\\ncpu0 19040 0 0 132960 0 0 0 0 0 0\\ncpu1 20660 0 0 131340 0 0 0 0 0 0\\ncpu2 22280 0 0 129720 0 0 0 0 0 0\\ncpu3 23900 0 0 128100 0 0 0 0 0 0\\ncpu4 25520 0 0 126480 0 0 0 0 0 0\\ncpu5 27140 0 0 124860 0 0 0 0 0 0\\ncpu6 28760 0 0 123240 0 0 0 0 0 0\\ncpu7 30380 0 0 121620 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 16170752 100 0 0 0 0 0 0 4723584 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 28000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  112570 0 0 915430 0 0 0 0 0 0\\ncpu0 19190 0 0 133810 0 0 0 0 0 0\\ncpu1 20870 0 0 132130 0 0 0 0 0 0\\ncpu2 22550 0 0 130450 0 0 0 0 0 0\\ncpu3 24230 0 0 128770 0 0 0 0 0 0\\ncpu4 25910 0 0 127090 0 0 0 0 0 0\\ncpu5 27590 0 0 125410 0 0 0 0 0 0\\ncpu6 29270 0 0 123730 0 0 0 0 0 0\\ncpu7 30950 0 0 122050 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 18420752 100 0 0 0 0 0 0 5473584 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 29000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  113050 0 0 915950 0 0 0 0 0 0\\ncpu0 19460 0 0 134540 0 0 0 0 0 0\\ncpu1 21200 0 0 132800 0 0 0 0 0 0\\ncpu2 22940 0 0 131060 0 0 0 0 0 0\\ncpu3 24680 0 0 129320 0 0 0 0 0 0\\ncpu4 26420 0 0 127580 0 0 0 0 0 0\\ncpu5 28160 0 0 125840 0 0 0 0 0 0\\ncpu6 29900 0 0 124100 0 0 0 0 0 0\\ncpu7 31640 0 0 122360 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 18421520 100 0 0 0 0 0 0 5473840 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 30000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  113650 0 0 916350 0 0 0 0 0 0\\ncpu0 19850 0 0 135150 0 0 0 0 0 0\\ncpu1 21650 0 0 133350 0 0 0 0 0 0\\ncpu2 23450 0 0 131550 0 0 0 0 0 0\\ncpu3 25250 0 0 129750 0 0 0 0 0 0\\ncpu4 27050 0 0 127950 0 0 0 0 0 0\\ncpu5 28850 0 0 126150 0 0 0 0 0 0\\ncpu6 30650 0 0 124350 0 0 0 0 0 0\\ncpu7 32450 0 0 122550 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 18421520 100 0 0 0 0 0 0 5473840 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 31000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  114040 0 0 916960 0 0 0 0 0 0\\ncpu0 20030 0 0 135970 0 0 0 0 0 0\\ncpu1 21890 0 0 134110 0 0 0 0 0 0\\ncpu2 23750 0 0 132250 0 0 0 0 0 0\\ncpu3 25610 0 0 130390 0 0 0 0 0 0\\ncpu4 27470 0 0 128530 0 0 0 0 0 0\\ncpu5 29330 0 0 126670 0 0 0 0 0 0\\ncpu6 31190 0 0 124810 0 0 0 0 0 0\\ncpu7 33050 0 0 122950 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 18423056 100 0 0 0 0 0 0 5474352 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 32000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  114550 0 0 917450 0 0 0 0 0 0\\ncpu0 20330 0 0 136670 0 0 0 0 0 0\\ncpu1 22250 0 0 134750 0 0 0 0 0 0\\ncpu2 24170 0 0 132830 0 0 0 0 0 0\\ncpu3 26090 0 0 130910 0 0 0 0 0 0\\ncpu4 28010 0 0 128990 0 0 0 0 0 0\\ncpu5 29930 0 0 127070 0 0 0 0 0 0\\ncpu6 31850 0 0 125150 0 0 0 0 0 0\\ncpu7 33770 0 0 123230 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 18807056 100 0 0 0 0 0 0 5602352 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 33000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  114850 0 0 918150 0 0 0 0 0 0\\ncpu0 20420 0 0 137580 0 0 0 0 0 0\\ncpu1 22400 0 0 135600 0 0 0 0 0 0\\ncpu2 24380 0 0 133620 0 0 0 0 0 0\\ncpu3 26360 0 0 131640 0 0 0 0 0 0\\ncpu4 28340 0 0 129660 0 0 0 0 0 0\\ncpu5 30320 0 0 127680 0 0 0 0 0 0\\ncpu6 32300 0 0 125700 0 0 0 0 0 0\\ncpu7 34280 0 0 123720 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 18855056 100 0 0 0 0 0 0 5618352 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 34000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  115270 0 0 918730 0 0 0 0 0 0\\ncpu0 20630 0 0 138370 0 0 0 0 0 0\\ncpu1 22670 0 0 136330 0 0 0 0 0 0\\ncpu2 24710 0 0 134290 0 0 0 0 0 0\\ncpu3 26750 0 0 132250 0 0 0 0 0 0\\ncpu4 28790 0 0 130210 0 0 0 0 0 0\\ncpu5 30830 0 0 128170 0 0 0 0 0 0\\ncpu6 32870 0 0 126130 0 0 0 0 0 0\\ncpu7 34910 0 0 124090 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 21105056 100 0 0 0 0 0 0 6368352 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 35000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  115810 0 0 919190 0 0 0 0 0 0\\ncpu0 20960 0 0 139040 0 0 0 0 0 0\\ncpu1 23060 0 0 136940 0 0 0 0 0 0\\ncpu2 25160 0 0 134840 0 0 0 0 0 0\\ncpu3 27260 0 0 132740 0 0 0 0 0 0\\ncpu4 29360 0 0 130640 0 0 0 0 0 0\\ncpu5 31460 0 0 128540 0 0 0 0 0 0\\ncpu6 33560 0 0 126440 0 0 0 0 0 0\\ncpu7 35660 0 0 124340 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 21105824 100 0 0 0 0 0 0 6368608 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 36000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  116140 0 0 919860 0 0 0 0 0 0\\ncpu0 21080 0 0 139920 0 0 0 0 0 0\\ncpu1 23240 0 0 137760 0 0 0 0 0 0\\ncpu2 25400 0 0 135600 0 0 0 0 0 0\\ncpu3 27560 0 0 133440 0 0 0 0 0 0\\ncpu4 29720 0 0 131280 0 0 0 0 0 0\\ncpu5 31880 0 0 129120 0 0 0 0 0 0\\ncpu6 34040 0 0 126960 0 0 0 0 0 0\\ncpu7 36200 0 0 124800 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 21105824 100 0 0 0 0 0 0 6368608 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 37000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  116590 0 0 920410 0 0 0 0 0 0\\ncpu0 21320 0 0 140680 0 0 0 0 0 0\\ncpu1 23540 0 0 138460 0 0 0 0 0 0\\ncpu2 25760 0 0 136240 0 0 0 0 0 0\\ncpu3 27980 0 0 134020 0 0 0 0 0 0\\ncpu4 30200 0 0 131800 0 0 0 0 0 0\\ncpu5 32420 0 0 129580 0 0 0 0 0 0\\ncpu6 34640 0 0 127360 0 0 0 0 0 0\\ncpu7 36860 0 0 125140 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 21107360 100 0 0 0 0 0 0 6369120 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 38000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  117160 0 0 920840 0 0 0 0 0 0\\ncpu0 21680 0 0 141320 0 0 0 0 0 0\\ncpu1 23960 0 0 139040 0 0 0 0 0 0\\ncpu2 26240 0 0 136760 0 0 0 0 0 0\\ncpu3 28520 0 0 134480 0 0 0 0 0 0\\ncpu4 30800 0 0 132200 0 0 0 0 0 0\\ncpu5 33080 0 0 129920 0 0 0 0 0 0\\ncpu6 35360 0 0 127640 0 0 0 0 0 0\\ncpu7 37640 0 0 125360 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 21491360 100 0 0 0 0 0 0 6497120 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 39000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  117520 0 0 921480 0 0 0 0 0 0\\ncpu0 21830 0 0 142170 0 0 0 0 0 0\\ncpu1 24170 0 0 139830 0 0 0 0 0 0\\ncpu2 26510 0 0 137490 0 0 0 0 0 0\\ncpu3 28850 0 0 135150 0 0 0 0 0 0\\ncpu4 31190 0 0 132810 0 0 0 0 0 0\\ncpu5 33530 0 0 130470 0 0 0 0 0 0\\ncpu6 35870 0 0 128130 0 0 0 0 0 0\\ncpu7 38210 0 0 125790 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 21539360 100 0 0 0 0 0 0 6513120 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 40000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  118000 0 0 922000 0 0 0 0 0 0\\ncpu0 22100 0 0 142900 0 0 0 0 0 0\\ncpu1 24500 0 0 140500 0 0 0 0 0 0\\ncpu2 26900 0 0 138100 0 0 0 0 0 0\\ncpu3 29300 0 0 135700 0 0 0 0 0 0\\ncpu4 31700 0 0 133300 0 0 0 0 0 0\\ncpu5 34100 0 0 130900 0 0 0 0 0 0\\ncpu6 36500 0 0 128500 0 0 0 0 0 0\\ncpu7 38900 0 0 126100 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 23789360 100 0 0 0 0 0 0 7263120 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 41000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  118600 0 0 922400 0 0 0 0 0 0\\ncpu0 22490 0 0 143510 0 0 0 0 0 0\\ncpu1 24950 0 0 141050 0 0 0 0 0 0\\ncpu2 27410 0 0 138590 0 0 0 0 0 0\\ncpu3 29870 0 0 136130 0 0 0 0 0 0\\ncpu4 32330 0 0 133670 0 0 0 0 0 0\\ncpu5 34790 0 0 131210 0 0 0 0 0 0\\ncpu6 37250 0 0 128750 0 0 0 0 0 0\\ncpu7 39710 0 0 126290 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 23790128 100 0 0 0 0 0 0 7263376 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 42000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  118990 0 0 923010 0 0 0 0 0 0\\ncpu0 22670 0 0 144330 0 0 0 0 0 0\\ncpu1 25190 0 0 141810 0 0 0 0 0 0\\ncpu2 27710 0 0 139290 0 0 0 0 0 0\\ncpu3 30230 0 0 136770 0 0 0 0 0 0\\ncpu4 32750 0 0 134250 0 0 0 0 0 0\\ncpu5 35270 0 0 131730 0 0 0 0 0 0\\ncpu6 37790 0 0 129210 0 0 0 0 0 0\\ncpu7 40310 0 0 126690 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 23790128 100 0 0 0 0 0 0 7263376 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 43000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  119500 0 0 923500 0 0 0 0 0 0\\ncpu0 22970 0 0 145030 0 0 0 0 0 0\\ncpu1 25550 0 0 142450 0 0 0 0 0 0\\ncpu2 28130 0 0 139870 0 0 0 0 0 0\\ncpu3 30710 0 0 137290 0 0 0 0 0 0\\ncpu4 33290 0 0 134710 0 0 0 0 0 0\\ncpu5 35870 0 0 132130 0 0 0 0 0 0\\ncpu6 38450 0 0 129550 0 0 0 0 0 0\\ncpu7 41030 0 0 126970 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 23791664 100 0 0 0 0 0 0 7263888 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 44000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  119800 0 0 924200 0 0 0 0 0 0\\ncpu0 23060 0 0 145940 0 0 0 0 0 0\\ncpu1 25700 0 0 143300 0 0 0 0 0 0\\ncpu2 28340 0 0 140660 0 0 0 0 0 0\\ncpu3 30980 0 0 138020 0 0 0 0 0 0\\ncpu4 33620 0 0 135380 0 0 0 0 0 0\\ncpu5 36260 0 0 132740 0 0 0 0 0 0\\ncpu6 38900 0 0 130100 0 0 0 0 0 0\\ncpu7 41540 0 0 127460 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 24175664 100 0 0 0 0 0 0 7391888 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 45000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  120220 0 0 924780 0 0 0 0 0 0\\ncpu0 23270 0 0 146730 0 0 0 0 0 0\\ncpu1 25970 0 0 144030 0 0 0 0 0 0\\ncpu2 28670 0 0 141330 0 0 0 0 0 0\\ncpu3 31370 0 0 138630 0 0 0 0 0 0\\ncpu4 34070 0 0 135930 0 0 0 0 0 0\\ncpu5 36770 0 0 133230 0 0 0 0 0 0\\ncpu6 39470 0 0 130530 0 0 0 0 0 0\\ncpu7 42170 0 0 127830 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 24223664 100 0 0 0 0 0 0 7407888 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 46000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  120760 0 0 925240 0 0 0 0 0 0\\ncpu0 23600 0 0 147400 0 0 0 0 0 0\\ncpu1 26360 0 0 144640 0 0 0 0 0 0\\ncpu2 29120 0 0 141880 0 0 0 0 0 0\\ncpu3 31880 0 0 139120 0 0 0 0 0 0\\ncpu4 34640 0 0 136360 0 0 0 0 0 0\\ncpu5 37400 0 0 133600 0 0 0 0 0 0\\ncpu6 40160 0 0 130840 0 0 0 0 0 0\\ncpu7 42920 0 0 128080 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 26473664 100 0 0 0 0 0 0 8157888 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 47000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  121090 0 0 925910 0 0 0 0 0 0\\ncpu0 23720 0 0 148280 0 0 0 0 0 0\\ncpu1 26540 0 0 145460 0 0 0 0 0 0\\ncpu2 29360 0 0 142640 0 0 0 0 0 0\\ncpu3 32180 0 0 139820 0 0 0 0 0 0\\ncpu4 35000 0 0 137000 0 0 0 0 0 0\\ncpu5 37820 0 0 134180 0 0 0 0 0 0\\ncpu6 40640 0 0 131360 0 0 0 0 0 0\\ncpu7 43460 0 0 128540 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 26474432 100 0 0 0 0 0 0 8158144 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 48000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  121540 0 0 926460 0 0 0 0 0 0\\ncpu0 23960 0 0 149040 0 0 0 0 0 0\\ncpu1 26840 0 0 146160 0 0 0 0 0 0\\ncpu2 29720 0 0 143280 0 0 0 0 0 0\\ncpu3 32600 0 0 140400 0 0 0 0 0 0\\ncpu4 35480 0 0 137520 0 0 0 0 0 0\\ncpu5 38360 0 0 134640 0 0 0 0 0 0\\ncpu6 41240 0 0 131760 0 0 0 0 0 0\\ncpu7 44120 0 0 128880 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 26474432 100 0 0 0 0 0 0 8158144 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 49000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  122110 0 0 926890 0 0 0 0 0 0\\ncpu0 24320 0 0 149680 0 0 0 0 0 0\\ncpu1 27260 0 0 146740 0 0 0 0 0 0\\ncpu2 30200 0 0 143800 0 0 0 0 0 0\\ncpu3 33140 0 0 140860 0 0 0 0 0 0\\ncpu4 36080 0 0 137920 0 0 0 0 0 0\\ncpu5 39020 0 0 134980 0 0 0 0 0 0\\ncpu6 41960 0 0 132040 0 0 0 0 0 0\\ncpu7 44900 0 0 129100 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 26475968 100 0 0 0 0 0 0 8158656 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 50000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  122470 0 0 927530 0 0 0 0 0 0\\ncpu0 24470 0 0 150530 0 0 0 0 0 0\\ncpu1 27470 0 0 147530 0 0 0 0 0 0\\ncpu2 30470 0 0 144530 0 0 0 0 0 0\\ncpu3 33470 0 0 141530 0 0 0 0 0 0\\ncpu4 36470 0 0 138530 0 0 0 0 0 0\\ncpu5 39470 0 0 135530 0 0 0 0 0 0\\ncpu6 42470 0 0 132530 0 0 0 0 0 0\\ncpu7 45470 0 0 129530 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 26859968 100 0 0 0 0 0 0 8286656 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 51000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  122950 0 0 928050 0 0 0 0 0 0\\ncpu0 24740 0 0 151260 0 0 0 0 0 0\\ncpu1 27800 0 0 148200 0 0 0 0 0 0\\ncpu2 30860 0 0 145140 0 0 0 0 0 0\\ncpu3 33920 0 0 142080 0 0 0 0 0 0\\ncpu4 36980 0 0 139020 0 0 0 0 0 0\\ncpu5 40040 0 0 135960 0 0 0 0 0 0\\ncpu6 43100 0 0 132900 0 0 0 0 0 0\\ncpu7 46160 0 0 129840 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 26907968 100 0 0 0 0 0 0 8302656 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 52000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  123550 0 0 928450 0 0 0 0 0 0\\ncpu0 25130 0 0 151870 0 0 0 0 0 0\\ncpu1 28250 0 0 148750 0 0 0 0 0 0\\ncpu2 31370 0 0 145630 0 0 0 0 0 0\\ncpu3 34490 0 0 142510 0 0 0 0 0 0\\ncpu4 37610 0 0 139390 0 0 0 0 0 0\\ncpu5 40730 0 0 136270 0 0 0 0 0 0\\ncpu6 43850 0 0 133150 0 0 0 0 0 0\\ncpu7 46970 0 0 130030 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 29157968 100 0 0 0 0 0 0 9052656 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 53000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  123940 0 0 929060 0 0 0 0 0 0\\ncpu0 25310 0 0 152690 0 0 0 0 0 0\\ncpu1 28490 0 0 149510 0 0 0 0 0 0\\ncpu2 31670 0 0 146330 0 0 0 0 0 0\\ncpu3 34850 0 0 143150 0 0 0 0 0 0\\ncpu4 38030 0 0 139970 0 0 0 0 0 0\\ncpu5 41210 0 0 136790 0 0 0 0 0 0\\ncpu6 44390 0 0 133610 0 0 0 0 0 0\\ncpu7 47570 0 0 130430 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 29158736 100 0 0 0 0 0 0 9052912 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 54000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  124450 0 0 929550 0 0 0 0 0 0\\ncpu0 25610 0 0 153390 0 0 0 0 0 0\\ncpu1 28850 0 0 150150 0 0 0 0 0 0\\ncpu2 32090 0 0 146910 0 0 0 0 0 0\\ncpu3 35330 0 0 143670 0 0 0 0 0 0\\ncpu4 38570 0 0 140430 0 0 0 0 0 0\\ncpu5 41810 0 0 137190 0 0 0 0 0 0\\ncpu6 45050 0 0 133950 0 0 0 0 0 0\\ncpu7 48290 0 0 130710 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 29158736 100 0 0 0 0 0 0 9052912 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 55000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  124750 0 0 930250 0 0 0 0 0 0\\ncpu0 25700 0 0 154300 0 0 0 0 0 0\\ncpu1 29000 0 0 151000 0 0 0 0 0 0\\ncpu2 32300 0 0 147700 0 0 0 0 0 0\\ncpu3 35600 0 0 144400 0 0 0 0 0 0\\ncpu4 38900 0 0 141100 0 0 0 0 0 0\\ncpu5 42200 0 0 137800 0 0 0 0 0 0\\ncpu6 45500 0 0 134500 0 0 0 0 0 0\\ncpu7 48800 0 0 131200 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 29160272 100 0 0 0 0 0 0 9053424 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 56000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  125170 0 0 930830 0 0 0 0 0 0\\ncpu0 25910 0 0 155090 0 0 0 0 0 0\\ncpu1 29270 0 0 151730 0 0 0 0 0 0\\ncpu2 32630 0 0 148370 0 0 0 0 0 0\\ncpu3 35990 0 0 145010 0 0 0 0 0 0\\ncpu4 39350 0 0 141650 0 0 0 0 0 0\\ncpu5 42710 0 0 138290 0 0 0 0 0 0\\ncpu6 46070 0 0 134930 0 0 0 0 0 0\\ncpu7 49430 0 0 131570 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 29544272 100 0 0 0 0 0 0 9181424 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 57000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  125710 0 0 931290 0 0 0 0 0 0\\ncpu0 26240 0 0 155760 0 0 0 0 0 0\\ncpu1 29660 0 0 152340 0 0 0 0 0 0\\ncpu2 33080 0 0 148920 0 0 0 0 0 0\\ncpu3 36500 0 0 145500 0 0 0 0 0 0\\ncpu4 39920 0 0 142080 0 0 0 0 0 0\\ncpu5 43340 0 0 138660 0 0 0 0 0 0\\ncpu6 46760 0 0 135240 0 0 0 0 0 0\\ncpu7 50180 0 0 131820 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 29592272 100 0 0 0 0 0 0 9197424 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 58000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  126040 0 0 931960 0 0 0 0 0 0\\ncpu0 26360 0 0 156640 0 0 0 0 0 0\\ncpu1 29840 0 0 153160 0 0 0 0 0 0\\ncpu2 33320 0 0 149680 0 0 0 0 0 0\\ncpu3 36800 0 0 146200 0 0 0 0 0 0\\ncpu4 40280 0 0 142720 0 0 0 0 0 0\\ncpu5 43760 0 0 139240 0 0 0 0 0 0\\ncpu6 47240 0 0 135760 0 0 0 0 0 0\\ncpu7 50720 0 0 132280 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 31842272 100 0 0 0 0 0 0 9947424 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 59000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  126490 0 0 932510 0 0 0 0 0 0\\ncpu0 26600 0 0 157400 0 0 0 0 0 0\\ncpu1 30140 0 0 153860 0 0 0 0 0 0\\ncpu2 33680 0 0 150320 0 0 0 0 0 0\\ncpu3 37220 0 0 146780 0 0 0 0 0 0\\ncpu4 40760 0 0 143240 0 0 0 0 0 0\\ncpu5 44300 0 0 139700 0 0 0 0 0 0\\ncpu6 47840 0 0 136160 0 0 0 0 0 0\\ncpu7 51380 0 0 132620 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 31843040 100 0 0 0 0 0 0 9947680 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 60000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  127060 0 0 932940 0 0 0 0 0 0\\ncpu0 26960 0 0 158040 0 0 0 0 0 0\\ncpu1 30560 0 0 154440 0 0 0 0 0 0\\ncpu2 34160 0 0 150840 0 0 0 0 0 0\\ncpu3 37760 0 0 147240 0 0 0 0 0 0\\ncpu4 41360 0 0 143640 0 0 0 0 0 0\\ncpu5 44960 0 0 140040 0 0 0 0 0 0\\ncpu6 48560 0 0 136440 0 0 0 0 0 0\\ncpu7 52160 0 0 132840 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 31843040 100 0 0 0 0 0 0 9947680 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 61000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  127420 0 0 933580 0 0 0 0 0 0\\ncpu0 27110 0 0 158890 0 0 0 0 0 0\\ncpu1 30770 0 0 155230 0 0 0 0 0 0\\ncpu2 34430 0 0 151570 0 0 0 0 0 0\\ncpu3 38090 0 0 147910 0 0 0 0 0 0\\ncpu4 41750 0 0 144250 0 0 0 0 0 0\\ncpu5 45410 0 0 140590 0 0 0 0 0 0\\ncpu6 49070 0 0 136930 0 0 0 0 0 0\\ncpu7 52730 0 0 133270 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 31844576 100 0 0 0 0 0 0 9948192 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 62000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  127900 0 0 934100 0 0 0 0 0 0\\ncpu0 27380 0 0 159620 0 0 0 0 0 0\\ncpu1 31100 0 0 155900 0 0 0 0 0 0\\ncpu2 34820 0 0 152180 0 0 0 0 0 0\\ncpu3 38540 0 0 148460 0 0 0 0 0 0\\ncpu4 42260 0 0 144740 0 0 0 0 0 0\\ncpu5 45980 0 0 141020 0 0 0 0 0 0\\ncpu6 49700 0 0 137300 0 0 0 0 0 0\\ncpu7 53420 0 0 133580 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 32228576 100 0 0 0 0 0 0 10076192 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 63000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  128500 0 0 934500 0 0 0 0 0 0\\ncpu0 27770 0 0 160230 0 0 0 0 0 0\\ncpu1 31550 0 0 156450 0 0 0 0 0 0\\ncpu2 35330 0 0 152670 0 0 0 0 0 0\\ncpu3 39110 0 0 148890 0 0 0 0 0 0\\ncpu4 42890 0 0 145110 0 0 0 0 0 0\\ncpu5 46670 0 0 141330 0 0 0 0 0 0\\ncpu6 50450 0 0 137550 0 0 0 0 0 0\\ncpu7 54230 0 0 133770 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 32276576 100 0 0 0 0 0 0 10092192 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 64000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  128890 0 0 935110 0 0 0 0 0 0\\ncpu0 27950 0 0 161050 0 0 0 0 0 0\\ncpu1 31790 0 0 157210 0 0 0 0 0 0\\ncpu2 35630 0 0 153370 0 0 0 0 0 0\\ncpu3 39470 0 0 149530 0 0 0 0 0 0\\ncpu4 43310 0 0 145690 0 0 0 0 0 0\\ncpu5 47150 0 0 141850 0 0 0 0 0 0\\ncpu6 50990 0 0 138010 0 0 0 0 0 0\\ncpu7 54830 0 0 134170 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 34526576 100 0 0 0 0 0 0 10842192 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 65000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  129400 0 0 935600 0 0 0 0 0 0\\ncpu0 28250 0 0 161750 0 0 0 0 0 0\\ncpu1 32150 0 0 157850 0 0 0 0 0 0\\ncpu2 36050 0 0 153950 0 0 0 0 0 0\\ncpu3 39950 0 0 150050 0 0 0 0 0 0\\ncpu4 43850 0 0 146150 0 0 0 0 0 0\\ncpu5 47750 0 0 142250 0 0 0 0 0 0\\ncpu6 51650 0 0 138350 0 0 0 0 0 0\\ncpu7 55550 0 0 134450 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 34527344 100 0 0 0 0 0 0 10842448 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 66000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  129700 0 0 936300 0 0 0 0 0 0\\ncpu0 28340 0 0 162660 0 0 0 0 0 0\\ncpu1 32300 0 0 158700 0 0 0 0 0 0\\ncpu2 36260 0 0 154740 0 0 0 0 0 0\\ncpu3 40220 0 0 150780 0 0 0 0 0 0\\ncpu4 44180 0 0 146820 0 0 0 0 0 0\\ncpu5 48140 0 0 142860 0 0 0 0 0 0\\ncpu6 52100 0 0 138900 0 0 0 0 0 0\\ncpu7 56060 0 0 134940 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 34527344 100 0 0 0 0 0 0 10842448 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 67000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  130120 0 0 936880 0 0 0 0 0 0\\ncpu0 28550 0 0 163450 0 0 0 0 0 0\\ncpu1 32570 0 0 159430 0 0 0 0 0 0\\ncpu2 36590 0 0 155410 0 0 0 0 0 0\\ncpu3 40610 0 0 151390 0 0 0 0 0 0\\ncpu4 44630 0 0 147370 0 0 0 0 0 0\\ncpu5 48650 0 0 143350 0 0 0 0 0 0\\ncpu6 52670 0 0 139330 0 0 0 0 0 0\\ncpu7 56690 0 0 135310 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 34528880 100 0 0 0 0 0 0 10842960 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 68000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  130660 0 0 937340 0 0 0 0 0 0\\ncpu0 28880 0 0 164120 0 0 0 0 0 0\\ncpu1 32960 0 0 160040 0 0 0 0 0 0\\ncpu2 37040 0 0 155960 0 0 0 0 0 0\\ncpu3 41120 0 0 151880 0 0 0 0 0 0\\ncpu4 45200 0 0 147800 0 0 0 0 0 0\\ncpu5 49280 0 0 143720 0 0 0 0 0 0\\ncpu6 53360 0 0 139640 0 0 0 0 0 0\\ncpu7 57440 0 0 135560 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 34912880 100 0 0 0 0 0 0 10970960 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 69000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  130990 0 0 938010 0 0 0 0 0 0\\ncpu0 29000 0 0 165000 0 0 0 0 0 0\\ncpu1 33140 0 0 160860 0 0 0 0 0 0\\ncpu2 37280 0 0 156720 0 0 0 0 0 0\\ncpu3 41420 0 0 152580 0 0 0 0 0 0\\ncpu4 45560 0 0 148440 0 0 0 0 0 0\\ncpu5 49700 0 0 144300 0 0 0 0 0 0\\ncpu6 53840 0 0 140160 0 0 0 0 0 0\\ncpu7 57980 0 0 136020 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 34960880 100 0 0 0 0 0 0 10986960 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 70000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  131440 0 0 938560 0 0 0 0 0 0\\ncpu0 29240 0 0 165760 0 0 0 0 0 0\\ncpu1 33440 0 0 161560 0 0 0 0 0 0\\ncpu2 37640 0 0 157360 0 0 0 0 0 0\\ncpu3 41840 0 0 153160 0 0 0 0 0 0\\ncpu4 46040 0 0 148960 0 0 0 0 0 0\\ncpu5 50240 0 0 144760 0 0 0 0 0 0\\ncpu6 54440 0 0 140560 0 0 0 0 0 0\\ncpu7 58640 0 0 136360 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 37210880 100 0 0 0 0 0 0 11736960 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 71000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  132010 0 0 938990 0 0 0 0 0 0\\ncpu0 29600 0 0 166400 0 0 0 0 0 0\\ncpu1 33860 0 0 162140 0 0 0 0 0 0\\ncpu2 38120 0 0 157880 0 0 0 0 0 0\\ncpu3 42380 0 0 153620 0 0 0 0 0 0\\ncpu4 46640 0 0 149360 0 0 0 0 0 0\\ncpu5 50900 0 0 145100 0 0 0 0 0 0\\ncpu6 55160 0 0 140840 0 0 0 0 0 0\\ncpu7 59420 0 0 136580 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 37211648 100 0 0 0 0 0 0 11737216 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 72000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  132370 0 0 939630 0 0 0 0 0 0\\ncpu0 29750 0 0 167250 0 0 0 0 0 0\\ncpu1 34070 0 0 162930 0 0 0 0 0 0\\ncpu2 38390 0 0 158610 0 0 0 0 0 0\\ncpu3 42710 0 0 154290 0 0 0 0 0 0\\ncpu4 47030 0 0 149970 0 0 0 0 0 0\\ncpu5 51350 0 0 145650 0 0 0 0 0 0\\ncpu6 55670 0 0 141330 0 0 0 0 0 0\\ncpu7 59990 0 0 137010 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 37211648 100 0 0 0 0 0 0 11737216 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 73000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  132850 0 0 940150 0 0 0 0 0 0\\ncpu0 30020 0 0 167980 0 0 0 0 0 0\\ncpu1 34400 0 0 163600 0 0 0 0 0 0\\ncpu2 38780 0 0 159220 0 0 0 0 0 0\\ncpu3 43160 0 0 154840 0 0 0 0 0 0\\ncpu4 47540 0 0 150460 0 0 0 0 0 0\\ncpu5 51920 0 0 146080 0 0 0 0 0 0\\ncpu6 56300 0 0 141700 0 0 0 0 0 0\\ncpu7 60680 0 0 137320 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 37213184 100 0 0 0 0 0 0 11737728 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 74000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  133450 0 0 940550 0 0 0 0 0 0\\ncpu0 30410 0 0 168590 0 0 0 0 0 0\\ncpu1 34850 0 0 164150 0 0 0 0 0 0\\ncpu2 39290 0 0 159710 0 0 0 0 0 0\\ncpu3 43730 0 0 155270 0 0 0 0 0 0\\ncpu4 48170 0 0 150830 0 0 0 0 0 0\\ncpu5 52610 0 0 146390 0 0 0 0 0 0\\ncpu6 57050 0 0 141950 0 0 0 0 0 0\\ncpu7 61490 0 0 137510 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 37597184 100 0 0 0 0 0 0 11865728 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 75000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  133840 0 0 941160 0 0 0 0 0 0\\ncpu0 30590 0 0 169410 0 0 0 0 0 0\\ncpu1 35090 0 0 164910 0 0 0 0 0 0\\ncpu2 39590 0 0 160410 0 0 0 0 0 0\\ncpu3 44090 0 0 155910 0 0 0 0 0 0\\ncpu4 48590 0 0 151410 0 0 0 0 0 0\\ncpu5 53090 0 0 146910 0 0 0 0 0 0\\ncpu6 57590 0 0 142410 0 0 0 0 0 0\\ncpu7 62090 0 0 137910 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 37645184 100 0 0 0 0 0 0 11881728 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 76000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  134350 0 0 941650 0 0 0 0 0 0\\ncpu0 30890 0 0 170110 0 0 0 0 0 0\\ncpu1 35450 0 0 165550 0 0 0 0 0 0\\ncpu2 40010 0 0 160990 0 0 0 0 0 0\\ncpu3 44570 0 0 156430 0 0 0 0 0 0\\ncpu4 49130 0 0 151870 0 0 0 0 0 0\\ncpu5 53690 0 0 147310 0 0 0 0 0 0\\ncpu6 58250 0 0 142750 0 0 0 0 0 0\\ncpu7 62810 0 0 138190 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 39895184 100 0 0 0 0 0 0 12631728 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 77000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  134650 0 0 942350 0 0 0 0 0 0\\ncpu0 30980 0 0 171020 0 0 0 0 0 0\\ncpu1 35600 0 0 166400 0 0 0 0 0 0\\ncpu2 40220 0 0 161780 0 0 0 0 0 0\\ncpu3 44840 0 0 157160 0 0 0 0 0 0\\ncpu4 49460 0 0 152540 0 0 0 0 0 0\\ncpu5 54080 0 0 147920 0 0 0 0 0 0\\ncpu6 58700 0 0 143300 0 0 0 0 0 0\\ncpu7 63320 0 0 138680 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 39895952 100 0 0 0 0 0 0 12631984 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 78000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  135070 0 0 942930 0 0 0 0 0 0\\ncpu0 31190 0 0 171810 0 0 0 0 0 0\\ncpu1 35870 0 0 167130 0 0 0 0 0 0\\ncpu2 40550 0 0 162450 0 0 0 0 0 0\\ncpu3 45230 0 0 157770 0 0 0 0 0 0\\ncpu4 49910 0 0 153090 0 0 0 0 0 0\\ncpu5 54590 0 0 148410 0 0 0 0 0 0\\ncpu6 59270 0 0 143730 0 0 0 0 0 0\\ncpu7 63950 0 0 139050 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 39895952 100 0 0 0 0 0 0 12631984 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 79000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  135610 0 0 943390 0 0 0 0 0 0\\ncpu0 31520 0 0 172480 0 0 0 0 0 0\\ncpu1 36260 0 0 167740 0 0 0 0 0 0\\ncpu2 41000 0 0 163000 0 0 0 0 0 0\\ncpu3 45740 0 0 158260 0 0 0 0 0 0\\ncpu4 50480 0 0 153520 0 0 0 0 0 0\\ncpu5 55220 0 0 148780 0 0 0 0 0 0\\ncpu6 59960 0 0 144040 0 0 0 0 0 0\\ncpu7 64700 0 0 139300 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 39897488 100 0 0 0 0 0 0 12632496 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 80000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  135940 0 0 944060 0 0 0 0 0 0\\ncpu0 31640 0 0 173360 0 0 0 0 0 0\\ncpu1 36440 0 0 168560 0 0 0 0 0 0\\ncpu2 41240 0 0 163760 0 0 0 0 0 0\\ncpu3 46040 0 0 158960 0 0 0 0 0 0\\ncpu4 50840 0 0 154160 0 0 0 0 0 0\\ncpu5 55640 0 0 149360 0 0 0 0 0 0\\ncpu6 60440 0 0 144560 0 0 0 0 0 0\\ncpu7 65240 0 0 139760 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 40281488 100 0 0 0 0 0 0 12760496 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 81000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  136390 0 0 944610 0 0 0 0 0 0\\ncpu0 31880 0 0 174120 0 0 0 0 0 0\\ncpu1 36740 0 0 169260 0 0 0 0 0 0\\ncpu2 41600 0 0 164400 0 0 0 0 0 0\\ncpu3 46460 0 0 159540 0 0 0 0 0 0\\ncpu4 51320 0 0 154680 0 0 0 0 0 0\\ncpu5 56180 0 0 149820 0 0 0 0 0 0\\ncpu6 61040 0 0 144960 0 0 0 0 0 0\\ncpu7 65900 0 0 140100 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 40329488 100 0 0 0 0 0 0 12776496 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 82000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  136960 0 0 945040 0 0 0 0 0 0\\ncpu0 32240 0 0 174760 0 0 0 0 0 0\\ncpu1 37160 0 0 169840 0 0 0 0 0 0\\ncpu2 42080 0 0 164920 0 0 0 0 0 0\\ncpu3 47000 0 0 160000 0 0 0 0 0 0\\ncpu4 51920 0 0 155080 0 0 0 0 0 0\\ncpu5 56840 0 0 150160 0 0 0 0 0 0\\ncpu6 61760 0 0 145240 0 0 0 0 0 0\\ncpu7 66680 0 0 140320 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 42579488 100 0 0 0 0 0 0 13526496 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 83000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  137320 0 0 945680 0 0 0 0 0 0\\ncpu0 32390 0 0 175610 0 0 0 0 0 0\\ncpu1 37370 0 0 170630 0 0 0 0 0 0\\ncpu2 42350 0 0 165650 0 0 0 0 0 0\\ncpu3 47330 0 0 160670 0 0 0 0 0 0\\ncpu4 52310 0 0 155690 0 0 0 0 0 0\\ncpu5 57290 0 0 150710 0 0 0 0 0 0\\ncpu6 62270 0 0 145730 0 0 0 0 0 0\\ncpu7 67250 0 0 140750 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 42580256 100 0 0 0 0 0 0 13526752 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 84000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  137800 0 0 946200 0 0 0 0 0 0\\ncpu0 32660 0 0 176340 0 0 0 0 0 0\\ncpu1 37700 0 0 171300 0 0 0 0 0 0\\ncpu2 42740 0 0 166260 0 0 0 0 0 0\\ncpu3 47780 0 0 161220 0 0 0 0 0 0\\ncpu4 52820 0 0 156180 0 0 0 0 0 0\\ncpu5 57860 0 0 151140 0 0 0 0 0 0\\ncpu6 62900 0 0 146100 0 0 0 0 0 0\\ncpu7 67940 0 0 141060 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 42580256 100 0 0 0 0 0 0 13526752 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 85000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  138400 0 0 946600 0 0 0 0 0 0\\ncpu0 33050 0 0 176950 0 0 0 0 0 0\\ncpu1 38150 0 0 171850 0 0 0 0 0 0\\ncpu2 43250 0 0 166750 0 0 0 0 0 0\\ncpu3 48350 0 0 161650 0 0 0 0 0 0\\ncpu4 53450 0 0 156550 0 0 0 0 0 0\\ncpu5 58550 0 0 151450 0 0 0 0 0 0\\ncpu6 63650 0 0 146350 0 0 0 0 0 0\\ncpu7 68750 0 0 141250 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 42581792 100 0 0 0 0 0 0 13527264 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 86000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  138790 0 0 947210 0 0 0 0 0 0\\ncpu0 33230 0 0 177770 0 0 0 0 0 0\\ncpu1 38390 0 0 172610 0 0 0 0 0 0\\ncpu2 43550 0 0 167450 0 0 0 0 0 0\\ncpu3 48710 0 0 162290 0 0 0 0 0 0\\ncpu4 53870 0 0 157130 0 0 0 0 0 0\\ncpu5 59030 0 0 151970 0 0 0 0 0 0\\ncpu6 64190 0 0 146810 0 0 0 0 0 0\\ncpu7 69350 0 0 141650 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 42965792 100 0 0 0 0 0 0 13655264 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 87000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  139300 0 0 947700 0 0 0 0 0 0\\ncpu0 33530 0 0 178470 0 0 0 0 0 0\\ncpu1 38750 0 0 173250 0 0 0 0 0 0\\ncpu2 43970 0 0 168030 0 0 0 0 0 0\\ncpu3 49190 0 0 162810 0 0 0 0 0 0\\ncpu4 54410 0 0 157590 0 0 0 0 0 0\\ncpu5 59630 0 0 152370 0 0 0 0 0 0\\ncpu6 64850 0 0 147150 0 0 0 0 0 0\\ncpu7 70070 0 0 141930 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 43013792 100 0 0 0 0 0 0 13671264 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 88000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  139600 0 0 948400 0 0 0 0 0 0\\ncpu0 33620 0 0 179380 0 0 0 0 0 0\\ncpu1 38900 0 0 174100 0 0 0 0 0 0\\ncpu2 44180 0 0 168820 0 0 0 0 0 0\\ncpu3 49460 0 0 163540 0 0 0 0 0 0\\ncpu4 54740 0 0 158260 0 0 0 0 0 0\\ncpu5 60020 0 0 152980 0 0 0 0 0 0\\ncpu6 65300 0 0 147700 0 0 0 0 0 0\\ncpu7 70580 0 0 142420 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 45263792 100 0 0 0 0 0 0 14421264 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 89000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  140020 0 0 948980 0 0 0 0 0 0\\ncpu0 33830 0 0 180170 0 0 0 0 0 0\\ncpu1 39170 0 0 174830 0 0 0 0 0 0\\ncpu2 44510 0 0 169490 0 0 0 0 0 0\\ncpu3 49850 0 0 164150 0 0 0 0 0 0\\ncpu4 55190 0 0 158810 0 0 0 0 0 0\\ncpu5 60530 0 0 153470 0 0 0 0 0 0\\ncpu6 65870 0 0 148130 0 0 0 0 0 0\\ncpu7 71210 0 0 142790 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 45264560 100 0 0 0 0 0 0 14421520 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 90000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  140560 0 0 949440 0 0 0 0 0 0\\ncpu0 34160 0 0 180840 0 0 0 0 0 0\\ncpu1 39560 0 0 175440 0 0 0 0 0 0\\ncpu2 44960 0 0 170040 0 0 0 0 0 0\\ncpu3 50360 0 0 164640 0 0 0 0 0 0\\ncpu4 55760 0 0 159240 0 0 0 0 0 0\\ncpu5 61160 0 0 153840 0 0 0 0 0 0\\ncpu6 66560 0 0 148440 0 0 0 0 0 0\\ncpu7 71960 0 0 143040 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 45264560 100 0 0 0 0 0 0 14421520 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 91000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  140890 0 0 950110 0 0 0 0 0 0\\ncpu0 34280 0 0 181720 0 0 0 0 0 0\\ncpu1 39740 0 0 176260 0 0 0 0 0 0\\ncpu2 45200 0 0 170800 0 0 0 0 0 0\\ncpu3 50660 0 0 165340 0 0 0 0 0 0\\ncpu4 56120 0 0 159880 0 0 0 0 0 0\\ncpu5 61580 0 0 154420 0 0 0 0 0 0\\ncpu6 67040 0 0 148960 0 0 0 0 0 0\\ncpu7 72500 0 0 143500 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 45266096 100 0 0 0 0 0 0 14422032 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 92000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  141340 0 0 950660 0 0 0 0 0 0\\ncpu0 34520 0 0 182480 0 0 0 0 0 0\\ncpu1 40040 0 0 176960 0 0 0 0 0 0\\ncpu2 45560 0 0 171440 0 0 0 0 0 0\\ncpu3 51080 0 0 165920 0 0 0 0 0 0\\ncpu4 56600 0 0 160400 0 0 0 0 0 0\\ncpu5 62120 0 0 154880 0 0 0 0 0 0\\ncpu6 67640 0 0 149360 0 0 0 0 0 0\\ncpu7 73160 0 0 143840 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 45650096 100 0 0 0 0 0 0 14550032 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 93000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  141910 0 0 951090 0 0 0 0 0 0\\ncpu0 34880 0 0 183120 0 0 0 0 0 0\\ncpu1 40460 0 0 177540 0 0 0 0 0 0\\ncpu2 46040 0 0 171960 0 0 0 0 0 0\\ncpu3 51620 0 0 166380 0 0 0 0 0 0\\ncpu4 57200 0 0 160800 0 0 0 0 0 0\\ncpu5 62780 0 0 155220 0 0 0 0 0 0\\ncpu6 68360 0 0 149640 0 0 0 0 0 0\\ncpu7 73940 0 0 144060 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 45698096 100 0 0 0 0 0 0 14566032 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 94000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  142270 0 0 951730 0 0 0 0 0 0\\ncpu0 35030 0 0 183970 0 0 0 0 0 0\\ncpu1 40670 0 0 178330 0 0 0 0 0 0\\ncpu2 46310 0 0 172690 0 0 0 0 0 0\\ncpu3 51950 0 0 167050 0 0 0 0 0 0\\ncpu4 57590 0 0 161410 0 0 0 0 0 0\\ncpu5 63230 0 0 155770 0 0 0 0 0 0\\ncpu6 68870 0 0 150130 0 0 0 0 0 0\\ncpu7 74510 0 0 144490 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 47948096 100 0 0 0 0 0 0 15316032 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 95000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  142750 0 0 952250 0 0 0 0 0 0\\ncpu0 35300 0 0 184700 0 0 0 0 0 0\\ncpu1 41000 0 0 179000 0 0 0 0 0 0\\ncpu2 46700 0 0 173300 0 0 0 0 0 0\\ncpu3 52400 0 0 167600 0 0 0 0 0 0\\ncpu4 58100 0 0 161900 0 0 0 0 0 0\\ncpu5 63800 0 0 156200 0 0 0 0 0 0\\ncpu6 69500 0 0 150500 0 0 0 0 0 0\\ncpu7 75200 0 0 144800 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 47948864 100 0 0 0 0 0 0 15316288 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 96000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  143350 0 0 952650 0 0 0 0 0 0\\ncpu0 35690 0 0 185310 0 0 0 0 0 0\\ncpu1 41450 0 0 179550 0 0 0 0 0 0\\ncpu2 47210 0 0 173790 0 0 0 0 0 0\\ncpu3 52970 0 0 168030 0 0 0 0 0 0\\ncpu4 58730 0 0 162270 0 0 0 0 0 0\\ncpu5 64490 0 0 156510 0 0 0 0 0 0\\ncpu6 70250 0 0 150750 0 0 0 0 0 0\\ncpu7 76010 0 0 144990 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 47948864 100 0 0 0 0 0 0 15316288 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 97000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  143740 0 0 953260 0 0 0 0 0 0\\ncpu0 35870 0 0 186130 0 0 0 0 0 0\\ncpu1 41690 0 0 180310 0 0 0 0 0 0\\ncpu2 47510 0 0 174490 0 0 0 0 0 0\\ncpu3 53330 0 0 168670 0 0 0 0 0 0\\ncpu4 59150 0 0 162850 0 0 0 0 0 0\\ncpu5 64970 0 0 157030 0 0 0 0 0 0\\ncpu6 70790 0 0 151210 0 0 0 0 0 0\\ncpu7 76610 0 0 145390 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 47950400 100 0 0 0 0 0 0 15316800 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 98000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  144250 0 0 953750 0 0 0 0 0 0\\ncpu0 36170 0 0 186830 0 0 0 0 0 0\\ncpu1 42050 0 0 180950 0 0 0 0 0 0\\ncpu2 47930 0 0 175070 0 0 0 0 0 0\\ncpu3 53810 0 0 169190 0 0 0 0 0 0\\ncpu4 59690 0 0 163310 0 0 0 0 0 0\\ncpu5 65570 0 0 157430 0 0 0 0 0 0\\ncpu6 71450 0 0 151550 0 0 0 0 0 0\\ncpu7 77330 0 0 145670 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 48334400 100 0 0 0 0 0 0 15444800 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 99000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  144550 0 0 954450 0 0 0 0 0 0\\ncpu0 36260 0 0 187740 0 0 0 0 0 0\\ncpu1 42200 0 0 181800 0 0 0 0 0 0\\ncpu2 48140 0 0 175860 0 0 0 0 0 0\\ncpu3 54080 0 0 169920 0 0 0 0 0 0\\ncpu4 60020 0 0 163980 0 0 0 0 0 0\\ncpu5 65960 0 0 158040 0 0 0 0 0 0\\ncpu6 71900 0 0 152100 0 0 0 0 0 0\\ncpu7 77840 0 0 146160 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 48382400 100 0 0 0 0 0 0 15460800 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 100000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  144970 0 0 955030 0 0 0 0 0 0\\ncpu0 36470 0 0 188530 0 0 0 0 0 0\\ncpu1 42470 0 0 182530 0 0 0 0 0 0\\ncpu2 48470 0 0 176530 0 0 0 0 0 0\\ncpu3 54470 0 0 170530 0 0 0 0 0 0\\ncpu4 60470 0 0 164530 0 0 0 0 0 0\\ncpu5 66470 0 0 158530 0 0 0 0 0 0\\ncpu6 72470 0 0 152530 0 0 0 0 0 0\\ncpu7 78470 0 0 146530 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 50632400 100 0 0 0 0 0 0 16210800 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 101000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  145510 0 0 955490 0 0 0 0 0 0\\ncpu0 36800 0 0 189200 0 0 0 0 0 0\\ncpu1 42860 0 0 183140 0 0 0 0 0 0\\ncpu2 48920 0 0 177080 0 0 0 0 0 0\\ncpu3 54980 0 0 171020 0 0 0 0 0 0\\ncpu4 61040 0 0 164960 0 0 0 0 0 0\\ncpu5 67100 0 0 158900 0 0 0 0 0 0\\ncpu6 73160 0 0 152840 0 0 0 0 0 0\\ncpu7 79220 0 0 146780 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 50633168 100 0 0 0 0 0 0 16211056 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 102000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  145840 0 0 956160 0 0 0 0 0 0\\ncpu0 36920 0 0 190080 0 0 0 0 0 0\\ncpu1 43040 0 0 183960 0 0 0 0 0 0\\ncpu2 49160 0 0 177840 0 0 0 0 0 0\\ncpu3 55280 0 0 171720 0 0 0 0 0 0\\ncpu4 61400 0 0 165600 0 0 0 0 0 0\\ncpu5 67520 0 0 159480 0 0 0 0 0 0\\ncpu6 73640 0 0 153360 0 0 0 0 0 0\\ncpu7 79760 0 0 147240 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 50633168 100 0 0 0 0 0 0 16211056 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 103000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  146290 0 0 956710 0 0 0 0 0 0\\ncpu0 37160 0 0 190840 0 0 0 0 0 0\\ncpu1 43340 0 0 184660 0 0 0 0 0 0\\ncpu2 49520 0 0 178480 0 0 0 0 0 0\\ncpu3 55700 0 0 172300 0 0 0 0 0 0\\ncpu4 61880 0 0 166120 0 0 0 0 0 0\\ncpu5 68060 0 0 159940 0 0 0 0 0 0\\ncpu6 74240 0 0 153760 0 0 0 0 0 0\\ncpu7 80420 0 0 147580 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 50634704 100 0 0 0 0 0 0 16211568 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 104000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  146860 0 0 957140 0 0 0 0 0 0\\ncpu0 37520 0 0 191480 0 0 0 0 0 0\\ncpu1 43760 0 0 185240 0 0 0 0 0 0\\ncpu2 50000 0 0 179000 0 0 0 0 0 0\\ncpu3 56240 0 0 172760 0 0 0 0 0 0\\ncpu4 62480 0 0 166520 0 0 0 0 0 0\\ncpu5 68720 0 0 160280 0 0 0 0 0 0\\ncpu6 74960 0 0 154040 0 0 0 0 0 0\\ncpu7 81200 0 0 147800 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 51018704 100 0 0 0 0 0 0 16339568 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 105000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  147220 0 0 957780 0 0 0 0 0 0\\ncpu0 37670 0 0 192330 0 0 0 0 0 0\\ncpu1 43970 0 0 186030 0 0 0 0 0 0\\ncpu2 50270 0 0 179730 0 0 0 0 0 0\\ncpu3 56570 0 0 173430 0 0 0 0 0 0\\ncpu4 62870 0 0 167130 0 0 0 0 0 0\\ncpu5 69170 0 0 160830 0 0 0 0 0 0\\ncpu6 75470 0 0 154530 0 0 0 0 0 0\\ncpu7 81770 0 0 148230 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 51066704 100 0 0 0 0 0 0 16355568 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 106000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  147700 0 0 958300 0 0 0 0 0 0\\ncpu0 37940 0 0 193060 0 0 0 0 0 0\\ncpu1 44300 0 0 186700 0 0 0 0 0 0\\ncpu2 50660 0 0 180340 0 0 0 0 0 0\\ncpu3 57020 0 0 173980 0 0 0 0 0 0\\ncpu4 63380 0 0 167620 0 0 0 0 0 0\\ncpu5 69740 0 0 161260 0 0 0 0 0 0\\ncpu6 76100 0 0 154900 0 0 0 0 0 0\\ncpu7 82460 0 0 148540 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 53316704 100 0 0 0 0 0 0 17105568 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 107000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  148300 0 0 958700 0 0 0 0 0 0\\ncpu0 38330 0 0 193670 0 0 0 0 0 0\\ncpu1 44750 0 0 187250 0 0 0 0 0 0\\ncpu2 51170 0 0 180830 0 0 0 0 0 0\\ncpu3 57590 0 0 174410 0 0 0 0 0 0\\ncpu4 64010 0 0 167990 0 0 0 0 0 0\\ncpu5 70430 0 0 161570 0 0 0 0 0 0\\ncpu6 76850 0 0 155150 0 0 0 0 0 0\\ncpu7 83270 0 0 148730 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 53317472 100 0 0 0 0 0 0 17105824 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 108000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  148690 0 0 959310 0 0 0 0 0 0\\ncpu0 38510 0 0 194490 0 0 0 0 0 0\\ncpu1 44990 0 0 188010 0 0 0 0 0 0\\ncpu2 51470 0 0 181530 0 0 0 0 0 0\\ncpu3 57950 0 0 175050 0 0 0 0 0 0\\ncpu4 64430 0 0 168570 0 0 0 0 0 0\\ncpu5 70910 0 0 162090 0 0 0 0 0 0\\ncpu6 77390 0 0 155610 0 0 0 0 0 0\\ncpu7 83870 0 0 149130 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 53317472 100 0 0 0 0 0 0 17105824 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 109000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  149200 0 0 959800 0 0 0 0 0 0\\ncpu0 38810 0 0 195190 0 0 0 0 0 0\\ncpu1 45350 0 0 188650 0 0 0 0 0 0\\ncpu2 51890 0 0 182110 0 0 0 0 0 0\\ncpu3 58430 0 0 175570 0 0 0 0 0 0\\ncpu4 64970 0 0 169030 0 0 0 0 0 0\\ncpu5 71510 0 0 162490 0 0 0 0 0 0\\ncpu6 78050 0 0 155950 0 0 0 0 0 0\\ncpu7 84590 0 0 149410 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 53319008 100 0 0 0 0 0 0 17106336 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 110000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  149500 0 0 960500 0 0 0 0 0 0\\ncpu0 38900 0 0 196100 0 0 0 0 0 0\\ncpu1 45500 0 0 189500 0 0 0 0 0 0\\ncpu2 52100 0 0 182900 0 0 0 0 0 0\\ncpu3 58700 0 0 176300 0 0 0 0 0 0\\ncpu4 65300 0 0 169700 0 0 0 0 0 0\\ncpu5 71900 0 0 163100 0 0 0 0 0 0\\ncpu6 78500 0 0 156500 0 0 0 0 0 0\\ncpu7 85100 0 0 149900 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 53703008 100 0 0 0 0 0 0 17234336 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 111000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  149920 0 0 961080 0 0 0 0 0 0\\ncpu0 39110 0 0 196890 0 0 0 0 0 0\\ncpu1 45770 0 0 190230 0 0 0 0 0 0\\ncpu2 52430 0 0 183570 0 0 0 0 0 0\\ncpu3 59090 0 0 176910 0 0 0 0 0 0\\ncpu4 65750 0 0 170250 0 0 0 0 0 0\\ncpu5 72410 0 0 163590 0 0 0 0 0 0\\ncpu6 79070 0 0 156930 0 0 0 0 0 0\\ncpu7 85730 0 0 150270 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 53751008 100 0 0 0 0 0 0 17250336 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 112000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  150460 0 0 961540 0 0 0 0 0 0\\ncpu0 39440 0 0 197560 0 0 0 0 0 0\\ncpu1 46160 0 0 190840 0 0 0 0 0 0\\ncpu2 52880 0 0 184120 0 0 0 0 0 0\\ncpu3 59600 0 0 177400 0 0 0 0 0 0\\ncpu4 66320 0 0 170680 0 0 0 0 0 0\\ncpu5 73040 0 0 163960 0 0 0 0 0 0\\ncpu6 79760 0 0 157240 0 0 0 0 0 0\\ncpu7 86480 0 0 150520 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 56001008 100 0 0 0 0 0 0 18000336 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 113000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  150790 0 0 962210 0 0 0 0 0 0\\ncpu0 39560 0 0 198440 0 0 0 0 0 0\\ncpu1 46340 0 0 191660 0 0 0 0 0 0\\ncpu2 53120 0 0 184880 0 0 0 0 0 0\\ncpu3 59900 0 0 178100 0 0 0 0 0 0\\ncpu4 66680 0 0 171320 0 0 0 0 0 0\\ncpu5 73460 0 0 164540 0 0 0 0 0 0\\ncpu6 80240 0 0 157760 0 0 0 0 0 0\\ncpu7 87020 0 0 150980 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 56001776 100 0 0 0 0 0 0 18000592 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 114000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  151240 0 0 962760 0 0 0 0 0 0\\ncpu0 39800 0 0 199200 0 0 0 0 0 0\\ncpu1 46640 0 0 192360 0 0 0 0 0 0\\ncpu2 53480 0 0 185520 0 0 0 0 0 0\\ncpu3 60320 0 0 178680 0 0 0 0 0 0\\ncpu4 67160 0 0 171840 0 0 0 0 0 0\\ncpu5 74000 0 0 165000 0 0 0 0 0 0\\ncpu6 80840 0 0 158160 0 0 0 0 0 0\\ncpu7 87680 0 0 151320 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 56001776 100 0 0 0 0 0 0 18000592 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 115000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  151810 0 0 963190 0 0 0 0 0 0\\ncpu0 40160 0 0 199840 0 0 0 0 0 0\\ncpu1 47060 0 0 192940 0 0 0 0 0 0\\ncpu2 53960 0 0 186040 0 0 0 0 0 0\\ncpu3 60860 0 0 179140 0 0 0 0 0 0\\ncpu4 67760 0 0 172240 0 0 0 0 0 0\\ncpu5 74660 0 0 165340 0 0 0 0 0 0\\ncpu6 81560 0 0 158440 0 0 0 0 0 0\\ncpu7 88460 0 0 151540 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 56003312 100 0 0 0 0 0 0 18001104 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 116000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  152170 0 0 963830 0 0 0 0 0 0\\ncpu0 40310 0 0 200690 0 0 0 0 0 0\\ncpu1 47270 0 0 193730 0 0 0 0 0 0\\ncpu2 54230 0 0 186770 0 0 0 0 0 0\\ncpu3 61190 0 0 179810 0 0 0 0 0 0\\ncpu4 68150 0 0 172850 0 0 0 0 0 0\\ncpu5 75110 0 0 165890 0 0 0 0 0 0\\ncpu6 82070 0 0 158930 0 0 0 0 0 0\\ncpu7 89030 0 0 151970 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 56387312 100 0 0 0 0 0 0 18129104 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 117000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  152650 0 0 964350 0 0 0 0 0 0\\ncpu0 40580 0 0 201420 0 0 0 0 0 0\\ncpu1 47600 0 0 194400 0 0 0 0 0 0\\ncpu2 54620 0 0 187380 0 0 0 0 0 0\\ncpu3 61640 0 0 180360 0 0 0 0 0 0\\ncpu4 68660 0 0 173340 0 0 0 0 0 0\\ncpu5 75680 0 0 166320 0 0 0 0 0 0\\ncpu6 82700 0 0 159300 0 0 0 0 0 0\\ncpu7 89720 0 0 152280 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 56435312 100 0 0 0 0 0 0 18145104 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 118000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  153250 0 0 964750 0 0 0 0 0 0\\ncpu0 40970 0 0 202030 0 0 0 0 0 0\\ncpu1 48050 0 0 194950 0 0 0 0 0 0\\ncpu2 55130 0 0 187870 0 0 0 0 0 0\\ncpu3 62210 0 0 180790 0 0 0 0 0 0\\ncpu4 69290 0 0 173710 0 0 0 0 0 0\\ncpu5 76370 0 0 166630 0 0 0 0 0 0\\ncpu6 83450 0 0 159550 0 0 0 0 0 0\\ncpu7 90530 0 0 152470 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 58685312 100 0 0 0 0 0 0 18895104 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 119000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  153640 0 0 965360 0 0 0 0 0 0\\ncpu0 41150 0 0 202850 0 0 0 0 0 0\\ncpu1 48290 0 0 195710 0 0 0 0 0 0\\ncpu2 55430 0 0 188570 0 0 0 0 0 0\\ncpu3 62570 0 0 181430 0 0 0 0 0 0\\ncpu4 69710 0 0 174290 0 0 0 0 0 0\\ncpu5 76850 0 0 167150 0 0 0 0 0 0\\ncpu6 83990 0 0 160010 0 0 0 0 0 0\\ncpu7 91130 0 0 152870 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 58686080 100 0 0 0 0 0 0 18895360 100 0 0 0 0 0 0\"}"
+    }
+   ]
+  },
+  {
+   "match": "swaync-client",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"text\": \"\", \"alt\": \"none\", \"tooltip\": \"\", \"class\": \"none\"}"
+    }
+   ]
+  },
+  {
+   "match": "command -v cava",
+   "exitCode": 0
+  },
+  {
+   "match": "hyprctl -j animations",
+   "stdout": "[[{\"name\": \"global\", \"overridden\": true, \"bezier\": \"default\", \"enabled\": true, \"speed\": 8.0, \"style\": \"\"}, {\"name\": \"windows\", \"overridden\": true, \"bezier\": \"myBezier\", \"enabled\": true, \"speed\": 7.0, \"style\": \"slide\"}, {\"name\": \"windowsMove\", \"overridden\": false, \"bezier\": \"\", \"enabled\": true, \"speed\": 0.0, \"style\": \"\"}], [{\"name\": \"myBezier\", \"X0\": 0.1, \"Y0\": 0.9, \"X1\": 0.1, \"Y1\": 1.05}, {\"name\": \"default\", \"X0\": 0.0, \"Y0\": 0.75, \"X1\": 0.15, \"Y1\": 1.0}]]"
+  },
+  {
+   "match": "Fluent-light",
+   "stdout": "light=@HOME@/.local/share/icons/Fluent-light\ndark=@HOME@/.local/share/icons/Fluent-dark\nbase=@HOME@/.local/share/icons/Fluent\n"
+  },
+  {
+   "match": "media-status.sh",
+   "stdout": "available=false\nplaying=false\n",
+   "exitCode": 1
+  },
+  {
+   "match": "audio-spectrum.sh",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "12;38;74;92;66;41;58;80;95;61;33;47;70;52;28;15;"
+    }
+   ]
+  },
+  {
+   "match": "control-panel-status.sh",
+   "stdout": "brightness=50\ndnd=false\nrecording=false\npower_profile=balanced\nprevent_sleep=false\ndemo_mode=false\nfan_available=true\nfan_chassis_percent=40\nfan_chassis_rpm=1200\nfan_pump_percent=60\nfan_pump_rpm=2400\n"
+  },
+  {
+   "match": "brightness_get",
+   "stdout": "50\n"
+  },
+  {
+   "match": "brightness_set",
+   "stdout": ""
+  },
+  {
+   "match": "brightness_finish",
+   "stdout": ""
+  },
+  {
+   "match": "windows-vm-control.sh status",
+   "stdout": "stopped\n"
+  },
+  {
+   "match": "windows-vm-control.sh start",
+   "delay_ms": 600000
+  },
+  {
+   "match": "viewflow-target.sh status",
+   "stdout": "windows\n"
+  },
+  {
+   "match": "deskflow-target.sh status",
+   "stdout": "windows\n"
+  },
+  {
+   "match": "mihomo-control.sh status",
+   "stdout": "{\"online\": true, \"service\": \"user\", \"version\": \"v1.19.2\", \"mode\": \"rule\", \"connections\": 37, \"upload\": 2048, \"download\": 48000, \"dashboard\": \"http://127.0.0.1:9090/ui\"}"
+  },
+  {
+   "match": "dcal --json socket",
+   "stdout": "{\"path\": \"/run/user/1000/dcal/parity.sock\"}"
+  }
+ ],
+ "props": {},
+ "steps": [
+  {
+   "click": {
+    "contains": "%",
+    "index": 0
+   }
+  },
+  {
+   "advance": 800
+  },
+  {
+   "capture": ""
+  }
+ ],
+ "tick_ms": 50,
+ "derived_from": "fixtures/panels/stats-120.json",
+ "outputs": [
+  {
+   "name": "DP-4",
+   "make": "LG Electronics",
+   "model": "LG ULTRAFINE",
+   "x": 0,
+   "y": 0,
+   "width": 3072,
+   "height": 1728,
+   "scale": 2,
+   "width_px": 6144,
+   "height_px": 3456,
+   "refresh": 60.021,
+   "transform": 0
+  }
+ ],
+ "targets": {
+  "0/click": [
+   278,
+   29
+  ]
+ }
+}

@@ -1,0 +1,69 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.8 '--:--', no fill, next button hover scale 1.06",
+  "canvas": {
+    "width": 640,
+    "height": 200
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [],
+    "now": "09:41",
+    "mediaAvailable": true,
+    "mediaPlaying": true,
+    "mediaTitle": "Midnight City",
+    "mediaArtist": "M83",
+    "mediaPlayerName": "spotify",
+    "mediaArtUrl": "@asset:cover-warm.png",
+    "mediaLengthSeconds": 0,
+    "mediaPositionSeconds": 0,
+    "spectrumValues": [
+      12,
+      38,
+      74,
+      92,
+      66,
+      41,
+      58,
+      80,
+      95,
+      61,
+      33,
+      47,
+      70,
+      52,
+      28,
+      15
+    ]
+  },
+  "steps": [
+    {
+      "hover": {
+        "item": "island",
+        "x": 6,
+        "y": 19
+      }
+    },
+    {
+      "advance": 600
+    },
+    {
+      "hover": {
+        "item": "island",
+        "x": 256,
+        "y": 141
+      }
+    },
+    {
+      "advance": 300
+    },
+    {
+      "capture": ""
+    }
+  ]
+}

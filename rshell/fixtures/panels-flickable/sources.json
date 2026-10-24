@@ -1,0 +1,18 @@
+{
+  "crates/hyprv-widgets/src/flickable.rs": "b1a833ecc62e5ae048b7f97e195ef80616bb9bd3df9d2b318ad216ccb275b8ae",
+  "crates/hyprv-ui-panels/src/wifi.rs": "a3f174121e17afc73085cfdbcba6068688af5a065c9daf640ba5bb1b374fec89",
+  "crates/hyprv-ui-panels/src/control_panel.rs": "32f861d28a4795e17502456eaa6a9a4799787a57e7bdce97550d224b7c0ebb95",
+  "crates/hyprv-ui-panels/src/calendar.rs": "af9fa8a97286d2ed2d16fe9d38a49722c75e94a789bf0416658b3b26fcfe50f4",
+  "crates/hyprv-ui-panels/src/panels.rs": "f4beb8d6fd26511c3188b296bfe33a6dc4f1cc6de75495e82fe61677a3a4f673",
+  "crates/hyprv-ui-panels/src/scroll_tests/common.rs": "01a89ff6bac68c032011d7b27a03cda75b03cdcdbc45aea557c87f7d7255439e",
+  "crates/hyprv-ui-panels/src/scroll_tests/wifi.rs": "892851ed6d284324cec4294dac1057064db2468c7f12d6c4b1fa2ee83f20d439",
+  "crates/hyprv-ui-panels/src/scroll_tests/bluetooth.rs": "483e7bb1fb3efcbc6f425ef1e700634e66a2450d69ac496c94563d62319e7260",
+  "crates/hyprv-ui-panels/src/scroll_tests/calendar.rs": "572e1f2d19ccaea60f533cdabbdd88383687bc494b9ec8720557fa4bdb5a8042",
+  "../quickshell/WifiFallback.qml": "fb74a7396f4ad00926078d580ef0661cd50cd4ddf0938410f785581a0b99a492",
+  "../quickshell/ControlPanelBluetoothDetails.qml": "be166eac5706d3f0f6a01d44b6663c6d7a42a0b79a21f08d2a3ea01142838e16",
+  "../quickshell/WeekCalendarPanel.qml": "1d51bcb9d6d974344c5066a8a1debba7e8b6e5ee14396570a1a1e7d5de3144b7",
+  "docs/reviews/scratch/panels-flickable/scene.qml": "69bda14dee39951600820e0af4e061b1c5c03ea4e7a1869352e6fec2f26041f8",
+  "docs/reviews/scratch/panels-flickable/host.cpp": "2268b9494589c7832ddf17dd833d8a43e0bc76a6bf896c38e5d2a6f66dfce5fd",
+  "docs/reviews/scratch/panels-flickable/capture.py": "46e8ee2f051b8f281fc1aed408df590361bcfceee961c7e953f91b05b0476595",
+  "docs/reviews/scratch/panels-flickable/qquickwheelhandler.cpp": "78ef1e7eeb4f4381b90a4f4f0880ea6e39d02d00b42d1067aa5d8310a5ed1bb5"
+}

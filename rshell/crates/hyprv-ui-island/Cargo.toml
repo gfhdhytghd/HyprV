@@ -1,0 +1,18 @@
+[package]
+name = "hyprv-ui-island"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+hyprv-ui = { path = "../hyprv-ui" }
+hyprv-widgets = { path = "../hyprv-widgets" }
+hyprv-svc-media = { path = "../hyprv-svc-media" }
+hyprv-svc-desktop = { path = "../hyprv-svc-desktop" }
+
+[dev-dependencies]
+serde_json = "1"
+# Parity GPU hook (parity/gpu/src/lib.rs included by the parity harness).
+wayland-client = { version = "0.31", features = ["system"] }
+# Piece B (calendar morph parity): the calendar content and the shared fixture translator.
+hyprv-ui-panels = { path = "../hyprv-ui-panels" }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }

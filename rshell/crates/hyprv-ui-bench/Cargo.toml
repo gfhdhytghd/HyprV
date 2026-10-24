@@ -1,0 +1,23 @@
+[package]
+name = "hyprv-ui-bench"
+version.workspace = true
+edition.workspace = true
+publish = false
+description = "Offscreen CPU + surfaceless-EGL GPU frame benchmarks for the HyprV UI components"
+
+[[bin]]
+name = "ui-bench"
+path = "src/main.rs"
+
+[dependencies]
+hyprv-ui = { path = "../hyprv-ui" }
+hyprv-widgets = { path = "../hyprv-widgets" }
+hyprv-ui-island = { path = "../hyprv-ui-island" }
+hyprv-ui-panels = { path = "../hyprv-ui-panels" }
+hyprv-ui-bar = { path = "../hyprv-ui-bar" }
+hyprv-svc-sys = { path = "../hyprv-svc-sys" }
+hyprv-svc-media = { path = "../hyprv-svc-media" }
+hyprv-svc-power = { path = "../hyprv-svc-power" }
+hyprv-svc-net = { path = "../hyprv-svc-net" }
+khronos-egl = { version = "6", features = ["dynamic"] }
+serde_json = "1"

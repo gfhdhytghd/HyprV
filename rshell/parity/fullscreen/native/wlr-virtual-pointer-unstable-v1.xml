@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- wlr-virtual-pointer-unstable-v1 (wlroots protocols, MIT). Request order = opcodes. -->
+<protocol name="wlr_virtual_pointer_unstable_v1">
+  <interface name="zwlr_virtual_pointer_v1" version="2">
+    <enum name="error">
+      <entry name="invalid_axis" value="0"/>
+      <entry name="invalid_axis_source" value="1"/>
+    </enum>
+    <request name="motion">
+      <arg name="time" type="uint"/>
+      <arg name="dx" type="fixed"/>
+      <arg name="dy" type="fixed"/>
+    </request>
+    <request name="motion_absolute">
+      <arg name="time" type="uint"/>
+      <arg name="x" type="uint"/>
+      <arg name="y" type="uint"/>
+      <arg name="x_extent" type="uint"/>
+      <arg name="y_extent" type="uint"/>
+    </request>
+    <request name="button">
+      <arg name="time" type="uint"/>
+      <arg name="button" type="uint"/>
+      <arg name="state" type="uint"/>
+    </request>
+    <request name="axis">
+      <arg name="time" type="uint"/>
+      <arg name="axis" type="uint"/>
+      <arg name="value" type="fixed"/>
+    </request>
+    <request name="frame"/>
+    <request name="axis_source">
+      <arg name="axis_source" type="uint"/>
+    </request>
+    <request name="axis_stop">
+      <arg name="time" type="uint"/>
+      <arg name="axis" type="uint"/>
+    </request>
+    <request name="axis_discrete">
+      <arg name="time" type="uint"/>
+      <arg name="axis" type="uint"/>
+      <arg name="value" type="fixed"/>
+      <arg name="discrete" type="int"/>
+    </request>
+    <request name="destroy" type="destructor"/>
+  </interface>
+  <interface name="zwlr_virtual_pointer_manager_v1" version="2">
+    <request name="create_virtual_pointer">
+      <arg name="seat" type="object" interface="wl_seat" allow-null="true"/>
+      <arg name="id" type="new_id" interface="zwlr_virtual_pointer_v1"/>
+    </request>
+    <request name="destroy" type="destructor"/>
+    <request name="create_virtual_pointer_with_output" since="2">
+      <arg name="seat" type="object" interface="wl_seat" allow-null="true"/>
+      <arg name="output" type="object" interface="wl_output" allow-null="true"/>
+      <arg name="id" type="new_id" interface="zwlr_virtual_pointer_v1"/>
+    </request>
+  </interface>
+</protocol>

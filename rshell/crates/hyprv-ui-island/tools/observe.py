@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import importlib.util,os,subprocess,sys,tempfile,re
+crate=Path(__file__).resolve().parents[1];root=crate.parents[1];name=sys.argv[1];out=crate/'artifacts'/('observe-'+name+os.environ.get('HYPRV_OBSERVER_SUFFIX','')+('-interval'+os.environ['QT_QUICK_FRAME_SYNCHRONOUS_HOVER_INTERVAL']if 'QT_QUICK_FRAME_SYNCHRONOUS_HOVER_INTERVAL'in os.environ else''));out.mkdir(exist_ok=True)
+spec=importlib.util.spec_from_file_location('v',root/'parity/verify/verify.py');v=importlib.util.module_from_spec(spec);spec.loader.exec_module(v)
+with v.PrivateWeston()as socket, tempfile.TemporaryDirectory(prefix='island-qt-env-') as tmp:
+ cfg=Path(tmp);(cfg/'qt6ct').mkdir();user=Path.home()/'.config';font=user/'fontconfig'
+ if font.exists():(cfg/'fontconfig').symlink_to(font)
+ qt=(user/'qt6ct/qt6ct.conf').read_text();qt=re.sub(r'^color_scheme_path=.*','color_scheme_path=/usr/share/qt6ct/colors/darker.conf',qt,flags=re.M);qt=re.sub(r'^icon_theme=.*','icon_theme=Fluent-dark',qt,flags=re.M);(cfg/'qt6ct/qt6ct.conf').write_text(qt)
+ env={k:os.environ[k] for k in ['HOME','PATH','XDG_RUNTIME_DIR','LANG','TZ']if k in os.environ};env.update({k:os.environ[k]for k in ['HYPRV_SINGLE_FRAME','HYPRV_RADIUS_TRACE','QT_LOGGING_RULES','QT_QUICK_FRAME_SYNCHRONOUS_HOVER_INTERVAL']if k in os.environ});env.update({k:os.environ[k]for k in ['HYPRV_GL_TRACE_FILE','HYPRV_GL_TRACE_AT']if k in os.environ});env.update({'LD_PRELOAD':os.environ['HYPRV_QT_GL_PRELOAD']}if 'HYPRV_QT_GL_PRELOAD'in os.environ else{});env.update({'XDG_CONFIG_HOME':str(cfg),'QT_QPA_PLATFORMTHEME':'qt6ct','WAYLAND_DISPLAY':socket,'QT_QPA_PLATFORM':'wayland','QSG_RHI_BACKEND':'opengl','QSG_RENDER_LOOP':'basic','QT_DISABLE_SHADER_DISK_CACHE':'1','QT_WAYLAND_DISABLE_WINDOWDECORATION':'1'})
+ with(out/'trace.log').open('w')as log:subprocess.run([str(crate/'artifacts/qt-observer-build/parity-host'),'--fixture',os.environ.get('HYPRV_OBSERVER_FIXTURE',str(root/'parity/fixtures/island'/f'{name}.json')),'--scenes',str(root/'parity/scenes'),'--source',str(root.parent/'quickshell'),'--assets',str(root/'parity/fixtures/assets'),'--out',str(out),'--theme','dark','--scale',sys.argv[2] if len(sys.argv)>2 else '1'],env=env,stdout=log,stderr=subprocess.STDOUT,check=True)

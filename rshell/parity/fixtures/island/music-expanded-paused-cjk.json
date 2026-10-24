@@ -1,0 +1,42 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.7 CJK fallback + elision, no artist",
+  "canvas": {
+    "width": 640,
+    "height": 200
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [],
+    "now": "09:41",
+    "mediaAvailable": true,
+    "mediaPlaying": false,
+    "mediaTitle": "夜に駆ける・夜空はいつでも最高密度の青色だ（Long Title Elision Test）",
+    "mediaArtist": "",
+    "mediaPlayerName": "spotify",
+    "mediaArtUrl": "@asset:cover-warm.png",
+    "mediaLengthSeconds": 225,
+    "mediaPositionSeconds": 83,
+    "spectrumValues": []
+  },
+  "steps": [
+    {
+      "hover": {
+        "item": "island",
+        "x": 6,
+        "y": 19
+      }
+    },
+    {
+      "advance": 600
+    },
+    {
+      "capture": ""
+    }
+  ]
+}

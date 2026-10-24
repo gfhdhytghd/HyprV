@@ -1,0 +1,51 @@
+{
+ "component": "dialog",
+ "kind": "inline",
+ "inline": {
+  "file": "StartupConfirm.qml",
+  "name": "ActionButton"
+ },
+ "imports": [
+  "import QtQuick.Controls.Basic"
+ ],
+ "canvas": {
+  "width": 98,
+  "height": 42
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "text": "\"启动\""
+ },
+ "extra_qml": "    property bool keyboardReady: true\n    readonly property bool dark: Harness.dark\n    readonly property color foreground: dark ? \"#cdd6f4\" : \"#2b2b2c\"\n    readonly property color accent: dark ? \"#89b4fa\" : \"#1e66f5\"",
+ "fonts": [
+  "JetBrainsMono Nerd Font"
+ ],
+ "steps": [
+  {
+   "hover": {
+    "item": "target",
+    "x": 44,
+    "y": 16
+   }
+  },
+  {
+   "advance": 20
+  },
+  {
+   "press": {
+    "item": "target",
+    "x": 44,
+    "y": 16
+   }
+  },
+  {
+   "advance": 40
+  },
+  {
+   "capture": ""
+  }
+ ]
+}

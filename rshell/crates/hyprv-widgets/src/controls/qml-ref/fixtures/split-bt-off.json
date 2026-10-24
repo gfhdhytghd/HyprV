@@ -1,0 +1,29 @@
+{
+ "component": "split",
+ "kind": "file",
+ "file": "ControlPanelSplitTile.qml",
+ "canvas": {
+  "width": 144,
+  "height": 72
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "width": "134",
+  "height": "62",
+  "icon": "\"\\u{f00b2}\"",
+  "title": "\"Bluetooth\"",
+  "subtitle": "\"Turned off\""
+ },
+ "props": {
+  "active": false
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

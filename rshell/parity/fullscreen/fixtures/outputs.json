@@ -1,0 +1,19 @@
+{
+ "source": "hyprctl monitors all -j (read-only)",
+ "outputs": [
+  {
+   "name": "DP-4",
+   "make": "LG Electronics",
+   "model": "LG ULTRAFINE",
+   "x": 0,
+   "y": 0,
+   "width": 3072,
+   "height": 1728,
+   "scale": 2,
+   "width_px": 6144,
+   "height_px": 3456,
+   "refresh": 60.021,
+   "transform": 0
+  }
+ ]
+}

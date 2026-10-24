@@ -1,0 +1,26 @@
+{
+ "component": "mediacard",
+ "kind": "file",
+ "file": "ControlPanelMediaCard.qml",
+ "canvas": {
+  "width": 144,
+  "height": 144
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "width": "134",
+  "height": "134"
+ },
+ "props": {
+  "available": false
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

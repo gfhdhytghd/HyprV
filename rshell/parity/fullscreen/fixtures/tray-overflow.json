@@ -1,0 +1,648 @@
+{
+ "component": "fullscreen",
+ "scene": "desktop.qml",
+ "spec": "docs/spec/ui-bar.md §14",
+ "note": "tray overflow grid: 96 items overflow the real-width bar (component fixture used a 1000-px output)",
+ "now": "2026-10-23T09:41:00",
+ "crop": [
+  0,
+  0,
+  3072,
+  1728
+ ],
+ "settle_ms": 2500,
+ "services": {
+  "screens": [
+   {
+    "name": "DP-4",
+    "width": 3072,
+    "height": 1728,
+    "x": 0,
+    "y": 0,
+    "scale": 2
+   }
+  ],
+  "hyprland": {
+   "workspaces": [
+    {
+     "id": 1,
+     "name": "1"
+    },
+    {
+     "id": 2,
+     "name": "2"
+    },
+    {
+     "id": 3,
+     "name": "3"
+    },
+    {
+     "id": 4,
+     "name": "4"
+    },
+    {
+     "id": 5,
+     "name": "5"
+    }
+   ],
+   "focusedWorkspace": 1,
+   "activeToplevel": {
+    "title": "Firefox — Quickshell spec"
+   },
+   "fullscreen": false
+  },
+  "audio": {
+   "available": true,
+   "volume": 0.35,
+   "muted": false
+  },
+  "mpris": {
+   "players": []
+  },
+  "tray": [
+   {
+    "id": "chrome_status_icon_1-0",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-1",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-2",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-3",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-4",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-5",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-6",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-7",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-8",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-9",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-10",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-11",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-12",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-13",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-14",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-15",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-16",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-17",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-18",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-19",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-20",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-21",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-22",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-23",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-24",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-25",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-26",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-27",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-28",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-29",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-30",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-31",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-32",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-33",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-34",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-35",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-36",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-37",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-38",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-39",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-40",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-41",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-42",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-43",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-44",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-45",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-46",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-47",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-48",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-49",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-50",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-51",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-52",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-53",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-54",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-55",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-56",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-57",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-58",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-59",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-60",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-61",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-62",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-63",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-64",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-65",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-66",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-67",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-68",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-69",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-70",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-71",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-72",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-73",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-74",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-75",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-76",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-77",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-78",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-79",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-80",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-81",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-82",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-83",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-84",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-85",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-86",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-87",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-88",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-89",
+    "title": "Telegram",
+    "icon": "telegram"
+   },
+   {
+    "id": "chrome_status_icon_1-90",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord-91",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC-92",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx-93",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat-94",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram-95",
+    "title": "Telegram",
+    "icon": "telegram"
+   }
+  ],
+  "bluetooth": {
+   "enabled": true,
+   "devices": []
+  },
+  "powerProfile": "balanced"
+ },
+ "processes": [
+  {
+   "match": "desktop-state.py",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100000 0 0 900000 0 0 0 0 0 0\\ncpu0 25000 0 0 225000 0 0 0 0 0 0\\ncpu1 25000 0 0 225000 0 0 0 0 0 0\\ncpu2 25000 0 0 225000 0 0 0 0 0 0\\ncpu3 25000 0 0 225000 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemFree:        19005440 kB\\nMemAvailable:   38010880 kB\\n__TEMP__\\n45000\\n__CPU_POWER__\\n\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|   Receive                                                |  Transmit\\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 1000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100070 0 0 900930 0 0 0 0 0 0\\ncpu0 25017 0 0 225232 0 0 0 0 0 0\\ncpu1 25027 0 0 225222 0 0 0 0 0 0\\ncpu2 25037 0 0 225212 0 0 0 0 0 0\\ncpu3 25047 0 0 225202 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemFree:        19005440 kB\\nMemAvailable:   38010880 kB\\n__TEMP__\\n45000\\n__CPU_POWER__\\n\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|   Receive                                                |  Transmit\\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 0,
+     "data": "{\"type\": \"wifi\", \"data\": {\"present\": false, \"hardwareEnabled\": true, \"enabled\": true, \"connected\": false, \"iface\": \"\", \"ssid\": \"\", \"security\": \"\", \"signal\": 0, \"networks\": []}}"
+    },
+    {
+     "at": 0,
+     "data": "{\"type\": \"agent\", \"data\": {\"active\": false, \"count\": 0, \"sessions\": []}}"
+    }
+   ]
+  },
+  {
+   "match": "swaync-client",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"text\": \"\", \"alt\": \"none\", \"tooltip\": \"\", \"class\": \"none\"}"
+    }
+   ]
+  },
+  {
+   "match": "command -v cava",
+   "exitCode": 0
+  },
+  {
+   "match": "hyprctl -j animations",
+   "stdout": "[[{\"name\": \"global\", \"overridden\": true, \"bezier\": \"default\", \"enabled\": true, \"speed\": 8.0, \"style\": \"\"}, {\"name\": \"windows\", \"overridden\": true, \"bezier\": \"myBezier\", \"enabled\": true, \"speed\": 7.0, \"style\": \"slide\"}, {\"name\": \"windowsMove\", \"overridden\": false, \"bezier\": \"\", \"enabled\": true, \"speed\": 0.0, \"style\": \"\"}], [{\"name\": \"myBezier\", \"X0\": 0.1, \"Y0\": 0.9, \"X1\": 0.1, \"Y1\": 1.05}, {\"name\": \"default\", \"X0\": 0.0, \"Y0\": 0.75, \"X1\": 0.15, \"Y1\": 1.0}]]"
+  },
+  {
+   "match": "Fluent-light",
+   "stdout": "light=@HOME@/.local/share/icons/Fluent-light\ndark=@HOME@/.local/share/icons/Fluent-dark\nbase=@HOME@/.local/share/icons/Fluent\n"
+  },
+  {
+   "match": "media-status.sh",
+   "stdout": "available=false\nplaying=false\n",
+   "exitCode": 1
+  },
+  {
+   "match": "audio-spectrum.sh",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "12;38;74;92;66;41;58;80;95;61;33;47;70;52;28;15;"
+    }
+   ]
+  }
+ ],
+ "props": {},
+ "steps": [
+  {
+   "click": {
+    "text": "⋯"
+   }
+  },
+  {
+   "advance": 600
+  },
+  {
+   "capture": ""
+  }
+ ],
+ "outputs": [
+  {
+   "name": "DP-4",
+   "make": "LG Electronics",
+   "model": "LG ULTRAFINE",
+   "x": 0,
+   "y": 0,
+   "width": 3072,
+   "height": 1728,
+   "scale": 2,
+   "width_px": 6144,
+   "height_px": 3456,
+   "refresh": 60.021,
+   "transform": 0
+  }
+ ],
+ "derived_from": "fixtures/bar/tray-overflow-7.json (+ 96 items at real width)",
+ "targets": {
+  "0/click": [
+   2994,
+   29
+  ]
+ }
+}

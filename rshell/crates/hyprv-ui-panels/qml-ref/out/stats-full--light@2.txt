@@ -1,0 +1,37 @@
+api=3 dpr=2.00 highdpiActive=0 size=1096x1144
+TEXT  | family=JetBrainsMono Nerd Font px=15 w=700 | implicit=60.000x20.000 fm.asc=15.297 desc=4.500 height=19.797 leading=0.000 hadv=60.000
+   run font=鸿蒙黑体 style=Bold px=15.00 hint=0 glyphs=4 pos=[0.000 15.000 30.000 45.000 ] y=15.297
+TEXT  | family=JetBrainsMono Nerd Font px=11 w=500 | implicit=87.906x15.000 fm.asc=11.219 desc=3.297 height=14.516 leading=0.000 hadv=87.906
+   run font=鸿蒙黑体 style=Medium px=11.00 hint=0 glyphs=2 pos=[0.000 10.984 ] y=11.219
+   run font=JetBrainsMono Nerd Font style=Medium px=11.00 hint=0 glyphs=4 pos=[21.969 28.563 35.156 41.750 ] y=11.219
+   run font=JetBrainsMono Nerd Font style=Medium px=11.00 hint=0 glyphs=6 pos=[48.344 54.938 61.531 68.125 74.719 81.313 ] y=11.219
+TEXT  | family=JetBrainsMono Nerd Font px=16 w=700 | implicit=38.375x22.000 fm.asc=16.312 desc=4.797 height=21.109 leading=0.000 hadv=38.375
+   run font=JetBrainsMono Nerd Font style=Bold px=16.00 hint=0 glyphs=4 pos=[0.000 9.594 19.188 28.781 ] y=16.312
+TEXT  | family=JetBrainsMono Nerd Font px=16 w=700 | implicit=28.781x22.000 fm.asc=16.312 desc=4.797 height=21.109 leading=0.000 hadv=28.781
+   run font=JetBrainsMono Nerd Font style=Bold px=16.00 hint=0 glyphs=3 pos=[0.000 9.594 19.188 ] y=16.312
+TEXT  | family=JetBrainsMono Nerd Font px=13 w=700 | implicit=46.781x18.000 fm.asc=13.250 desc=3.891 height=17.141 leading=0.000 hadv=46.781
+   run font=JetBrainsMono Nerd Font style=Bold px=13.00 hint=0 glyphs=6 pos=[0.000 7.797 15.594 23.391 31.188 38.984 ] y=13.250
+TEXT  | family=JetBrainsMono Nerd Font px=13 w=700 | implicit=46.781x18.000 fm.asc=13.250 desc=3.891 height=17.141 leading=0.000 hadv=46.781
+   run font=JetBrainsMono Nerd Font style=Bold px=13.00 hint=0 glyphs=6 pos=[0.000 7.797 15.594 23.391 31.188 38.984 ] y=13.250
+TEXT  | family=JetBrainsMono Nerd Font px=13 w=700 | implicit=38.984x18.000 fm.asc=13.250 desc=3.891 height=17.141 leading=0.000 hadv=38.984
+   run font=JetBrainsMono Nerd Font style=Bold px=13.00 hint=0 glyphs=5 pos=[0.000 7.797 15.594 23.391 31.188 ] y=13.250
+TEXT  | family=JetBrainsMono Nerd Font px=13 w=700 | implicit=46.781x18.000 fm.asc=13.250 desc=3.891 height=17.141 leading=0.000 hadv=46.781
+   run font=JetBrainsMono Nerd Font style=Bold px=13.00 hint=0 glyphs=6 pos=[0.000 7.797 15.594 23.391 31.188 38.984 ] y=13.250
+TEXT  | family=JetBrainsMono Nerd Font px=13 w=700 | implicit=46.781x18.000 fm.asc=13.250 desc=3.891 height=17.141 leading=0.000 hadv=46.781
+   run font=JetBrainsMono Nerd Font style=Bold px=13.00 hint=0 glyphs=6 pos=[0.000 7.797 15.594 23.391 31.188 38.984 ] y=13.250
+TEXT  | family=JetBrainsMono Nerd Font px=13 w=700 | implicit=46.781x18.000 fm.asc=13.250 desc=3.891 height=17.141 leading=0.000 hadv=46.781
+   run font=JetBrainsMono Nerd Font style=Bold px=13.00 hint=0 glyphs=6 pos=[0.000 7.797 15.594 23.391 31.188 38.984 ] y=13.250
+TEXT  | family=JetBrainsMono Nerd Font px=13 w=700 | implicit=46.781x18.000 fm.asc=13.250 desc=3.891 height=17.141 leading=0.000 hadv=46.781
+   run font=JetBrainsMono Nerd Font style=Bold px=13.00 hint=0 glyphs=6 pos=[0.000 7.797 15.594 23.391 31.188 38.984 ] y=13.250
+TEXT  | family=JetBrainsMono Nerd Font px=13 w=700 | implicit=38.984x18.000 fm.asc=13.250 desc=3.891 height=17.141 leading=0.000 hadv=38.984
+   run font=JetBrainsMono Nerd Font style=Bold px=13.00 hint=0 glyphs=5 pos=[0.000 7.797 15.594 23.391 31.188 ] y=13.250
+TEXT  | family=JetBrainsMono Nerd Font px=16 w=700 | implicit=38.375x22.000 fm.asc=16.312 desc=4.797 height=21.109 leading=0.000 hadv=38.375
+   run font=JetBrainsMono Nerd Font style=Bold px=16.00 hint=0 glyphs=4 pos=[0.000 9.594 19.188 28.781 ] y=16.312
+TEXT  | family=JetBrainsMono Nerd Font px=16 w=700 | implicit=28.781x22.000 fm.asc=16.312 desc=4.797 height=21.109 leading=0.000 hadv=28.781
+   run font=JetBrainsMono Nerd Font style=Bold px=16.00 hint=0 glyphs=3 pos=[0.000 9.594 19.188 ] y=16.312
+TEXT  | family=JetBrainsMono Nerd Font px=16 w=700 | implicit=76.750x22.000 fm.asc=16.312 desc=4.797 height=21.109 leading=0.000 hadv=76.750
+   run font=JetBrainsMono Nerd Font style=Bold px=16.00 hint=0 glyphs=8 pos=[0.000 9.594 19.188 28.781 38.375 47.969 57.563 67.156 ] y=16.312
+TEXT  | family=JetBrainsMono Nerd Font px=16 w=700 | implicit=67.156x22.000 fm.asc=16.312 desc=4.797 height=21.109 leading=0.000 hadv=67.156
+   run font=JetBrainsMono Nerd Font style=Bold px=16.00 hint=0 glyphs=7 pos=[0.000 9.594 19.188 28.781 38.375 47.969 57.563 ] y=16.312
+TEXT  | family=JetBrainsMono Nerd Font px=11 w=500 | implicit=145.062x15.000 fm.asc=11.219 desc=3.297 height=14.516 leading=0.000 hadv=145.062
+   run font=JetBrainsMono Nerd Font style=Medium px=11.00 hint=0 glyphs=22 pos=[0.000 6.594 13.188 19.781 26.375 32.969 39.563 46.156 52.750 59.344 65.938 72.531 79.125 85.719 92.313 98.906 105.500 112.094 118.688 125.281 131.875 138.469 ] y=11.219

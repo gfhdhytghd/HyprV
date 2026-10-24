@@ -1,0 +1,22 @@
+[package]
+name = "hyprv-svc-desktop"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+hyprv-core = { path = "../hyprv-core" }
+tokio = { version = "1.54", features = ["rt", "sync", "net", "time", "io-util", "macros", "fs", "process"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["raw_value"] }
+libc = "0.2"
+zbus = { version = "5", default-features = false, features = ["tokio"] }
+zvariant = { version = "5", features = ["gvariant"] }
+futures-util = "0.3"
+toml_edit = "0.25"
+
+[dev-dependencies]
+tokio = { version = "1.54", features = ["rt", "sync", "net", "time", "io-util", "macros", "fs", "test-util"] }
+
+[[bin]]
+name = "hyprv-agent-hook"
+path = "src/bin/hyprv-agent-hook.rs"

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Cargo supplies the external subcommand name as argv[1].
+if [ "${1:-}" = xtask ]; then shift; fi
+exec cargo run --quiet --manifest-path "$(dirname "$0")/Cargo.toml" -- "$@"

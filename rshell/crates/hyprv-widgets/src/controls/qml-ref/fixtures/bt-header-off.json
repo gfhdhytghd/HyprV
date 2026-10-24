@@ -1,0 +1,24 @@
+{
+ "component": "bluetooth",
+ "kind": "file",
+ "file": "ControlPanelBluetoothDetails.qml",
+ "canvas": {
+  "width": 394,
+  "height": 250
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "width": "384",
+  "useExternalPanelBackground": "true"
+ },
+ "extra_qml": "    property bool bluetoothPresent: true\n    property bool bluetoothEnabled: false\n    property bool bluetoothDiscovering: false\n    property bool bluetoothPairable: true\n    property bool bluetoothShowUnnamedDevices: true\n    property bool bluetoothActionBusy: false\n    property var bluetoothDevices: []\n    property string bluetoothActionMessage: \"\"",
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

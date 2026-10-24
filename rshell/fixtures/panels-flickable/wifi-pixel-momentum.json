@@ -1,0 +1,126 @@
+[
+  {
+    "t": 304,
+    "type": "wheel",
+    "pixel": true,
+    "phase": 1
+  },
+  {
+    "t": 320,
+    "type": "wheel",
+    "pixel": true,
+    "py": -10,
+    "ay": -15,
+    "phase": 2
+  },
+  {
+    "t": 336,
+    "type": "wheel",
+    "pixel": true,
+    "py": -10,
+    "ay": -15,
+    "phase": 2
+  },
+  {
+    "t": 352,
+    "type": "wheel",
+    "pixel": true,
+    "py": -10,
+    "ay": -15,
+    "phase": 2
+  },
+  {
+    "t": 368,
+    "type": "wheel",
+    "pixel": true,
+    "py": -10,
+    "ay": -15,
+    "phase": 2
+  },
+  {
+    "t": 384,
+    "type": "wheel",
+    "pixel": true,
+    "py": -10,
+    "ay": -15,
+    "phase": 2
+  },
+  {
+    "t": 400,
+    "type": "wheel",
+    "pixel": true,
+    "py": -10,
+    "ay": -15,
+    "phase": 2
+  },
+  {
+    "t": 416,
+    "type": "wheel",
+    "pixel": true,
+    "py": -10,
+    "ay": -15,
+    "phase": 2
+  },
+  {
+    "t": 432,
+    "type": "wheel",
+    "pixel": true,
+    "py": -10,
+    "ay": -15,
+    "phase": 2
+  },
+  {
+    "t": 464,
+    "type": "wheel",
+    "pixel": true,
+    "phase": 4,
+    "py": -8,
+    "ay": -15
+  },
+  {
+    "t": 480,
+    "type": "wheel",
+    "pixel": true,
+    "phase": 4,
+    "py": -7,
+    "ay": -15
+  },
+  {
+    "t": 496,
+    "type": "wheel",
+    "pixel": true,
+    "phase": 4,
+    "py": -6,
+    "ay": -15
+  },
+  {
+    "t": 512,
+    "type": "wheel",
+    "pixel": true,
+    "phase": 4,
+    "py": -5,
+    "ay": -15
+  },
+  {
+    "t": 528,
+    "type": "wheel",
+    "pixel": true,
+    "phase": 4,
+    "py": -4,
+    "ay": -15
+  },
+  {
+    "t": 544,
+    "type": "wheel",
+    "pixel": true,
+    "phase": 4,
+    "py": -3,
+    "ay": -15
+  },
+  {
+    "t": 560,
+    "type": "wheel",
+    "pixel": true,
+    "phase": 3
+  }
+]

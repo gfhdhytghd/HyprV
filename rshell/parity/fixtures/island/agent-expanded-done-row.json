@@ -1,0 +1,65 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.11 accent ✓ slots",
+  "canvas": {
+    "width": 640,
+    "height": 220
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [
+      {
+        "id": "codex-session-0",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 0",
+        "project": "rshell",
+        "status": "completed",
+        "current_tool": "",
+        "detail": "Finished",
+        "progress": 1.0
+      },
+      {
+        "id": "d2",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 0",
+        "project": "hypr",
+        "status": "completed",
+        "current_tool": "",
+        "detail": "Finished",
+        "progress": 1.0
+      }
+    ],
+    "now": "09:41",
+    "mediaAvailable": false,
+    "mediaPlaying": false,
+    "mediaTitle": "",
+    "mediaArtist": "",
+    "mediaPlayerName": "",
+    "mediaArtUrl": "",
+    "mediaLengthSeconds": 0,
+    "mediaPositionSeconds": 0,
+    "spectrumValues": []
+  },
+  "steps": [
+    {
+      "hover": {
+        "item": "island",
+        "x": 10,
+        "y": 19
+      }
+    },
+    {
+      "advance": 600
+    },
+    {
+      "capture": ""
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+ "component": "calendar",
+ "kind": "file",
+ "file": "WeekCalendarPanel.qml",
+ "canvas": {
+  "width": 520,
+  "height": 500
+ },
+ "at": [
+  0,
+  0
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "width": "520",
+  "height": "500",
+  "embeddedSurface": "true",
+  "bridge": "bridgeMock"
+ },
+ "extra_qml": "    QtObject {\n        id: bridgeMock\n        property bool connected: true\n        property string lastError: \"\"\n        property date weekStart: new Date(2026, 9, 19)\n        property var calendars: [\n            {\"id\": \"work\", \"summary\": \"Work\", \"color\": \"#4f86c6\"},\n            {\"id\": \"home\", \"summary\": \"Home\", \"color\": \"#e07a5f\"},\n            {\"id\": \"hidden\", \"summary\": \"Hidden\", \"color\": \"#999999\", \"hidden\": true}]\n        property var events: [\n            {\"uid\": \"a1\", \"calendarId\": \"home\", \"summary\": \"Trip to Kyoto\", \"allDay\": true, \"start\": \"2026-10-21T00:00:00Z\", \"end\": \"2026-10-24T00:00:00Z\"},\n            {\"uid\": \"a2\", \"calendarId\": \"work\", \"summary\": \"Release day\", \"allDay\": true, \"start\": \"2026-10-23T00:00:00Z\", \"end\": \"2026-10-24T00:00:00Z\"},\n            {\"uid\": \"t1\", \"calendarId\": \"work\", \"summary\": \"Standup\", \"allDay\": false, \"start\": \"2026-10-23T09:00:00\", \"end\": \"2026-10-23T09:30:00\"},\n            {\"uid\": \"t2\", \"calendarId\": \"work\", \"summary\": \"Design review\", \"allDay\": false, \"start\": \"2026-10-23T10:00:00\", \"end\": \"2026-10-23T11:30:00\"},\n            {\"uid\": \"t3\", \"calendarId\": \"home\", \"summary\": \"Dentist\", \"allDay\": false, \"start\": \"2026-10-23T10:30:00\", \"end\": \"2026-10-23T11:00:00\"},\n            {\"uid\": \"t4\", \"calendarId\": \"work\", \"summary\": \"1:1\", \"allDay\": false, \"start\": \"2026-10-20T08:00:00\", \"end\": \"2026-10-20T08:20:00\"},\n            {\"uid\": \"t5\", \"calendarId\": \"hidden\", \"summary\": \"Invisible\", \"allDay\": false, \"start\": \"2026-10-22T09:00:00\", \"end\": \"2026-10-22T10:00:00\"}]\n        function previousWeek() {}\n        function nextWeek() {}\n        function openEvent(e) {}\n        function createEvent() {}\n    }",
+ "fonts": [
+  "JetBrainsMono Nerd Font"
+ ],
+ "now": "2026-10-23T09:41:00",
+ "settle_ms": 800,
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

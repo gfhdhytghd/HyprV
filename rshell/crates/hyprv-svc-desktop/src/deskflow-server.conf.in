@@ -1,0 +1,47 @@
+section: screens
+		WindowsVM:
+		halfDuplexCapsLock = false
+		halfDuplexNumLock = false
+		halfDuplexScrollLock = false
+		xtestIsXineramaUnaware = false
+		switchCorners = none
+		switchCornerSize = 0
+	linhaikuodeMac-mini.local:
+		halfDuplexCapsLock = false
+		halfDuplexNumLock = false
+		halfDuplexScrollLock = false
+		xtestIsXineramaUnaware = false
+		switchCorners = none
+		switchCornerSize = 0
+	SuperPower:
+		halfDuplexCapsLock = false
+		halfDuplexNumLock = false
+		halfDuplexScrollLock = false
+		xtestIsXineramaUnaware = false
+		switchCorners = none
+		switchCornerSize = 0
+end
+
+section: aliases
+end
+
+section: links
+	__TARGET_SCREEN__:
+		left(0,100) = SuperPower(__PORTAL_START__,__PORTAL_END__)
+	SuperPower:
+		right(__PORTAL_START__,__PORTAL_END__) = __TARGET_SCREEN__(0,100)
+end
+
+section: options
+	protocol = barrier
+	relativeMouseMoves = false
+	win32KeepForeground = false
+	defaultLockToScreenState = false
+	disableLockToScreen = false
+	clipboardSharing = true
+		clipboardSharingSize = 3072
+		switchCorners = none
+		switchCornerSize = 0
+		keystroke(control+alt+BracketR) = switchToScreen(__TARGET_SCREEN__)
+		keystroke(control+alt+BracketL) = switchToScreen(SuperPower)
+end

@@ -1,0 +1,15 @@
+[package]
+name = "hyprv-widgets"
+version.workspace = true
+edition.workspace = true
+license = "MIT AND LGPL-3.0-only"
+
+[dependencies]
+libc = "0.2"
+hyprv-ui = { path = "../hyprv-ui" }
+usvg = { version = "0.45.1", default-features = false }
+
+[features]
+default = ["controls", "viz"]
+controls = []
+viz = []

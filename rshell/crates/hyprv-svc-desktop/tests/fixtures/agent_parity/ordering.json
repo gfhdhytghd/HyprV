@@ -1,0 +1,382 @@
+{
+ "name": "ordering",
+ "ticks": [
+  {
+   "t": 1000.0,
+   "lease": true,
+   "procs": [
+    {
+     "pid": 1,
+     "comm": "systemd",
+     "ppid": 0,
+     "start": 1,
+     "argv": [
+      "/sbin/init"
+     ]
+    },
+    {
+     "pid": 400,
+     "comm": "bash",
+     "ppid": 1,
+     "start": 10,
+     "argv": [
+      "bash"
+     ]
+    },
+    {
+     "pid": 200,
+     "comm": "claude",
+     "ppid": 400,
+     "start": 50,
+     "argv": [
+      "claude"
+     ],
+     "cwd": "/w/alpha"
+    },
+    {
+     "pid": 300,
+     "comm": "codex",
+     "ppid": 400,
+     "start": 60,
+     "argv": [
+      "/usr/bin/codex"
+     ],
+     "cwd": "/w/gamma"
+    },
+    {
+     "pid": 301,
+     "comm": "systemd-inhibit",
+     "ppid": 300,
+     "start": 61,
+     "argv": [
+      "systemd-inhibit",
+      "--who",
+      "codex",
+      "--why",
+      "Codex is running an active turn",
+      "sleep",
+      "1d"
+     ]
+    },
+    {
+     "pid": 500,
+     "comm": "claude",
+     "ppid": 400,
+     "start": 80,
+     "argv": [
+      "claude",
+      "--version"
+     ]
+    }
+   ],
+   "hook": {
+    "h1": {
+     "id": "h1",
+     "source": "claude",
+     "source_label": "Claude",
+     "title": "H1",
+     "project": "p",
+     "cwd": "/w/p",
+     "status": "running",
+     "event": "PreToolUse",
+     "detail": "Bash",
+     "current_tool": "",
+     "progress": 0.3,
+     "last_activity": 1000.0,
+     "started_at": 1000.0,
+     "had_activity": true,
+     "terminal": {
+      "pid": 400
+     }
+    }
+   }
+  },
+  {
+   "t": 1000.5
+  },
+  {
+   "t": 1000.7,
+   "hook": {
+    "h1": {
+     "id": "h1",
+     "source": "claude",
+     "source_label": "Claude",
+     "title": "H1",
+     "project": "p",
+     "cwd": "/w/p",
+     "status": "running",
+     "event": "PostToolUse",
+     "detail": "Edit",
+     "current_tool": "",
+     "progress": 0.3,
+     "last_activity": 1000.7,
+     "started_at": 1000.7,
+     "had_activity": true,
+     "terminal": {
+      "pid": 400
+     }
+    }
+   }
+  },
+  {
+   "t": 1001.0
+  },
+  {
+   "t": 1001.5
+  },
+  {
+   "t": 1002.0
+  },
+  {
+   "t": 1002.2,
+   "procs": [
+    {
+     "pid": 1,
+     "comm": "systemd",
+     "ppid": 0,
+     "start": 1,
+     "argv": [
+      "/sbin/init"
+     ]
+    },
+    {
+     "pid": 400,
+     "comm": "bash",
+     "ppid": 1,
+     "start": 10,
+     "argv": [
+      "bash"
+     ]
+    },
+    {
+     "pid": 200,
+     "comm": "claude",
+     "ppid": 400,
+     "start": 50,
+     "argv": [
+      "claude"
+     ],
+     "cwd": "/w/alpha"
+    },
+    {
+     "pid": 150,
+     "comm": "claude",
+     "ppid": 400,
+     "start": 70,
+     "argv": [
+      "/home/u/.local/bin/claude",
+      "--resume"
+     ],
+     "cwd": "/w/beta"
+    },
+    {
+     "pid": 300,
+     "comm": "codex",
+     "ppid": 400,
+     "start": 60,
+     "argv": [
+      "/usr/bin/codex"
+     ],
+     "cwd": "/w/gamma"
+    },
+    {
+     "pid": 301,
+     "comm": "systemd-inhibit",
+     "ppid": 300,
+     "start": 61,
+     "argv": [
+      "systemd-inhibit",
+      "--who",
+      "codex",
+      "--why",
+      "Codex is running an active turn",
+      "sleep",
+      "1d"
+     ]
+    },
+    {
+     "pid": 500,
+     "comm": "claude",
+     "ppid": 400,
+     "start": 80,
+     "argv": [
+      "claude",
+      "--version"
+     ]
+    }
+   ]
+  },
+  {
+   "t": 1002.5
+  },
+  {
+   "t": 1003.0
+  },
+  {
+   "t": 1003.4,
+   "hook": {
+    "hA": {
+     "id": "hA",
+     "source": "claude",
+     "source_label": "Claude",
+     "title": "HA",
+     "project": "p",
+     "cwd": "/w/p",
+     "status": "waitingApproval",
+     "event": "PermissionRequest",
+     "detail": "Approve Bash?",
+     "current_tool": "",
+     "progress": 0.3,
+     "last_activity": 1003.4,
+     "started_at": 1003.4,
+     "had_activity": true,
+     "terminal": {
+      "pid": 200
+     }
+    }
+   }
+  },
+  {
+   "t": 1003.5
+  },
+  {
+   "t": 1004.0
+  },
+  {
+   "t": 1004.5
+  },
+  {
+   "t": 1005.0
+  },
+  {
+   "t": 1005.2,
+   "procs": [
+    {
+     "pid": 1,
+     "comm": "systemd",
+     "ppid": 0,
+     "start": 1,
+     "argv": [
+      "/sbin/init"
+     ]
+    },
+    {
+     "pid": 400,
+     "comm": "bash",
+     "ppid": 1,
+     "start": 10,
+     "argv": [
+      "bash"
+     ]
+    },
+    {
+     "pid": 200,
+     "comm": "claude",
+     "ppid": 400,
+     "start": 50,
+     "argv": [
+      "claude"
+     ],
+     "cwd": "/w/alpha"
+    },
+    {
+     "pid": 150,
+     "comm": "claude",
+     "ppid": 400,
+     "start": 70,
+     "argv": [
+      "/home/u/.local/bin/claude",
+      "--resume"
+     ],
+     "cwd": "/w/beta"
+    },
+    {
+     "pid": 300,
+     "comm": "codex",
+     "ppid": 400,
+     "start": 60,
+     "argv": [
+      "/usr/bin/codex"
+     ],
+     "cwd": "/w/gamma"
+    },
+    {
+     "pid": 500,
+     "comm": "claude",
+     "ppid": 400,
+     "start": 80,
+     "argv": [
+      "claude",
+      "--version"
+     ]
+    }
+   ]
+  },
+  {
+   "t": 1005.5
+  },
+  {
+   "t": 1006.0
+  },
+  {
+   "t": 1006.5
+  },
+  {
+   "t": 1007.0
+  },
+  {
+   "t": 1007.5
+  },
+  {
+   "t": 1007.9,
+   "hook": {
+    "h2": {
+     "id": "h2",
+     "source": "claude",
+     "source_label": "Claude",
+     "title": "H2",
+     "project": "p",
+     "cwd": "/w/p",
+     "status": "running",
+     "event": "PreToolUse",
+     "detail": "Read",
+     "current_tool": "",
+     "progress": 0.3,
+     "last_activity": 1007.9,
+     "started_at": 1007.9,
+     "had_activity": true,
+     "terminal": {
+      "pid": 400
+     }
+    }
+   }
+  },
+  {
+   "t": 1008.0
+  },
+  {
+   "t": 1008.5
+  },
+  {
+   "t": 1009.0
+  },
+  {
+   "t": 1009.5
+  },
+  {
+   "t": 1010.0
+  },
+  {
+   "t": 1010.5
+  },
+  {
+   "t": 1011.0
+  },
+  {
+   "t": 1011.5
+  },
+  {
+   "t": 1012.0
+  }
+ ]
+}

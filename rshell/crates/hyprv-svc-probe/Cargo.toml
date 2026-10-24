@@ -1,0 +1,23 @@
+[package]
+name = "hyprv-svc-probe"
+version.workspace = true
+edition.workspace = true
+[features]
+default = ["net", "media", "power", "sys", "desktop"]
+net = ["dep:hyprv-svc-net"]
+media = ["dep:hyprv-svc-media"]
+power = ["dep:hyprv-svc-power", "dep:hyprv-privhelper"]
+sys = ["dep:hyprv-svc-sys"]
+desktop = ["dep:hyprv-svc-desktop"]
+[dependencies]
+hyprv-core = {path="../hyprv-core"}
+hyprv-svc-net = {path="../hyprv-svc-net", optional=true}
+hyprv-svc-media = {path="../hyprv-svc-media", optional=true}
+hyprv-svc-power = {path="../hyprv-svc-power", optional=true}
+hyprv-privhelper = {path="../hyprv-privhelper", optional=true}
+hyprv-svc-sys = {path="../hyprv-svc-sys", optional=true}
+hyprv-svc-desktop = {path="../hyprv-svc-desktop", optional=true}
+tokio = {version="1.54",features=["rt","macros","time","sync","signal"]}
+serde = {version="1",features=["derive"]}
+serde_json = "1"
+zbus = {version="5",default-features=false,features=["tokio"]}

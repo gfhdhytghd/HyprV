@@ -1,0 +1,181 @@
+{
+ "width": 320,
+ "height": 250,
+ "samples": [
+  {
+   "name": "clock",
+   "text": "12:34",
+   "px": 16,
+   "weight": 700,
+   "x": 10,
+   "y": 8,
+   "mode": "native"
+  },
+  {
+   "name": "cpu",
+   "text": " 7%",
+   "px": 16,
+   "weight": 700,
+   "x": 80,
+   "y": 8,
+   "mode": "native"
+  },
+  {
+   "name": "arch",
+   "text": "",
+   "px": 17,
+   "weight": 700,
+   "x": 160,
+   "y": 7,
+   "mode": "native"
+  },
+  {
+   "name": "vol",
+   "text": "",
+   "px": 16,
+   "weight": 700,
+   "x": 190,
+   "y": 8,
+   "mode": "native"
+  },
+  {
+   "name": "title",
+   "text": "Firefox — Quickshell spec",
+   "px": 16,
+   "weight": 700,
+   "x": 10.4,
+   "y": 40,
+   "mode": "native"
+  },
+  {
+   "name": "frac",
+   "text": "12:34",
+   "px": 16,
+   "weight": 700,
+   "x": 200.9,
+   "y": 121.3,
+   "mode": "native"
+  },
+  {
+   "name": "charge",
+   "text": "正在充电",
+   "px": 12,
+   "weight": 600,
+   "x": 10,
+   "y": 72,
+   "mode": "native"
+  },
+  {
+   "name": "power",
+   "text": "当前净功率",
+   "px": 13,
+   "weight": 600,
+   "x": 110,
+   "y": 72,
+   "mode": "native"
+  },
+  {
+   "name": "estimate",
+   "text": "预计剩余使用时间 3小时5分钟",
+   "px": 13,
+   "weight": 700,
+   "x": 10,
+   "y": 96,
+   "mode": "native"
+  },
+  {
+   "name": "menu",
+   "text": "Open Settings…",
+   "px": 14,
+   "weight": 400,
+   "x": 10,
+   "y": 124,
+   "mode": "native"
+  },
+  {
+   "name": "cal_dt",
+   "text": "12:34",
+   "px": 16,
+   "weight": 700,
+   "x": 10,
+   "y": 156,
+   "mode": "qt"
+  },
+  {
+   "name": "cal_cn",
+   "text": "正在连接日历…",
+   "px": 12,
+   "weight": 400,
+   "x": 80,
+   "y": 156,
+   "mode": "qt"
+  },
+  {
+   "name": "cal_day",
+   "text": "一 二 三 四 五",
+   "px": 11,
+   "weight": 400,
+   "x": 10,
+   "y": 184,
+   "mode": "qt"
+  },
+  {
+   "name": "cal_num",
+   "text": "23",
+   "px": 14,
+   "weight": 400,
+   "x": 200,
+   "y": 184,
+   "mode": "qt"
+  },
+  {
+   "name": "fallback",
+   "text": "D",
+   "px": 10,
+   "weight": 400,
+   "x": 240,
+   "y": 184,
+   "mode": "qt"
+  },
+  {
+   "name": "spaced",
+   "text": "MIHOMO ON",
+   "px": 9,
+   "weight": 700,
+   "x": 10,
+   "y": 200,
+   "mode": "qt",
+   "letterSpacing": 3
+  },
+  {
+   "name": "spacedn",
+   "text": "12:34",
+   "px": 16,
+   "weight": 700,
+   "x": 120,
+   "y": 196,
+   "mode": "native",
+   "letterSpacing": 3
+  },
+  {
+   "name": "elide",
+   "text": "Firefox — a very long window title that must elide",
+   "px": 16,
+   "weight": 700,
+   "x": 10.4,
+   "y": 226,
+   "mode": "native",
+   "width": 150.5
+  },
+  {
+   "name": "elidecn",
+   "text": "已接通电源，当前未充电",
+   "px": 12,
+   "weight": 600,
+   "x": 180,
+   "y": 228,
+   "mode": "native",
+   "width": 100
+  }
+ ]
+}

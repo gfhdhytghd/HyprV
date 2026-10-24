@@ -1,0 +1,23 @@
+{
+ "component": "badge",
+ "kind": "file",
+ "file": "WifiSecurityBadge.qml",
+ "canvas": {
+  "width": 32,
+  "height": 30
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "shellRoot": "root",
+  "cornerRadius": "9",
+  "active": "true"
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

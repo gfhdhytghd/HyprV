@@ -1,0 +1,13 @@
+api=3 dpr=2.00 highdpiActive=0 size=720x312
+TEXT  | family=HarmonyOS Sans SC px=16 w=500 | implicit=96.000x24.000 fm.asc=14.844 desc=3.891 height=18.734 leading=0.000 hadv=96.000
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=HarmonyOS Sans SC style=Medium px=16.00 hint=0 glyphs=6 pos=[0.000 16.000 32.000 48.000 64.000 80.000 ] y=14.844
+TEXT  | family=HarmonyOS Sans SC px=14 w=400 | implicit=209.766x22.000 fm.asc=12.984 desc=3.406 height=16.391 leading=0.000 hadv=209.766
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=HarmonyOS Sans SC style=Regular px=14.00 hint=0 glyphs=15 pos=[0.000 13.984 27.969 41.953 55.938 69.922 83.906 97.891 111.875 125.859 139.844 153.828 167.813 181.797 195.781 ] y=12.984
+TEXT  | family=HarmonyOS Sans SC px=13 w=500 | implicit=52.000x16.000 fm.asc=12.062 desc=3.172 height=15.234 leading=0.000 hadv=52.000
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=HarmonyOS Sans SC style=Medium px=13.00 hint=0 glyphs=4 pos=[0.000 13.000 26.000 39.000 ] y=12.062
+TEXT  | family=HarmonyOS Sans SC px=13 w=500 | implicit=26.000x16.000 fm.asc=12.062 desc=3.172 height=15.234 leading=0.000 hadv=26.000
+   df narrow=0 glyphCount=29824 base=54 scale=16 radius=80
+   run font=HarmonyOS Sans SC style=Medium px=13.00 hint=0 glyphs=2 pos=[0.000 13.000 ] y=12.062

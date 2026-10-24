@@ -1,0 +1,5 @@
+module Quickshell.Bluetooth
+singleton Bluetooth 1.0 Bluetooth.qml
+BluetoothDevice 1.0 BluetoothDevice.qml
+BluetoothAdapter 1.0 BluetoothAdapter.qml
+BluetoothDeviceState 1.0 BluetoothDeviceState.qml

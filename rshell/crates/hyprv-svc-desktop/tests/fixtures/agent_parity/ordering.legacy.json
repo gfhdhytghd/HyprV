@@ -1,0 +1,900 @@
+{
+ "name": "ordering",
+ "ticks": [
+  {
+   "t": 1000.0,
+   "file": "{\"version\":1,\"updated_at\":1000.0,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Bash\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.0,\"started_at\":1000.0,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "h1",
+     "running",
+     "Bash"
+    ],
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ]
+   ]
+  },
+  {
+   "t": 1000.5,
+   "file": "{\"version\":1,\"updated_at\":1000.0,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Bash\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.0,\"started_at\":1000.0,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "h1",
+     "running",
+     "Bash"
+    ],
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ]
+   ]
+  },
+  {
+   "t": 1000.7,
+   "file": "{\"version\":1,\"updated_at\":1000.7,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ]
+   ]
+  },
+  {
+   "t": 1001.0,
+   "file": "{\"version\":1,\"updated_at\":1000.7,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ]
+   ]
+  },
+  {
+   "t": 1001.5,
+   "file": "{\"version\":1,\"updated_at\":1000.7,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1002.0,
+   "file": "{\"version\":1,\"updated_at\":1000.7,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1002.2,
+   "file": "{\"version\":1,\"updated_at\":1000.7,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1002.5,
+   "file": "{\"version\":1,\"updated_at\":1000.7,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1003.0,
+   "file": "{\"version\":1,\"updated_at\":1000.7,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1003.4,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "hA",
+     "waitingApproval",
+     "Approve Bash?"
+    ],
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1003.5,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "hA",
+     "waitingApproval",
+     "Approve Bash?"
+    ],
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1004.0,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "hA",
+     "waitingApproval",
+     "Approve Bash?"
+    ],
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1004.5,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1005.0,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1005.2,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1005.5,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "codexproc-300-60",
+     "running",
+     "Active turn"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ]
+   ]
+  },
+  {
+   "t": 1006.0,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1006.5,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1007.0,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1007.5,
+   "file": "{\"version\":1,\"updated_at\":1003.4,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1007.9,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1008.0,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1008.5,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1009.0,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1009.5,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1010.0,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1010.5,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1011.0,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1011.5,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  },
+  {
+   "t": 1012.0,
+   "file": "{\"version\":1,\"updated_at\":1007.9,\"sessions\":{\"h1\":{\"id\":\"h1\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H1\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PostToolUse\",\"detail\":\"Edit\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1000.7,\"started_at\":1000.7,\"had_activity\":true,\"terminal\":{\"pid\":400}},\"hA\":{\"id\":\"hA\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"HA\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"waitingApproval\",\"event\":\"PermissionRequest\",\"detail\":\"Approve Bash?\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1003.4,\"started_at\":1003.4,\"had_activity\":true,\"terminal\":{\"pid\":200}},\"h2\":{\"id\":\"h2\",\"source\":\"claude\",\"source_label\":\"Claude\",\"title\":\"H2\",\"project\":\"p\",\"cwd\":\"/w/p\",\"status\":\"running\",\"event\":\"PreToolUse\",\"detail\":\"Read\",\"current_tool\":\"\",\"progress\":0.3,\"last_activity\":1007.9,\"started_at\":1007.9,\"had_activity\":true,\"terminal\":{\"pid\":400}}},\"pending_requests\":{}}",
+   "legacy": [
+    [
+     "claudeproc-150-70",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "hA",
+     "running",
+     "Approve Bash?"
+    ],
+    [
+     "h2",
+     "running",
+     "Read"
+    ],
+    [
+     "claudeproc-200-50",
+     "running",
+     "Claude Code"
+    ],
+    [
+     "h1",
+     "running",
+     "Edit"
+    ],
+    [
+     "codexproc-300-60",
+     "completed",
+     "Done"
+    ]
+   ]
+  }
+ ]
+}

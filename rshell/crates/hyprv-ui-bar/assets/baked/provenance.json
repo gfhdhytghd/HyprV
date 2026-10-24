@@ -1,0 +1,16 @@
+{
+  "qt_svg_version": "6.12.0",
+  "tool_sha256": "e436487ae95aafa41ac33ce0f69c512221869d2550f1846ca35f16d8f2ac75a4",
+  "scales": [
+    1,
+    1.25,
+    1.5,
+    1.75,
+    2,
+    2.5,
+    3,
+    4
+  ],
+  "entries": 288,
+  "runtime_qt": false
+}

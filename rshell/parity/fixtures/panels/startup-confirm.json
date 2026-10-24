@@ -1,0 +1,111 @@
+{
+ "component": "panels",
+ "scene": "desktop.qml",
+ "spec": "docs/spec/ui-panels.md §5",
+ "note": "§5.21 initial (keyboard focus on 本次跳过 after 150 ms)",
+ "now": "2026-10-23T09:41:00",
+ "crop": [
+  1290,
+  680,
+  492,
+  370
+ ],
+ "settle_ms": 0,
+ "services": {
+  "screens": [
+   {
+    "name": "DP-4",
+    "width": 3072,
+    "height": 1728,
+    "x": 0,
+    "y": 0,
+    "scale": 2
+   }
+  ],
+  "hyprland": {
+   "workspaces": [
+    {
+     "id": 1,
+     "name": "1"
+    },
+    {
+     "id": 2,
+     "name": "2"
+    },
+    {
+     "id": 3,
+     "name": "3"
+    },
+    {
+     "id": 4,
+     "name": "4"
+    },
+    {
+     "id": 5,
+     "name": "5"
+    }
+   ],
+   "focusedWorkspace": 1,
+   "activeToplevel": {
+    "title": "Firefox — Quickshell spec"
+   },
+   "fullscreen": false
+  },
+  "audio": {
+   "available": true,
+   "volume": 0.35,
+   "muted": false
+  },
+  "mpris": {
+   "players": []
+  },
+  "tray": [
+   {
+    "id": "chrome_status_icon_1",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram",
+    "title": "Telegram",
+    "icon": "telegram"
+   }
+  ],
+  "bluetooth": {
+   "enabled": true,
+   "devices": []
+  },
+  "powerProfile": "balanced"
+ },
+ "processes": [],
+ "props": {},
+ "steps": [
+  {
+   "advance": 400
+  },
+  {
+   "capture": ""
+  }
+ ],
+ "entry": "StartupConfirm.qml"
+}

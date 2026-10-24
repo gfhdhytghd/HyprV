@@ -1,0 +1,231 @@
+{
+ "component": "panels",
+ "scene": "desktop.qml",
+ "spec": "docs/spec/ui-panels.md §5",
+ "note": "§5.15 network disconnected (未连接)",
+ "now": "2026-10-23T09:41:00",
+ "crop": [
+  0,
+  50,
+  1000,
+  760
+ ],
+ "settle_ms": 6500,
+ "services": {
+  "screens": [
+   {
+    "name": "DP-4",
+    "width": 3072,
+    "height": 1728,
+    "x": 0,
+    "y": 0,
+    "scale": 2
+   }
+  ],
+  "hyprland": {
+   "workspaces": [
+    {
+     "id": 1,
+     "name": "1"
+    },
+    {
+     "id": 2,
+     "name": "2"
+    },
+    {
+     "id": 3,
+     "name": "3"
+    },
+    {
+     "id": 4,
+     "name": "4"
+    },
+    {
+     "id": 5,
+     "name": "5"
+    }
+   ],
+   "focusedWorkspace": 1,
+   "activeToplevel": {
+    "title": "Firefox — Quickshell spec"
+   },
+   "fullscreen": false
+  },
+  "audio": {
+   "available": true,
+   "volume": 0.35,
+   "muted": false
+  },
+  "mpris": {
+   "players": []
+  },
+  "tray": [
+   {
+    "id": "chrome_status_icon_1",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram",
+    "title": "Telegram",
+    "icon": "telegram"
+   }
+  ],
+  "bluetooth": {
+   "enabled": true,
+   "devices": []
+  },
+  "powerProfile": "balanced"
+ },
+ "processes": [
+  {
+   "match": "desktop-state.py",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"type\": \"wifi\", \"data\": {\"present\": false, \"hardwareEnabled\": true, \"enabled\": true, \"connected\": false, \"iface\": \"\", \"ssid\": \"\", \"security\": \"\", \"signal\": 0, \"networks\": []}}"
+    },
+    {
+     "at": 0,
+     "data": "{\"type\": \"agent\", \"data\": {\"active\": false, \"count\": 0, \"sessions\": []}}"
+    },
+    {
+     "at": 0,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100000 0 0 900000 0 0 0 0 0 0\\ncpu0 12500 0 0 112500 0 0 0 0 0 0\\ncpu1 12500 0 0 112500 0 0 0 0 0 0\\ncpu2 12500 0 0 112500 0 0 0 0 0 0\\ncpu3 12500 0 0 112500 0 0 0 0 0 0\\ncpu4 12500 0 0 112500 0 0 0 0 0 0\\ncpu5 12500 0 0 112500 0 0 0 0 0 0\\ncpu6 12500 0 0 112500 0 0 0 0 0 0\\ncpu7 12500 0 0 112500 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 1000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100420 0 0 900580 0 0 0 0 0 0\\ncpu0 12710 0 0 113290 0 0 0 0 0 0\\ncpu1 12770 0 0 113230 0 0 0 0 0 0\\ncpu2 12830 0 0 113170 0 0 0 0 0 0\\ncpu3 12890 0 0 113110 0 0 0 0 0 0\\ncpu4 12950 0 0 113050 0 0 0 0 0 0\\ncpu5 13010 0 0 112990 0 0 0 0 0 0\\ncpu6 13070 0 0 112930 0 0 0 0 0 0\\ncpu7 13130 0 0 112870 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19005440 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 2000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100960 0 0 901040 0 0 0 0 0 0\\ncpu0 13040 0 0 113960 0 0 0 0 0 0\\ncpu1 13160 0 0 113840 0 0 0 0 0 0\\ncpu2 13280 0 0 113720 0 0 0 0 0 0\\ncpu3 13400 0 0 113600 0 0 0 0 0 0\\ncpu4 13520 0 0 113480 0 0 0 0 0 0\\ncpu5 13640 0 0 113360 0 0 0 0 0 0\\ncpu6 13760 0 0 113240 0 0 0 0 0 0\\ncpu7 13880 0 0 113120 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20316160 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 3000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  101290 0 0 901710 0 0 0 0 0 0\\ncpu0 13160 0 0 114840 0 0 0 0 0 0\\ncpu1 13340 0 0 114660 0 0 0 0 0 0\\ncpu2 13520 0 0 114480 0 0 0 0 0 0\\ncpu3 13700 0 0 114300 0 0 0 0 0 0\\ncpu4 13880 0 0 114120 0 0 0 0 0 0\\ncpu5 14060 0 0 113940 0 0 0 0 0 0\\ncpu6 14240 0 0 113760 0 0 0 0 0 0\\ncpu7 14420 0 0 113580 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   18350080 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 4000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  101740 0 0 902260 0 0 0 0 0 0\\ncpu0 13400 0 0 115600 0 0 0 0 0 0\\ncpu1 13640 0 0 115360 0 0 0 0 0 0\\ncpu2 13880 0 0 115120 0 0 0 0 0 0\\ncpu3 14120 0 0 114880 0 0 0 0 0 0\\ncpu4 14360 0 0 114640 0 0 0 0 0 0\\ncpu5 14600 0 0 114400 0 0 0 0 0 0\\ncpu6 14840 0 0 114160 0 0 0 0 0 0\\ncpu7 15080 0 0 113920 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   19660800 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 5000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  102310 0 0 902690 0 0 0 0 0 0\\ncpu0 13760 0 0 116240 0 0 0 0 0 0\\ncpu1 14060 0 0 115940 0 0 0 0 0 0\\ncpu2 14360 0 0 115640 0 0 0 0 0 0\\ncpu3 14660 0 0 115340 0 0 0 0 0 0\\ncpu4 14960 0 0 115040 0 0 0 0 0 0\\ncpu5 15260 0 0 114740 0 0 0 0 0 0\\ncpu6 15560 0 0 114440 0 0 0 0 0 0\\ncpu7 15860 0 0 114140 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemAvailable:   20971520 kB\\n__TEMP__\\n52000\\n__CPU_POWER__\\n64.2\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\n__NET__\\nInter-|\\n face |\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\"}"
+    }
+   ]
+  },
+  {
+   "match": "swaync-client",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"text\": \"\", \"alt\": \"none\", \"tooltip\": \"\", \"class\": \"none\"}"
+    }
+   ]
+  },
+  {
+   "match": "command -v cava",
+   "exitCode": 0
+  },
+  {
+   "match": "hyprctl -j animations",
+   "stdout": "[[{\"name\": \"global\", \"overridden\": true, \"bezier\": \"default\", \"enabled\": true, \"speed\": 8.0, \"style\": \"\"}, {\"name\": \"windows\", \"overridden\": true, \"bezier\": \"myBezier\", \"enabled\": true, \"speed\": 7.0, \"style\": \"slide\"}, {\"name\": \"windowsMove\", \"overridden\": false, \"bezier\": \"\", \"enabled\": true, \"speed\": 0.0, \"style\": \"\"}], [{\"name\": \"myBezier\", \"X0\": 0.1, \"Y0\": 0.9, \"X1\": 0.1, \"Y1\": 1.05}, {\"name\": \"default\", \"X0\": 0.0, \"Y0\": 0.75, \"X1\": 0.15, \"Y1\": 1.0}]]"
+  },
+  {
+   "match": "Fluent-light",
+   "stdout": "light=@HOME@/.local/share/icons/Fluent-light\ndark=@HOME@/.local/share/icons/Fluent-dark\nbase=@HOME@/.local/share/icons/Fluent\n"
+  },
+  {
+   "match": "media-status.sh",
+   "stdout": "available=false\nplaying=false\n",
+   "exitCode": 1
+  },
+  {
+   "match": "audio-spectrum.sh",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "12;38;74;92;66;41;58;80;95;61;33;47;70;52;28;15;"
+    }
+   ]
+  },
+  {
+   "match": "control-panel-status.sh",
+   "stdout": "brightness=50\ndnd=false\nrecording=false\npower_profile=balanced\nprevent_sleep=false\ndemo_mode=false\nfan_available=true\nfan_chassis_percent=40\nfan_chassis_rpm=1200\nfan_pump_percent=60\nfan_pump_rpm=2400\n"
+  },
+  {
+   "match": "brightness_get",
+   "stdout": "50\n"
+  },
+  {
+   "match": "brightness_set",
+   "stdout": ""
+  },
+  {
+   "match": "brightness_finish",
+   "stdout": ""
+  },
+  {
+   "match": "windows-vm-control.sh status",
+   "stdout": "stopped\n"
+  },
+  {
+   "match": "windows-vm-control.sh start",
+   "delay_ms": 600000
+  },
+  {
+   "match": "viewflow-target.sh status",
+   "stdout": "windows\n"
+  },
+  {
+   "match": "deskflow-target.sh status",
+   "stdout": "windows\n"
+  },
+  {
+   "match": "mihomo-control.sh status",
+   "stdout": "{\"online\": true, \"service\": \"user\", \"version\": \"v1.19.2\", \"mode\": \"rule\", \"connections\": 37, \"upload\": 2048, \"download\": 48000, \"dashboard\": \"http://127.0.0.1:9090/ui\"}"
+  },
+  {
+   "match": "dcal --json socket",
+   "stdout": "{\"path\": \"/run/user/1000/dcal/parity.sock\"}"
+  }
+ ],
+ "props": {},
+ "steps": [
+  {
+   "click": {
+    "contains": "nocon"
+   }
+  },
+  {
+   "advance": 800
+  },
+  {
+   "capture": ""
+  }
+ ]
+}

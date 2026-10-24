@@ -1,0 +1,41 @@
+{
+  "qt_version": "6.12.0",
+  "qt_sources": {
+    "qquickflickable.cpp": {
+      "url": "https://raw.githubusercontent.com/qt/qtdeclarative/v6.12.0/src/quick/items/qquickflickable.cpp",
+      "sha256": "1ea228569cfe97a393be1840b417559648d50fa2ca876e2b277e3292112a0fdf"
+    },
+    "qquickflickable_p_p.h": {
+      "url": "https://raw.githubusercontent.com/qt/qtdeclarative/v6.12.0/src/quick/items/qquickflickable_p_p.h",
+      "sha256": "3612d6ffa91a81d05f47ce11dbd25c053f008535c1fd2886a5687e5d8add590d"
+    },
+    "qquickflickablebehavior_p.h": {
+      "url": "https://raw.githubusercontent.com/qt/qtdeclarative/v6.12.0/src/quick/items/qquickflickablebehavior_p.h",
+      "sha256": "f894031a13ee1fabebc5236a8bb707861e44b303a0b46173e941b29297abf7fb"
+    },
+    "qquicktimeline.cpp": {
+      "url": "https://raw.githubusercontent.com/qt/qtdeclarative/v6.12.0/src/quick/util/qquicktimeline.cpp",
+      "sha256": "ddbc660b7c7d86a46d37eaf406946d7da8a358aa0078829b00e239ae34c87029"
+    },
+    "qeventpoint.cpp": {
+      "url": "https://raw.githubusercontent.com/qt/qtbase/v6.12.0/src/gui/kernel/qeventpoint.cpp",
+      "sha256": "5d816887d44a9deaee35db1d9635d2b1b1bcc8c7c6494a2e4c2371b2d30afcfe"
+    },
+    "qplatformtheme.cpp": {
+      "url": "https://raw.githubusercontent.com/qt/qtbase/v6.12.0/src/gui/kernel/qplatformtheme.cpp",
+      "sha256": "cb1f12776efdae5fac7a19446db4581bfe73a583c6d5162bacc2daba5dc69be3"
+    }
+  },
+  "implementation_sha256": {
+    "crates/hyprv-widgets/src/flickable.rs": "f867fa55926fb8302ade01a9c374478f3a20f28e03977e400cbb00341431c1cb",
+    "crates/hyprv-widgets/src/lib.rs": "615fc0eface4f9121006f560ff127e3a3e60c46702cd9437eb34e8bf2add7a9e",
+    "crates/hyprv-ui-bar/src/popups.rs": "dcc7936ec356d94d612279fdc353601727694f5386db8494df5d14c6cf5224e6",
+    "crates/hyprv-ui-island/src/island.rs": "4d33394dc0e6902268695393e5a2daca77fd4878c406f4b4b27abcc3d5b604b2",
+    "crates/hyprv-ui-bar/tests/flickable.rs": "f72a56583d0f867ccae0c02648aac42ceff321b0e3b3810d7f961010a6acdb53",
+    "crates/hyprv-ui-island/tests/flickable.rs": "e434f28ffcbaa190baf43948cdb9360db8e50c1fd90ebeedab209d5c29280f70"
+  },
+  "qml_sha256": {
+    "shell.qml": "8ec08f7332bd9ad1a3ec8f8632c52f6f12ac7b2f30eda87a72a372eb820fb20c",
+    "DynamicIsland.qml": "64f7535c470595dd7e93d1422d916970bae1f0e4873054dcb3e1967ada44d6e4"
+  }
+}

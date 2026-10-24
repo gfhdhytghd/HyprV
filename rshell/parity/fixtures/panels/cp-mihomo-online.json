@@ -1,0 +1,224 @@
+{
+ "component": "panels",
+ "scene": "desktop.qml",
+ "spec": "docs/spec/ui-panels.md §5",
+ "note": "§5.9 Mihomo page online (rule mode, rates > 1 KB/s); harness-only state",
+ "now": "2026-10-23T09:41:00",
+ "crop": [
+  2590,
+  50,
+  482,
+  760
+ ],
+ "settle_ms": 2500,
+ "services": {
+  "screens": [
+   {
+    "name": "DP-4",
+    "width": 3072,
+    "height": 1728,
+    "x": 0,
+    "y": 0,
+    "scale": 2
+   }
+  ],
+  "hyprland": {
+   "workspaces": [
+    {
+     "id": 1,
+     "name": "1"
+    },
+    {
+     "id": 2,
+     "name": "2"
+    },
+    {
+     "id": 3,
+     "name": "3"
+    },
+    {
+     "id": 4,
+     "name": "4"
+    },
+    {
+     "id": 5,
+     "name": "5"
+    }
+   ],
+   "focusedWorkspace": 1,
+   "activeToplevel": {
+    "title": "Firefox — Quickshell spec"
+   },
+   "fullscreen": false
+  },
+  "audio": {
+   "available": true,
+   "volume": 0.35,
+   "muted": false
+  },
+  "mpris": {
+   "players": []
+  },
+  "tray": [
+   {
+    "id": "chrome_status_icon_1",
+    "title": "Google Chrome",
+    "icon": "google-chrome"
+   },
+   {
+    "id": "discord",
+    "title": "Discord",
+    "icon": "discord"
+   },
+   {
+    "id": "org.keepassxc.KeePassXC",
+    "title": "KeePassXC",
+    "icon": "keepassxc"
+   },
+   {
+    "id": "Fcitx",
+    "title": "输入法",
+    "icon": "fcitx"
+   },
+   {
+    "id": "wechat",
+    "title": "微信",
+    "icon": "wechat"
+   },
+   {
+    "id": "telegram",
+    "title": "Telegram",
+    "icon": "telegram"
+   }
+  ],
+  "bluetooth": {
+   "enabled": true,
+   "devices": []
+  },
+  "powerProfile": "balanced"
+ },
+ "processes": [
+  {
+   "match": "desktop-state.py",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100000 0 0 900000 0 0 0 0 0 0\\ncpu0 25000 0 0 225000 0 0 0 0 0 0\\ncpu1 25000 0 0 225000 0 0 0 0 0 0\\ncpu2 25000 0 0 225000 0 0 0 0 0 0\\ncpu3 25000 0 0 225000 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemFree:        19005440 kB\\nMemAvailable:   38010880 kB\\n__TEMP__\\n45000\\n__CPU_POWER__\\n\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|   Receive                                                |  Transmit\\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 1000,
+     "data": "{\"type\": \"system\", \"data\": \"__STAT__\\ncpu  100070 0 0 900930 0 0 0 0 0 0\\ncpu0 25017 0 0 225232 0 0 0 0 0 0\\ncpu1 25027 0 0 225222 0 0 0 0 0 0\\ncpu2 25037 0 0 225212 0 0 0 0 0 0\\ncpu3 25047 0 0 225202 0 0 0 0 0 0\\n__MEM__\\nMemTotal:       65536000 kB\\nMemFree:        19005440 kB\\nMemAvailable:   38010880 kB\\n__TEMP__\\n45000\\n__CPU_POWER__\\n\\n__ROUTE__\\nIface\\tDestination\\tGateway \\tFlags\\tRefCnt\\tUse\\tMetric\\tMask\\t\\tMTU\\tWindow\\tIRTT\\nenp5s0\\t00000000\\t0101A8C0\\t0003\\t0\\t0\\t100\\t00000000\\t0\\t0\\t0\\n__NET__\\nInter-|   Receive                                                |  Transmit\\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\\n    lo:  100 1 0 0 0 0 0 0  100 1 0 0 0 0 0 0\\nenp5s0: 5000000 100 0 0 0 0 0 0 1000000 100 0 0 0 0 0 0\"}"
+    },
+    {
+     "at": 0,
+     "data": "{\"type\": \"wifi\", \"data\": {\"present\": false, \"hardwareEnabled\": true, \"enabled\": true, \"connected\": false, \"iface\": \"\", \"ssid\": \"\", \"security\": \"\", \"signal\": 0, \"networks\": []}}"
+    },
+    {
+     "at": 0,
+     "data": "{\"type\": \"agent\", \"data\": {\"active\": false, \"count\": 0, \"sessions\": []}}"
+    }
+   ]
+  },
+  {
+   "match": "swaync-client",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "{\"text\": \"\", \"alt\": \"none\", \"tooltip\": \"\", \"class\": \"none\"}"
+    }
+   ]
+  },
+  {
+   "match": "command -v cava",
+   "exitCode": 0
+  },
+  {
+   "match": "hyprctl -j animations",
+   "stdout": "[[{\"name\": \"global\", \"overridden\": true, \"bezier\": \"default\", \"enabled\": true, \"speed\": 8.0, \"style\": \"\"}, {\"name\": \"windows\", \"overridden\": true, \"bezier\": \"myBezier\", \"enabled\": true, \"speed\": 7.0, \"style\": \"slide\"}, {\"name\": \"windowsMove\", \"overridden\": false, \"bezier\": \"\", \"enabled\": true, \"speed\": 0.0, \"style\": \"\"}], [{\"name\": \"myBezier\", \"X0\": 0.1, \"Y0\": 0.9, \"X1\": 0.1, \"Y1\": 1.05}, {\"name\": \"default\", \"X0\": 0.0, \"Y0\": 0.75, \"X1\": 0.15, \"Y1\": 1.0}]]"
+  },
+  {
+   "match": "Fluent-light",
+   "stdout": "light=@HOME@/.local/share/icons/Fluent-light\ndark=@HOME@/.local/share/icons/Fluent-dark\nbase=@HOME@/.local/share/icons/Fluent\n"
+  },
+  {
+   "match": "media-status.sh",
+   "stdout": "available=false\nplaying=false\n",
+   "exitCode": 1
+  },
+  {
+   "match": "audio-spectrum.sh",
+   "stream": true,
+   "lines": [
+    {
+     "at": 0,
+     "data": "12;38;74;92;66;41;58;80;95;61;33;47;70;52;28;15;"
+    }
+   ]
+  },
+  {
+   "match": "control-panel-status.sh",
+   "stdout": "brightness=50\ndnd=false\nrecording=false\npower_profile=balanced\nprevent_sleep=false\ndemo_mode=false\nfan_available=true\nfan_chassis_percent=40\nfan_chassis_rpm=1200\nfan_pump_percent=60\nfan_pump_rpm=2400\n"
+  },
+  {
+   "match": "brightness_get",
+   "stdout": "50\n"
+  },
+  {
+   "match": "brightness_set",
+   "stdout": ""
+  },
+  {
+   "match": "brightness_finish",
+   "stdout": ""
+  },
+  {
+   "match": "windows-vm-control.sh status",
+   "stdout": "stopped\n"
+  },
+  {
+   "match": "windows-vm-control.sh start",
+   "delay_ms": 600000
+  },
+  {
+   "match": "viewflow-target.sh status",
+   "stdout": "windows\n"
+  },
+  {
+   "match": "deskflow-target.sh status",
+   "stdout": "windows\n"
+  },
+  {
+   "match": "mihomo-control.sh status",
+   "stdout": "{\"online\": true, \"service\": \"user\", \"version\": \"v1.19.2\", \"mode\": \"rule\", \"connections\": 37, \"upload\": 2048, \"download\": 48000, \"dashboard\": \"http://127.0.0.1:9090/ui\"}"
+  },
+  {
+   "match": "dcal --json socket",
+   "stdout": "{\"path\": \"/run/user/1000/dcal/parity.sock\"}"
+  }
+ ],
+ "props": {},
+ "steps": [
+  {
+   "click": {
+    "image": "control-panel-"
+   }
+  },
+  {
+   "advance": 800
+  },
+  {
+   "invoke": {
+    "type": "ControlPanelPopup",
+    "method": "toggleMihomoExpanded"
+   }
+  },
+  {
+   "advance": 800
+  },
+  {
+   "capture": ""
+  }
+ ]
+}

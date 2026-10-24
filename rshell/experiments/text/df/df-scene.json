@@ -1,0 +1,186 @@
+{
+ "width": 320,
+ "height": 220,
+ "samples": [
+  {
+   "name": "st_title",
+   "text": "启动用户应用",
+   "family": "HarmonyOS Sans SC",
+   "px": 16,
+   "weight": 500,
+   "letterSpacing": 0,
+   "x": 24,
+   "y": 24
+  },
+  {
+   "name": "st_body",
+   "text": "启动常用应用并恢复工作区布局。",
+   "family": "HarmonyOS Sans SC",
+   "px": 14,
+   "weight": 400,
+   "letterSpacing": 0,
+   "x": 24,
+   "y": 54.3
+  },
+  {
+   "name": "st_btn",
+   "text": "本次跳过",
+   "family": "HarmonyOS Sans SC",
+   "px": 13,
+   "weight": 500,
+   "letterSpacing": 0,
+   "x": 200.5,
+   "y": 24
+  },
+  {
+   "name": "st_btn2",
+   "text": "启动",
+   "family": "HarmonyOS Sans SC",
+   "px": 13,
+   "weight": 500,
+   "letterSpacing": 0,
+   "x": 280,
+   "y": 30.75
+  },
+  {
+   "name": "mh_title",
+   "text": "Mihomo · rule",
+   "family": "JetBrainsMono Nerd Font",
+   "px": 12,
+   "weight": 700,
+   "letterSpacing": 0,
+   "x": 24,
+   "y": 84
+  },
+  {
+   "name": "mh_sub",
+   "text": "37 active connections",
+   "family": "JetBrainsMono Nerd Font",
+   "px": 9,
+   "weight": 400,
+   "letterSpacing": 0,
+   "x": 24.25,
+   "y": 102
+  },
+  {
+   "name": "mh_on",
+   "text": "ON",
+   "family": "sans-serif",
+   "px": 9,
+   "weight": 700,
+   "letterSpacing": 0,
+   "x": 200,
+   "y": 84.5
+  },
+  {
+   "name": "mh_rate",
+   "text": "47 KB/s",
+   "family": "JetBrainsMono Nerd Font",
+   "px": 11,
+   "weight": 700,
+   "letterSpacing": 0,
+   "x": 230,
+   "y": 100
+  },
+  {
+   "name": "mh_lbl",
+   "text": "Download",
+   "family": "JetBrainsMono Nerd Font",
+   "px": 8,
+   "weight": 400,
+   "letterSpacing": 0,
+   "x": 230.3,
+   "y": 114.6
+  },
+  {
+   "name": "mh_refresh",
+   "text": "Refresh",
+   "family": "sans-serif",
+   "px": 10,
+   "weight": 700,
+   "letterSpacing": 0,
+   "x": 24,
+   "y": 124
+  },
+  {
+   "name": "mh_global",
+   "text": "Global",
+   "family": "sans-serif",
+   "px": 10,
+   "weight": 400,
+   "letterSpacing": 0,
+   "x": 90.5,
+   "y": 124.25
+  },
+  {
+   "name": "mh_dash",
+   "text": "Dashboard  ↗",
+   "family": "sans-serif",
+   "px": 10,
+   "weight": 700,
+   "letterSpacing": 0,
+   "x": 150.2,
+   "y": 124
+  },
+  {
+   "name": "mh_ls",
+   "text": "MIHOMO",
+   "family": "JetBrainsMono Nerd Font",
+   "px": 8,
+   "weight": 700,
+   "letterSpacing": 3,
+   "x": 24,
+   "y": 144
+  },
+  {
+   "name": "cal_a",
+   "text": "Week 43 · 十月",
+   "family": "sans-serif",
+   "px": 13,
+   "weight": 600,
+   "letterSpacing": 0,
+   "x": 24,
+   "y": 164
+  },
+  {
+   "name": "cal_b",
+   "text": "周四 23",
+   "family": "sans-serif",
+   "px": 14,
+   "weight": 700,
+   "letterSpacing": 0,
+   "x": 160.5,
+   "y": 164.4
+  },
+  {
+   "name": "cal_c",
+   "text": "Standup meeting",
+   "family": "sans-serif",
+   "px": 10,
+   "weight": 600,
+   "letterSpacing": 0,
+   "x": 24,
+   "y": 190.3
+  },
+  {
+   "name": "cal_d",
+   "text": "09:30 – 10:00",
+   "family": "sans-serif",
+   "px": 9,
+   "weight": 400,
+   "letterSpacing": 0,
+   "x": 140,
+   "y": 190
+  },
+  {
+   "name": "cal_e",
+   "text": "全天",
+   "family": "sans-serif",
+   "px": 11,
+   "weight": 400,
+   "letterSpacing": 0,
+   "x": 240.7,
+   "y": 190
+  }
+ ]
+}

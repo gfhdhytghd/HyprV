@@ -1,0 +1,18 @@
+module Quickshell
+singleton Quickshell 1.0 Quickshell.qml
+ShellRoot 1.0 ShellRoot.qml
+Scope 1.0 Scope.qml
+Variants 1.0 Variants.qml
+PanelWindow 1.0 PanelWindow.qml
+PanelAnchors 1.0 PanelAnchors.qml
+PanelMargins 1.0 PanelMargins.qml
+SurfaceFormat 1.0 SurfaceFormat.qml
+Region 1.0 Region.qml
+IpcHandler 1.0 IpcHandler.qml
+SystemClock 1.0 SystemClock.qml
+ExclusionMode 1.0 ExclusionMode.qml
+QsMenuOpener 1.0 QsMenuOpener.qml
+QsMenuAnchor 1.0 QsMenuAnchor.qml
+PopupAnchor 1.0 PopupAnchor.qml
+ShellScreen 1.0 ShellScreen.qml
+PopupWindow 1.0 PopupWindow.qml

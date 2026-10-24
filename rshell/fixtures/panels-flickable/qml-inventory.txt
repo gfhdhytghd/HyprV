@@ -1,0 +1,6 @@
+../quickshell/shell.qml:992:                Flickable {
+../quickshell/DynamicIsland.qml:1318:        ListView {
+../quickshell/WeekCalendarPanel.qml:546:    Flickable {
+../quickshell/ControlPanelBluetoothDetails.qml:468:        Flickable {
+../quickshell/WifiFallback.qml:667:                Flickable {
+../quickshell/tests/tst_AgentTaskModel.qml:13:    ListView {

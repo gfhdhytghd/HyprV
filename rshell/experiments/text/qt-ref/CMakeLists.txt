@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.21)
+project(textref LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+find_package(Qt6 REQUIRED COMPONENTS Gui GuiPrivate Qml Quick)
+add_executable(textref main.cpp)
+target_link_libraries(textref PRIVATE Qt6::Gui Qt6::Qml Qt6::Quick Qt6::GuiPrivate)

@@ -1,0 +1,13 @@
+[package]
+name = "textcmp"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# Standalone experiment: not a member of the rshell workspace.
+[workspace]
+
+[dependencies]
+skia-safe = { version = "=0.90.0", features = ["gl", "textlayout", "svg"] }
+freetype-rs = "0.38"
+serde_json = "1"

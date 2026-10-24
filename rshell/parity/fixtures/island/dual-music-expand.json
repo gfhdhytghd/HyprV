@@ -1,0 +1,100 @@
+{
+  "component": "island",
+  "scene": "island.qml",
+  "spec": "docs/spec/ui-island.md",
+  "note": "§10.13 incl. musicFrameRelease at 230 ms",
+  "canvas": {
+    "width": 640,
+    "height": 200
+  },
+  "fonts": [
+    "JetBrainsMono Nerd Font"
+  ],
+  "props": {
+    "mediaManuallyHidden": false,
+    "agentSessions": [
+      {
+        "id": "codex-session-0",
+        "source": "codex",
+        "source_label": "Codex",
+        "title": "Session 0",
+        "project": "rshell",
+        "status": "running",
+        "current_tool": "Bash",
+        "detail": "cargo build",
+        "progress": 0.58
+      }
+    ],
+    "now": "09:41",
+    "mediaAvailable": true,
+    "mediaPlaying": true,
+    "mediaTitle": "Midnight City",
+    "mediaArtist": "M83",
+    "mediaPlayerName": "spotify",
+    "mediaArtUrl": "@asset:cover-warm.png",
+    "mediaLengthSeconds": 225,
+    "mediaPositionSeconds": 83,
+    "spectrumValues": [
+      12,
+      38,
+      74,
+      92,
+      66,
+      41,
+      58,
+      80,
+      95,
+      61,
+      33,
+      47,
+      70,
+      52,
+      28,
+      15
+    ]
+  },
+  "steps": [
+    {
+      "hover": {
+        "item": "island",
+        "x": 118,
+        "y": 19
+      }
+    },
+    {
+      "frames": {
+        "name": "expand",
+        "at": [
+          0,
+          30,
+          60,
+          105,
+          150,
+          210,
+          400
+        ]
+      }
+    },
+    {
+      "hover": [
+        2,
+        2
+      ]
+    },
+    {
+      "frames": {
+        "name": "collapse",
+        "at": [
+          0,
+          60,
+          105,
+          150,
+          210,
+          229,
+          231,
+          400
+        ]
+      }
+    }
+  ]
+}

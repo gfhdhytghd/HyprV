@@ -1,0 +1,30 @@
+{
+ "component": "textmodule",
+ "kind": "inline",
+ "inline": {
+  "file": "shell.qml",
+  "name": "TextModule"
+ },
+ "canvas": {
+  "width": 110,
+  "height": 48
+ },
+ "at": [
+  5,
+  5
+ ],
+ "bind": {
+  "label": "\"1\"",
+  "moduleHeight": "32",
+  "paddingLeft": "5",
+  "paddingRight": "5",
+  "minimumWidth": "32",
+  "highlighted": "true",
+  "textColor": "root.mutedWorkspaceText"
+ },
+ "steps": [
+  {
+   "capture": ""
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+# Generated builds, measurements and local deployment state.
+**/target/
+**/target-*/
+**/dist/
+**/.build/
+**/.check/
+**/.research/
+**/.cache/
+**/__pycache__/
+**/artifacts/
+**/scratch/
+**/raw/
+**/*.log
+**/*.journal
+/packaging/dist/
+/cutover/evidence/
+/parity/build/
+/parity/verify/out/
+/parity/laptop/verify-out/
+/experiments/text/out/
