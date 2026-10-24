@@ -1,0 +1,16 @@
+{
+  "epoch": 1792817268.3787868,
+  "release_id": "eeafb5a678912bbaa802016d562b2b69fcea3ab0afc20f2f2a54ddba788a04c5",
+  "source_count": 4855,
+  "current_sources_match": true,
+  "all_manifest_entries_valid": true,
+  "manifest_entries": 60,
+  "staged_and_flat_binaries": {
+    "hyprv-shell": "c364f556a1a5168a7bcac866616e1912a87b06951b7ac321b2a7a0f22d1d52df",
+    "hyprv-privhelper": "76921a20326e113878748be5202e59da2e42b014c10f778f3e363e1a042ef7b1",
+    "hyprv-cooling-failsafe": "bc33d2bf9d8982051e74346137776c9d6b8b33453d311decce9a016d8d4b9e9a"
+  },
+  "scoped_tested_inputs_match": true,
+  "policy_and_bus_allowlist_included": true,
+  "builder": "coordinated official packaging/build-release.sh by svc-sys; independently verified by svc-power"
+}

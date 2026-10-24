@@ -1,0 +1,1 @@
+helper cooling capability v2: single-store manual-enable then PWM 255

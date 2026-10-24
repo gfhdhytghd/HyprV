@@ -1,0 +1,9 @@
+{
+  "release_id": "5abee3cbf1fde6136b432ea51d275d5f8c37a460ba6f7d3bd0801130863cff53",
+  "epoch": 1792808576.788402,
+  "binaries": {
+    "hyprv-shell": "9a9a43e4e7e94f22fee6a70b6482f7a7cf26bf9c3507994b1462c57760361e5f",
+    "hyprv-privhelper": "0114e75578e3e0264ac278f77b59a7162ac3aa6917706043b86bb9acabbaff3b",
+    "hyprv-cooling-failsafe": "512b9ac9add86c622e7cd87abf283b09cea236a0e43d43726482e4a315f30941"
+  }
+}

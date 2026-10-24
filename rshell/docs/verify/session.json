@@ -1,0 +1,31 @@
+{
+  "quickshell_roots": [
+    {
+      "pid": 3193809,
+      "ppid": 1,
+      "comm": "quickshell",
+      "argv": "quickshell -p /home/wilf/.config/HyprV/quickshell -n -d ",
+      "start": 24558939,
+      "ticks": 32199,
+      "rss_kib": 290436.0
+    }
+  ],
+  "recovered_keys": [
+    "HYPRLAND_INSTANCE_SIGNATURE",
+    "XDG_RUNTIME_DIR",
+    "WAYLAND_DISPLAY",
+    "DBUS_SESSION_BUS_ADDRESS"
+  ],
+  "calendar_socket": "/run/user/1000/dankcal-3194001.sock",
+  "other_quickshell_configs": [
+    {
+      "pid": 3194130,
+      "ppid": 3194001,
+      "comm": "qs",
+      "argv": "qs -p /run/user/1000/dankcal-shell/60374bd50dd2f72e ",
+      "start": 24559060,
+      "ticks": 117,
+      "rss_kib": 78244.0
+    }
+  ]
+}

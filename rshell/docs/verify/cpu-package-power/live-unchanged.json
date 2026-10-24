@@ -1,0 +1,18 @@
+{
+  "epoch": 1792817294.0714927,
+  "read_only": true,
+  "services": {
+    "shell": {
+      "unchanged": true,
+      "ActiveState": "active",
+      "MainPID": "2709217",
+      "ExecMainStartTimestampMonotonic": "453279700979"
+    },
+    "helper": {
+      "unchanged": true,
+      "ActiveState": "active",
+      "MainPID": "2716595",
+      "ExecMainStartTimestampMonotonic": "453380825556"
+    }
+  }
+}

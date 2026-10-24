@@ -1,0 +1,31 @@
+{
+  "epoch": 1792816010.4883404,
+  "previous_release_id": "eda5ca090166790a41ddcd171f79008f01f589c766816b0d3040b41c07be0f03",
+  "files": {
+    "crates/hyprv-privhelper/src/cooling.rs": {
+      "previous": "325265b59f4c661846dd0a00c8e6ba58bdbf4d67f609c3cff3f355994dca9640",
+      "current": "4c7b968069248c0a2f0125b6e0911b8eb4e36bae8cb8f15202cf8a99f09bcc6e",
+      "unchanged": false,
+      "earlier_observation": "1a573a5825500f8ec8a3664ce13b584857ca031e894e8c8f3da2eb2f02724e33"
+    },
+    "crates/hyprv-privhelper/src/cooling_regression.rs": {
+      "previous": "261487478fc537acf109489447d02b046b5d4123c12952c3d04fc5684ac92a99",
+      "current": "261487478fc537acf109489447d02b046b5d4123c12952c3d04fc5684ac92a99",
+      "unchanged": true,
+      "earlier_observation": "261487478fc537acf109489447d02b046b5d4123c12952c3d04fc5684ac92a99"
+    },
+    "crates/hyprv-privhelper/src/watchdog.rs": {
+      "previous": "bd99728c55c3e469c94932e858a4eb8596db04d70805f5bfecc470aa268eceda",
+      "current": "bd99728c55c3e469c94932e858a4eb8596db04d70805f5bfecc470aa268eceda",
+      "unchanged": true,
+      "earlier_observation": "bd99728c55c3e469c94932e858a4eb8596db04d70805f5bfecc470aa268eceda"
+    },
+    "crates/hyprv-privhelper/packaging/hyprv-privhelper.service": {
+      "previous": "531095baabcdfbb51bd5b38df384f31505326101430f23c1c8f909b60c8c9b49",
+      "current": "531095baabcdfbb51bd5b38df384f31505326101430f23c1c8f909b60c8c9b49",
+      "unchanged": true,
+      "earlier_observation": "531095baabcdfbb51bd5b38df384f31505326101430f23c1c8f909b60c8c9b49"
+    }
+  },
+  "final_observation_epoch": 1792817294.0718405
+}

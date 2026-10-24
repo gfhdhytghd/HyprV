@@ -1,0 +1,15 @@
+Id=hyprv-fan-control.service
+ActiveState=active
+UnitFileState=enabled
+
+Id=hyprv-fan-permissions.service
+ActiveState=active
+UnitFileState=enabled
+
+Id=hyprv-cpu-power.service
+ActiveState=active
+UnitFileState=enabled
+
+Id=hyprv-privhelper.service
+ActiveState=inactive
+UnitFileState=masked

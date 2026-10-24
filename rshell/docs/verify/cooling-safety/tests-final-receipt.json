@@ -1,0 +1,67 @@
+{
+  "status": "pass",
+  "epoch": 1792809475.3537815,
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--workspace",
+        "--all-targets"
+      ],
+      "returncode": 0,
+      "log": "test-0.log"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--workspace",
+        "--doc"
+      ],
+      "returncode": 0,
+      "log": "test-1.log"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "xtask/Cargo.toml"
+      ],
+      "returncode": 0,
+      "log": "test-2.log"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "cutover/tests",
+        "-p",
+        "test*.py"
+      ],
+      "returncode": 0,
+      "log": "test-3.log"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "crates/hyprv-svc-probe/scripts",
+        "-p",
+        "test*.py"
+      ],
+      "returncode": 0,
+      "log": "test-4.log"
+    }
+  ]
+}

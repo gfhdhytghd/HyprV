@@ -1,0 +1,8 @@
+{
+  "crates/hyprv-svc-net/src/lib.rs": "1779efaa3212d461a27ca5deb7a604db1d5992288361e66e3ab3869bee120248",
+  "crates/hyprv-svc-net/src/network.rs": "5904ab1b3d6c44d8e12f0b01858644a8db3e12246ad83c3c7a78b7b7de628d4d",
+  "crates/hyprv-svc-net/src/network_tests.rs": "b68ca7589bae5d1c672f759a8bcfbc88e04b84e3793737b1af83d869750865be",
+  "crates/hyprv-svc-net/src/bluetooth_tests.rs": "7d42aa9baadd901513968d911af53107ec94112479e40ffca19f533dceda7590",
+  "crates/hyprv-svc-net/src/wifi_scan.rs": "1a9c450c052db717e64109efa727273d2782efc3af4897ad7e88a4807c2493b3",
+  "crates/hyprv-svc-net/README.md": "f764f9d903331be1cd43a3b943e6b2e500ce2c7ced1daed36cfb6af811f78df1"
+}

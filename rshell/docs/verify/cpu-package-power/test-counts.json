@@ -1,0 +1,17 @@
+{
+  "workspace-all-targets": {
+    "passed": 610,
+    "ignored": 52,
+    "failed_summaries": 0
+  },
+  "workspace-doctests": {
+    "passed": 2,
+    "ignored": 1,
+    "failed_summaries": 0
+  },
+  "xtask-tests": {
+    "passed": 1,
+    "ignored": 0,
+    "failed_summaries": 0
+  }
+}

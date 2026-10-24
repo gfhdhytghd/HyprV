@@ -1,0 +1,50 @@
+{
+  "release_id": "5080284888fedc55ee8eb7bf50f83077d32aedebc8c83006c555832d9f6296de",
+  "epoch": 1792809265.9691265,
+  "binaries": {
+    "hyprv-shell": "2073ea266e34c5aee6a69038baeaaeb75a2a287da636ee55176469f7d54c89d0",
+    "hyprv-privhelper": "b5aff1e245724bf8be9f8da70ec5841e4063ea498c09a9a4c2ae578cef33cc2e",
+    "hyprv-cooling-failsafe": "3531ff43078aa3771d6d246f873610aa331dc22e6d7015d9da7bef45502bb92d"
+  },
+  "profile": "release",
+  "command": [
+    "cargo",
+    "build",
+    "--manifest-path",
+    "Cargo.toml",
+    "--locked",
+    "--release",
+    "--target-dir",
+    "/home/wilf/.config/HyprV/rshell/target",
+    "--config",
+    "packaging/release.toml",
+    "-p",
+    "hyprv-shell",
+    "-p",
+    "hyprv-privhelper",
+    "--bins"
+  ],
+  "sources_sha256": "510d034254a332e9377721b54ebc9c3f598e9aec45e9ce3f37fc5b631d0be131",
+  "shell_elf_unchanged": false,
+  "critical_sources": {
+    "crates/hyprv-privhelper/Cargo.toml": "c14acb7943c1804f608eaecface45d7e4b0c716a20eec0186b3fcab504b398f3",
+    "crates/hyprv-privhelper/packaging/hyprv-privhelper.service": "531095baabcdfbb51bd5b38df384f31505326101430f23c1c8f909b60c8c9b49",
+    "crates/hyprv-privhelper/packaging/nct6775.conf": "be62ed7cff83326735e1a7a7f4452828f1447065c727227deaa242cb64e95f8c",
+    "crates/hyprv-privhelper/packaging/org.hyprv.Shell.PrivHelper.conf": "d1f50d1d2225f02d8e1792c89b9f9cea5b39c24c2f146ca171893ccac56f1060",
+    "crates/hyprv-privhelper/packaging/org.hyprv.Shell.PrivHelper.service": "481ec7a1d5ddb5777d914a6d2875741d7a8099b4913719d6cc6f5af0e8171586",
+    "crates/hyprv-privhelper/packaging/org.hyprv.shell.fan-control.policy": "35925995202ab7683d069f1c44bef9807ca2153d964e2ed85f22d03f7ee67ab0",
+    "crates/hyprv-privhelper/src/bin/hyprv-cooling-failsafe.rs": "162317322646f418f3b598222ad78365e56cf158afd37e9c72757c3529984e07",
+    "crates/hyprv-privhelper/src/cooling.rs": "325265b59f4c661846dd0a00c8e6ba58bdbf4d67f609c3cff3f355994dca9640",
+    "crates/hyprv-privhelper/src/cooling_regression.rs": "261487478fc537acf109489447d02b046b5d4123c12952c3d04fc5684ac92a99",
+    "crates/hyprv-privhelper/src/egpu.rs": "bc88abdc5e3483069dd6458a40cd98c6cdb5de750354bed13e435e90aabbc4b3",
+    "crates/hyprv-privhelper/src/events.rs": "133e87749db0303a7402a2a2dde7a2b4ca87915ee862bfa76ce0cdb6ce13d046",
+    "crates/hyprv-privhelper/src/lib.rs": "25c358cd47f2658fbcf33a084ee844233093a22f332feda5fe21d57889f9df5c",
+    "crates/hyprv-privhelper/src/main.rs": "a86c5b9cb64fd02d358488cb3d1ff31387c3b66baec9ae2b0eecf94a9b237418",
+    "crates/hyprv-privhelper/src/watchdog.rs": "bd99728c55c3e469c94932e858a4eb8596db04d70805f5bfecc470aa268eceda",
+    "crates/hyprv-privhelper/tests/clippy.log": "230d147cb006690a6caed2b5fcb7e99a04dddcb9b197ef144fe75e3d2819f339",
+    "crates/hyprv-privhelper/tests/packaging.rs": "d956ad0ffb071f548d1ae0bb9f4dd6a0459eecd7b01fac19d2d2240cfc5fcab8",
+    "crates/hyprv-privhelper/tests/validation.log": "4ec07a2db191db8036a3cb844bdb8ac93210c2abc76d9bb2c397a8c25491d47d",
+    "cutover/control.py": "a58e3eaeff31595f1fbb1ce0d368366aa6ae8cd7b948d75603e10c20dfe121b0",
+    "packaging/install.py": "7faba71b5646171a95863929e6ebd72a1de575a3e6ef202919fb11199dc585b5"
+  }
+}

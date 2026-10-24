@@ -1,0 +1,11 @@
+{
+  "calendars": 5,
+  "connected": true,
+  "events": 112,
+  "exec_discovery": false,
+  "loading": false,
+  "read_only": true,
+  "request_serial": 1,
+  "socket": "/run/user/1000/dankcal-3194001.sock",
+  "subscribed": true
+}

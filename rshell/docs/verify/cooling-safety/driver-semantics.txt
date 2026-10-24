@@ -1,0 +1,86 @@
+https://raw.githubusercontent.com/torvalds/linux/master/drivers/hwmon/nct6775-core.c
+2542: store_pwm(struct device *dev, struct device_attribute *attr, const char *buf,
+2543: 	  size_t count)
+2544: {
+2545: 	struct nct6775_data *data = dev_get_drvdata(dev);
+2546: 	struct sensor_device_attribute_2 *sattr = to_sensor_dev_attr_2(attr);
+2547: 	int nr = sattr->nr;
+2548: 	int index = sattr->index;
+2549: 	unsigned long val;
+2550: 	int minval[7] = { 0, 1, 1, data->pwm[2][nr], 0, 0, 0 };
+2551: 	int maxval[7]
+2552: 	  = { 255, 255, data->pwm[3][nr] ? : 255, 255, 255, 255, 255 };
+2553: 	int err;
+2554: 	u16 reg;
+2555: 
+2556: 	/*
+2557: 	 * The fan control mode should be set to manual if the user wants to adjust
+2558: 	 * the fan speed. Otherwise, it will fail to set.
+2559: 	 */
+2560: 	if (index == 0 && data->pwm_enable[nr] > manual)
+2561: 		return -EBUSY;
+2562: 
+2563: 	err = kstrtoul(buf, 10, &val);
+2564: 	if (err < 0)
+2565: 		return err;
+2566: 	val = clamp_val(val, minval[index], maxval[index]);
+2567: 
+2568: 	mutex_lock(&data->update_lock);
+2569: 	data->pwm[index][nr] = val;
+2674: store_pwm_enable(struct device *dev, struct device_attribute *attr,
+2675: 		 const char *buf, size_t count)
+2676: {
+2677: 	struct nct6775_data *data = dev_get_drvdata(dev);
+2678: 	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
+2679: 	int nr = sattr->index;
+2680: 	unsigned long val;
+2681: 	int err;
+2682: 	u16 reg;
+2683: 
+2684: 	err = kstrtoul(buf, 10, &val);
+2685: 	if (err < 0)
+2686: 		return err;
+2687: 
+2688: 	if (val > sf4)
+2689: 		return -EINVAL;
+2690: 
+2691: 	if (val == sf3 && data->kind != nct6775)
+2692: 		return -EINVAL;
+2693: 
+2694: 	if (val == sf4 && check_trip_points(data, nr)) {
+2695: 		dev_err(dev, "Inconsistent trip points, not switching to SmartFan IV mode\n");
+2696: 		dev_err(dev, "Adjust trip points and try again\n");
+2697: 		return -EINVAL;
+2698: 	}
+2699: 
+2700: 	mutex_lock(&data->update_lock);
+2701: 	data->pwm_enable[nr] = val;
+2702: 	if (val == off) {
+2703: 		/*
+2704: 		 * turn off pwm control: select manual mode, set pwm to maximum
+2705: 		 */
+2706: 		data->pwm[0][nr] = 255;
+2707: 		err = nct6775_write_value(data, data->REG_PWM[0][nr], 255);
+2708: 		if (err)
+2709: 			goto out;
+2710: 	}
+2711: 	err = pwm_update_registers(data, nr);
+2712: 	if (err)
+2713: 		goto out;
+2714: 	err = nct6775_read_value(data, data->REG_FAN_MODE[nr], &reg);
+2715: 	if (err)
+2716: 		goto out;
+2717: 	reg &= 0x0f;
+2718: 	reg |= pwm_enable_to_reg(val) << 4;
+2719: 	err = nct6775_write_value(data, data->REG_FAN_MODE[nr], reg);
+2720: out:
+2721: 	mutex_unlock(&data->update_lock);
+2722: 	return err ? : count;
+2723: }
+2724: 
+2725: static ssize_t
+2726: show_pwm_temp_sel_common(struct nct6775_data *data, char *buf, int src)
+2727: {
+2728: 	int i, sel = 0;
+2729: 
+2730: 	for (i = 0; i < NUM_TEMP; i++) {

@@ -1,0 +1,21 @@
+# PLAN ONLY (no root, no writes). The root install never runs files from this user-writable tree.
+# 1. Stage a root-owned copy using system tools only:
+sudo /usr/bin/install -d -o root -g root -m 0755 /usr/local/lib/hyprv-cutover/releases
+sudo /usr/bin/cp -R -P -T -- /home/wilf/.config/HyprV/rshell/packaging/dist/release /usr/local/lib/hyprv-cutover/releases/5080284888fedc55   # target must not exist yet
+# 2. Verify the staged copy with system tools BEFORE executing anything from it.
+#    The first line must print exactly the release id build-release printed: 5080284888fedc55ee8eb7bf50f83077d32aedebc8c83006c555832d9f6296de
+/usr/bin/sha256sum /usr/local/lib/hyprv-cutover/releases/5080284888fedc55/MANIFEST.sha256
+/usr/bin/sh -c 'cd /usr/local/lib/hyprv-cutover/releases/5080284888fedc55 && /usr/bin/sha256sum --strict --quiet -c MANIFEST.sha256'
+# 3. Install from the staged, root-owned copy (re-verifies tree ownership and every digest):
+sudo /usr/bin/python3 -I -B /usr/local/lib/hyprv-cutover/releases/5080284888fedc55/packaging/install.py root --release 5080284888fedc55ee8eb7bf50f83077d32aedebc8c83006c555832d9f6296de --apply
+# Install effects: journalled atomic replace of 6 files (restored on any failure or interruption):
+#   /usr/libexec/hyprv-privhelper (0755) <- bin/hyprv-privhelper
+#   /usr/libexec/hyprv-cooling-failsafe (0755) <- bin/hyprv-cooling-failsafe
+#   /usr/lib/systemd/system/hyprv-privhelper.service (0644) <- files/hyprv-privhelper.service
+#   /usr/share/dbus-1/system-services/org.hyprv.Shell.PrivHelper.service (0644) <- files/org.hyprv.Shell.PrivHelper.service
+#   /etc/dbus-1/system.d/org.hyprv.Shell.PrivHelper.conf (0644) <- files/org.hyprv.Shell.PrivHelper.conf
+#   /usr/share/polkit-1/actions/org.hyprv.shell.fan-control.policy (0644) <- files/org.hyprv.shell.fan-control.policy
+#   + /var/lib/hyprv-cutover/install.json, install-tx/<tx>/ backups, install-backup/ (first-ever originals, never overwritten)
+#   + /usr/local/lib/hyprv-cutover/installed.json and /usr/local/lib/hyprv-cutover/current -> releases/<id16>; systemctl daemon-reload
+#   Before cutover or phase=switching: keep helper masked/inactive; recover interrupted handoff before switching again. Only phase=native may restart the helper on new files (with file rollback on failure).
+# Current cutover phase: unknown (root-only journal)

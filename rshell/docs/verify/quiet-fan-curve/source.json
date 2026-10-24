@@ -1,0 +1,15 @@
+{
+  "path": "crates/hyprv-privhelper/src/cooling.rs",
+  "sha256": "4c7b968069248c0a2f0125b6e0911b8eb4e36bae8cb8f15202cf8a99f09bcc6e",
+  "parameters": {
+    "MIN_START": 77,
+    "FAN_START_MC": 72000,
+    "FAN_STOP_MC": 65000,
+    "FAN_FULL_MC": 88000,
+    "TEMPERATURE_EMA_SECONDS": 10,
+    "PWM_RISE_PER_SECOND": 10,
+    "PWM_FALL_PER_SECOND": 2,
+    "EMERGENCY_MC": 90000,
+    "EMERGENCY_EXIT_MC": 85000
+  }
+}

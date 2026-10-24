@@ -1,0 +1,3 @@
+sha256sum --strict --quiet -c MANIFEST.sha256: exit0
+Manifest SHA256/release ID: eeafb5a678912bbaa802016d562b2b69fcea3ab0afc20f2f2a54ddba788a04c5
+All4855 current source hashes and all3 staged/flat ELFs match build receipt.

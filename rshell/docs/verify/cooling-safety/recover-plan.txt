@@ -1,0 +1,11 @@
+# PLAN ONLY: recover, scope=system. No subprocess, file write, service action, sysfs access or patch application is performed.
+# Root phase runs ONLY from the root-owned staged release (never from this checkout):
+sudo /usr/bin/python3 -I -B /usr/local/lib/hyprv-cutover/current/cutover/control.py recover --scope system --apply
+# It verifies root ownership of the release tree and every MANIFEST digest; switch also requires it to be the installed release. Journal /var/lib/hyprv-cutover/state.json (0700 dir, 0600 file).
+# Require native shell stopped; validate journal and cooling hardware identity. Reconcile interrupted switching to journalled legacy state, preserving the original baseline.
+# Failsafe errors are warnings: restoration still runs; helper must be confirmed inactive first. Verify actual unit states before phase=legacy.
++ systemctl disable --now hyprv-privhelper.service
++ /usr/libexec/hyprv-cooling-failsafe
++ systemctl mask hyprv-privhelper.service
+# Restore journalled PWM owners/modes; recreate exactly the journalled unit symlinks (enabled/linked/alias/runtime), permissions unit first, start previously active units, compare unit-file states:
+# hyprv-fan-control.service, hyprv-fan-permissions.service, hyprv-cpu-power.service

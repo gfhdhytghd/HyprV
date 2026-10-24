@@ -1,0 +1,14 @@
+{
+  "release_id": "d64aecf167b9b86e3744ae8d5a9ddaac37247c5f15a2a64d7fc259bb8035435a",
+  "source_count": 4862,
+  "sources_match": true,
+  "manifest_valid": true,
+  "staged_flat_binaries_match": true,
+  "binaries": {
+    "hyprv-shell": "c364f556a1a5168a7bcac866616e1912a87b06951b7ac321b2a7a0f22d1d52df",
+    "hyprv-privhelper": "3b6a0c275ec1eb4f416cc7da2a79cd49cfaf022d3f852da6948ac812f8d8e68b",
+    "hyprv-cooling-failsafe": "bc33d2bf9d8982051e74346137776c9d6b8b33453d311decce9a016d8d4b9e9a"
+  },
+  "cooling_sha256": "f5a3906262fb2a15a1023bff7ee2c30a8e004c84d20980d2c3b88fe7bb6d42ee",
+  "workspace": "/home/wilf/.config/HyprV/rshell"
+}

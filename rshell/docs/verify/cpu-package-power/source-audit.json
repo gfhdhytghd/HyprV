@@ -1,0 +1,528 @@
+{
+  "epoch": 1792815767.099714,
+  "uid": 1000,
+  "sources": [
+    {
+      "path": "/proc/meminfo",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/proc/net/dev",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/proc/net/route",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/proc/stat",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon1/temp1_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon2/temp1_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon2/temp2_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon2/temp3_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp10_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp11_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp12_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp1_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp2_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp3_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp4_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp5_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp6_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp7_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp8_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon3/temp9_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon4/temp1_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon6/temp1_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp14_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp15_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp16_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp17_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp18_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp1_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp22_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp26_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp2_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp30_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp34_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp35_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp36_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp37_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp38_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp39_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp40_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp41_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp42_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp46_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon7/temp6_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/hwmon/hwmon8/temp1_input",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/br-676c47e7ef91/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/br-676c47e7ef91/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/br0/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/br0/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/docker0/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/docker0/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/eno1/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/eno1/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/heiyu-0/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/heiyu-0/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/lo/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/lo/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth47fe83f/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth47fe83f/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth5b533e8/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth5b533e8/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth816ca72/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth816ca72/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth85f7714/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth85f7714/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth9b013c1/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/veth9b013c1/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/vethe19bce4/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/vethe19bce4/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/wlan0/statistics/rx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/net/wlan0/statistics/tx_bytes",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl-mmio:0/energy_uj",
+      "uid": 0,
+      "mode": "0o400",
+      "result": "PermissionError: [Errno 13] Permission denied: '/sys/class/powercap/intel-rapl-mmio:0/energy_uj'"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl-mmio:0/max_energy_range_uj",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl-mmio:0/name",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:0/energy_uj",
+      "uid": 0,
+      "mode": "0o400",
+      "result": "PermissionError: [Errno 13] Permission denied: '/sys/class/powercap/intel-rapl:0/energy_uj'"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:0/max_energy_range_uj",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:0/name",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:0:0/energy_uj",
+      "uid": 0,
+      "mode": "0o400",
+      "result": "PermissionError: [Errno 13] Permission denied: '/sys/class/powercap/intel-rapl:0:0/energy_uj'"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:0:0/max_energy_range_uj",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:0:0/name",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:0:1/energy_uj",
+      "uid": 0,
+      "mode": "0o400",
+      "result": "PermissionError: [Errno 13] Permission denied: '/sys/class/powercap/intel-rapl:0:1/energy_uj'"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:0:1/max_energy_range_uj",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:0:1/name",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/thermal/thermal_zone0/temp",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/thermal/thermal_zone1/temp",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/thermal/thermal_zone2/temp",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/thermal/thermal_zone3/temp",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    },
+    {
+      "path": "/sys/class/thermal/thermal_zone4/temp",
+      "uid": 0,
+      "mode": "0o444",
+      "result": "readable"
+    }
+  ]
+}

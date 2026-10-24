@@ -1,0 +1,10 @@
+{
+  "release_id": "eeafb5a678912bbaa802016d562b2b69fcea3ab0afc20f2f2a54ddba788a04c5",
+  "hyprv_shell_sha256": "c364f556a1a5168a7bcac866616e1912a87b06951b7ac321b2a7a0f22d1d52df",
+  "all_sources_match": true,
+  "source_files": 4855,
+  "manifest_verified": true,
+  "all_three_staged_and_flat_binaries_match": true,
+  "workspace": "/home/wilf/.config/HyprV/rshell",
+  "calendar_source_fingerprints_match": true
+}

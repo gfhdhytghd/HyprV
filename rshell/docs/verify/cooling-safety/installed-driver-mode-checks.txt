@@ -1,0 +1,46 @@
+0000000000002140 <store_pwm_enable>:
+    2140:	f3 0f 1e fa          	endbr64
+    2144:	e8 00 00 00 00       	call   2149 <store_pwm_enable+0x9>
+			2145: R_X86_64_PLT32	__fentry__-0x4
+    2149:	48 83 ec 48          	sub    $0x48,%rsp
+    214d:	48 89 6c 24 20       	mov    %rbp,0x20(%rsp)
+    2152:	48 89 fd             	mov    %rdi,%rbp
+    2155:	48 89 d7             	mov    %rdx,%rdi
+    2158:	48 8d 54 24 08       	lea    0x8(%rsp),%rdx
+    215d:	48 89 5c 24 18       	mov    %rbx,0x18(%rsp)
+    2162:	4c 89 6c 24 30       	mov    %r13,0x30(%rsp)
+    2167:	4c 89 7c 24 40       	mov    %r15,0x40(%rsp)
+    216c:	44 8b 6e 20          	mov    0x20(%rsi),%r13d
+    2170:	be 0a 00 00 00       	mov    $0xa,%esi
+    2175:	48 8b 5d 78          	mov    0x78(%rbp),%rbx
+    2179:	65 4c 8b 3d 00 00 00 	mov    %gs:0x0(%rip),%r15        # 2181 <store_pwm_enable+0x41>
+    2180:	00 
+			217d: R_X86_64_PC32	__ref_stack_chk_guard-0x4
+    2181:	4c 89 7c 24 10       	mov    %r15,0x10(%rsp)
+    2186:	49 89 cf             	mov    %rcx,%r15
+    2189:	48 c7 44 24 08 00 00 	movq   $0x0,0x8(%rsp)
+    2190:	00 00 
+    2192:	e8 00 00 00 00       	call   2197 <store_pwm_enable+0x57>
+			2193: R_X86_64_PLT32	kstrtoull-0x4
+    2197:	85 c0                	test   %eax,%eax
+    2199:	0f 88 d9 01 00 00    	js     2378 <store_pwm_enable+0x238>
+    219f:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+    21a4:	48 83 f8 05          	cmp    $0x5,%rax
+    21a8:	0f 87 76 03 00 00    	ja     2524 <store_pwm_enable+0x3e4>
+    21ae:	4c 89 74 24 38       	mov    %r14,0x38(%rsp)
+    21b3:	48 83 f8 04          	cmp    $0x4,%rax
+    21b7:	0f 84 e4 00 00 00    	je     22a1 <store_pwm_enable+0x161>
+    21bd:	48 83 f8 05          	cmp    $0x5,%rax
+    21c1:	0f 85 e4 00 00 00    	jne    22ab <store_pwm_enable+0x16b>
+    21c7:	48 63 8b 78 04 00 00 	movslq 0x478(%rbx),%rcx
+    21ce:	4d 63 f5             	movslq %r13d,%r14
+    21d1:	8d 41 ff             	lea    -0x1(%rcx),%eax
+    21d4:	85 c0                	test   %eax,%eax
+    21d6:	0f 8e 6f 02 00 00    	jle    244b <store_pwm_enable+0x30b>
+    21dc:	4a 8d 14 f3          	lea    (%rbx,%r14,8),%rdx
+    21e0:	4c 29 f2             	sub    %r14,%rdx
+    21e3:	0f b6 b2 ae 04 00 00 	movzbl 0x4ae(%rdx),%esi
+    21ea:	40 3a b2 ad 04 00 00 	cmp    0x4ad(%rdx),%sil
+    21f1:	0f 82 00 00 00 00    	jb     21f7 <store_pwm_enable+0xb7>
+			21f3: R_X86_64_PC32	.text+0x83a7
+    21f7:	83 f8 01             	cmp    $0x1,%eax

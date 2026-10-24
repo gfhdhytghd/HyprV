@@ -1,0 +1,40 @@
+{
+  "ready": false,
+  "checks": [
+    {
+      "check": "release paths",
+      "ok": true,
+      "detail": "stable deployment workspace and preflight exist: /home/wilf/.config/HyprV/rshell"
+    },
+    {
+      "check": "release binaries",
+      "ok": false,
+      "detail": "installed user binary/unit differs from candidate"
+    },
+    {
+      "check": "runtime assets",
+      "ok": true,
+      "detail": "44 runtime payloads and catalog hash-verified; unit asset root configured (installed)"
+    },
+    {
+      "check": "automated tests",
+      "ok": false,
+      "detail": "automated test receipt failed or stale; run preflight --run-tests"
+    },
+    {
+      "check": "parity gate",
+      "ok": false,
+      "detail": "bar-gl: render dependency hashes stale or changed during render/diff"
+    },
+    {
+      "check": "performance gate",
+      "ok": false,
+      "detail": "real-shell performance source evidence stale; rerun perf-shell measurement"
+    },
+    {
+      "check": "privhelper installed",
+      "ok": false,
+      "detail": "installed release eda5ca090166790a differs from candidate eeafb5a678912bba in packaging/dist/release"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+# Fan emergency threshold: user decision 2026-10-24
+
+Raw CPU Package temperature now enters emergency only above105000 mC; an existing desktop safety latch clears only below100000 mC and after the fault clears. Exactly105000 does not enter; exactly100000 does not clear. Quiet curve/EMA/slew/start/stop constants are unchanged. Zero caps remain off in normal operation. Missing/invalid temperature, invalid state and per-channel faults retain immediate maximum cooling. Exit/crash failsafe remains unconditional255 with enable-before-duty single-store writes.
+
+Validation: 43 helper tests passed (39 library,3 main,1 packaging); strict all-target Clippy passed. Fake sysfs controller tests exercise105000→105001→105000→100000→99999 and invalid sensor data with zero caps; curve tests cover raw/filter separation, fault latches and channel independence; boot tests cover strict entry and unavailable sensors. Logs: [tests](fan-emergency-threshold/tests.log), [Clippy](fan-emergency-threshold/clippy.log). Cargo reports a pre-existing registry cache permission warning, without affecting successful gates.
+
+Cooling spec and crate README record the decision. Both helper and failsafe --check text contain no90C threshold and need no change. No root execution, installation, real sysfs writes, or live service actions. Physical thermal behavior remains untested. Release manifest verification will be appended after the official build. Full candidate gate refresh belongs to svc-sys; old receipts are not rebound.
+
+Official `packaging/build-release.sh` completed successfully (2m08s). Release ID: `d64aecf167b9b86e3744ae8d5a9ddaac37247c5f15a2a64d7fc259bb8035435a`. Independently checked all4862source hashes against the build receipt, the complete manifest, flat/staged binary hashes and stable workspace metadata. [Verification receipt](fan-emergency-threshold/release-verification.json). Gate refresh remains assigned to svc-sys.

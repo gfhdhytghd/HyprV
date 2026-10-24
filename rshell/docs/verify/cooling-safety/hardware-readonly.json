@@ -1,0 +1,19 @@
+{
+  "epoch": 1792809131.8770344,
+  "uid": 1000,
+  "operation": "read-only; no sysfs stores, no root or systemctl mutations",
+  "path": "/sys/devices/platform/nct6775.656/hwmon/hwmon3",
+  "kernel": "7.2.11-zen1-1-zen",
+  "attributes": {
+    "name": "nct6799",
+    "pwm1": "112",
+    "pwm1_enable": "1",
+    "pwm1_mode": "1",
+    "pwm7": "96",
+    "pwm7_enable": "1",
+    "pwm7_mode": "1"
+  },
+  "module_srcversion": "F7D204FE213D58EB4411E0C",
+  "module_elf_sha256": "5d78cd4e8bf605ea636ac8a581b87b84ea2853483b3d02981976863026a1330f",
+  "upstream_source_sha256": "9acc1d1f87ab46a235c3110c8ecd235fdf7793a6600811a02dece777221c2605"
+}
