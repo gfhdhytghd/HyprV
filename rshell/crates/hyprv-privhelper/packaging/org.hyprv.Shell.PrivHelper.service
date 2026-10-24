@@ -1,0 +1,5 @@
+[D-BUS Service]
+Name=org.hyprv.Shell.PrivHelper
+Exec=/usr/libexec/hyprv-privhelper
+User=root
+SystemdService=hyprv-privhelper.service

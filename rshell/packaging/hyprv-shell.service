@@ -1,0 +1,25 @@
+[Unit]
+Description=HyprV native Wayland shell
+Documentation=file:%h/.config/HyprV/rshell/cutover/README.md
+After=graphical-session-pre.target graphical-session.target
+PartOf=graphical-session.target
+ConditionEnvironment=WAYLAND_DISPLAY
+ConditionEnvironment=XDG_RUNTIME_DIR
+# Installed alone is inert. Only successful, explicit cutover arms startup.
+ConditionPathExists=%h/.local/state/hyprv-cutover/native.enabled
+StartLimitIntervalSec=30
+StartLimitBurst=3
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/hyprv-shell
+ExecStop=-%h/.local/bin/hyprv-shell kill
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=5
+KillMode=mixed
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
+Environment=HYPRV_ASSET_ROOT=%h/.local/share/hyprv-shell
+
+# Static unit: Hyprland exec-once imports its environment and starts this unit.
+# No WantedBy=graphical-session.target / After=graphical-session.target cycle.

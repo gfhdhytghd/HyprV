@@ -1,0 +1,52 @@
+local lib = require("hypr.lib")
+
+-- Make the Xwayland IM frontend available to both new X11 clients and D-Bus apps.
+hl.env("GTK_IM_MODULE", "fcitx")
+hl.env("QT_IM_MODULE", "fcitx")
+hl.env("XMODIFIERS", "@im=fcitx")
+
+lib.exec_once("~/.config/hypr/xdg-portal-hyprland")
+lib.exec_once("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DBUS_SESSION_BUS_ADDRESS DISPLAY XDG_RUNTIME_DIR HYPRLAND_INSTANCE_SIGNATURE GTK_IM_MODULE QT_IM_MODULE XMODIFIERS")
+lib.exec_once("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DBUS_SESSION_BUS_ADDRESS DISPLAY XDG_RUNTIME_DIR HYPRLAND_INSTANCE_SIGNATURE GTK_IM_MODULE QT_IM_MODULE XMODIFIERS")
+lib.exec_once("systemctl --user start plasma-kded6.service")
+lib.exec_once("sleep 0.5 && busctl --user call org.kde.kded6 /kded org.kde.kded6 loadModule s statusnotifierwatcher")
+lib.exec_once("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
+lib.exec_once("~/.config/HyprV/quickshell/scripts/launch.sh")
+lib.exec_once("sleep 1 && nm-applet --indicator")
+lib.exec_once("kdeconnectd")
+lib.exec_once("fcitx5")
+lib.exec_once("wl-paste --watch cliphist store")
+lib.exec_once("sleep 0.3&&awww-daemon")
+lib.exec_once("kbuildsycoca6")
+lib.exec_once("uxplay")
+lib.exec_once("hyprpm reload -n && /home/wilf/.local/bin/hypr-edgehover-local && hyprctl reload")
+lib.exec_once("hypridle")
+lib.exec_once("ydotoold")
+lib.exec_once("zw")
+lib.exec_once("rm .config/chromium/SingletonLock")
+lib.exec_once("rm .config/vivaldi/SingletonLock")
+lib.exec_once("sleep 5 && keepassxc --minimized")
+-- Start Sunshine in the graphical session, preserving its NVIDIA environment.
+lib.exec_once("sleep 5 && /usr/bin/sunshine")
+lib.exec_once("sleep 5 && $HOME/data/model/local_ai_service/launch.sh --tray-only")
+lib.exec_once("sleep 2 && $HOME/.local/share/lzc-client-desktop/lzc-client-desktop --password-store=gnome-libsecret --ozone-platform-hint=wayland --gtk-version=4 --ignore-gpu-blocklist --enable-features=TouchpadOverscrollHistoryNavigation --enable-wayland-ime --auto-startup")
+lib.exec_once("~/.config/HyprV/hypr/scripts/battery-notify.sh &")
+lib.exec_once("~/.config/HyprV/hypr/scripts/restore-session-layout.sh")
+
+hl.env("trashAppUnsafe", "1")
+hl.env("QT_QPA_PLATFORM", "wayland")
+hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
+hl.env("QT_LINUX_ACCESSIBILITY_ALWAYS_ON", "1")
+-- SuperPower: keep DRM buffer modifiers enabled.
+-- hl.env("AQ_NO_MODIFIERS", "1")
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
+hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
+-- SuperPower: keep atomic modesetting enabled.
+-- hl.env("WLR_DRM_NO_ATOMIC", "1")
+hl.env("XCURSOR_SIZE", "24")
+
+-- HDR client color feedback is loaded by hyprpm above.
+
+-- Start ALS brightness directly: this session does not activate graphical-session.target.
+lib.exec_once("systemctl --user start wluma.service")

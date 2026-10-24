@@ -1,0 +1,129 @@
+diff --git a/hypr/controls.lua b/hypr/controls.lua
+--- a/hypr/controls.lua
++++ b/hypr/controls.lua
+@@ -44,7 +44,7 @@
+   hl.notification.create({text=text,timeout=4000,icon="warning"})
+ end
+ local function notify(kind,level)
+-  hl.exec_cmd("quickshell -p " .. quote(root .. "/quickshell") .. " ipc call quickAdjust " .. kind .. (level and (" " .. level) or ""))
++  hl.exec_cmd(quote(home .. "/.local/bin/hyprv-shell") .. " ipc call quickAdjust " .. kind .. (level and (" " .. level) or ""))
+ end
+ local function applySDR(level)
+   local d,c=targets(level)
+diff --git a/hypr/hyprland-bind.lua b/hypr/hyprland-bind.lua
+--- a/hypr/hyprland-bind.lua
++++ b/hypr/hyprland-bind.lua
+@@ -31,7 +31,7 @@
+ hl.bind(main .. " + Y", hl.dsp.window.move({ monitor = "1" }))
+ hl.bind(main .. " + Y", hl.dsp.window.resize({ x = 1415, y = 2075 }))
+ hl.bind(main .. " + Y", hl.dsp.window.move({ x = 1772, y = 861 }))
+-lib.bind_exec(main .. " + Y", "quickshell kill -p $HOME/.config/HyprV/quickshell")
++lib.bind_exec(main .. " + Y", "systemctl --user stop hyprv-shell.service")
+ lib.bind_plugin_fn_or_exec(
+   main .. " + SHIFT + O",
+   "hymission",
+@@ -47,11 +47,11 @@
+ lib.bind_exec(main .. " + B", "~/.config/HyprV/hypr/scripts/toggle-battery-mode.sh")
+ lib.bind_exec(main .. " + T", "~/.config/HyprV/hypr/scripts/rotate-screen-ccw.sh")
+ lib.bind_exec(main .. " + R", "~/.config/hypr/scripts/record-script.sh --fullscreen-sound")
+-lib.bind_exec(main .. " + SHIFT + R", "~/.config/HyprV/quickshell/scripts/reload.sh && fcitx5")
++lib.bind_exec(main .. " + SHIFT + R", "systemctl --user restart hyprv-shell.service && fcitx5")
+ lib.bind_exec(main .. " + SHIFT + S", "~/.config/hypr/scripts/ocr.sh")
+ lib.bind_exec(main .. " + N", "swaync-client -t -sw")
+ hl.bind(main .. " + SHIFT + b", function() require("hypr.controls").brightness_set(35, true) end)
+-lib.bind_exec(main .. " + A", "quickshell ipc call -p $HOME/.config/HyprV/quickshell controlPanel toggle")
++lib.bind_exec(main .. " + A", "\"$HOME/.local/bin/hyprv-shell\" ipc call controlPanel toggle")
+ 
+ hl.bind(main .. " + left", hl.dsp.focus({ direction = "left" }))
+ hl.bind(main .. " + right", hl.dsp.focus({ direction = "right" }))
+diff --git a/hypr/hyprland-exec-once.lua b/hypr/hyprland-exec-once.lua
+--- a/hypr/hyprland-exec-once.lua
++++ b/hypr/hyprland-exec-once.lua
+@@ -11,7 +11,7 @@
+ lib.exec_once("systemctl --user start plasma-kded6.service")
+ lib.exec_once("sleep 0.5 && busctl --user call org.kde.kded6 /kded org.kde.kded6 loadModule s statusnotifierwatcher")
+ lib.exec_once("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
+-lib.exec_once("~/.config/HyprV/quickshell/scripts/launch.sh")
++lib.exec_once("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DBUS_SESSION_BUS_ADDRESS DISPLAY XDG_RUNTIME_DIR HYPRLAND_INSTANCE_SIGNATURE && systemctl --user start hyprv-shell.service")
+ lib.exec_once("sleep 1 && nm-applet --indicator")
+ lib.exec_once("kdeconnectd")
+ lib.exec_once("fcitx5")
+diff --git a/hypr/hyprland-dropitem.lua b/hypr/hyprland-dropitem.lua
+--- a/hypr/hyprland-dropitem.lua
++++ b/hypr/hyprland-dropitem.lua
+@@ -28,7 +28,7 @@
+ 
+ lib.bind_exec(
+   "SUPER + C",
+-  "quickshell ipc -p $HOME/.config/HyprV/quickshell call calendar toggle"
++  "\"$HOME/.local/bin/hyprv-shell\" ipc call calendar toggle"
+ )
+ hl.window_rule({
+   name = "dropdown-calendar",
+diff --git a/hypr/hyprland-plugins.lua b/hypr/hyprland-plugins.lua
+--- a/hypr/hyprland-plugins.lua
++++ b/hypr/hyprland-plugins.lua
+@@ -196,7 +196,8 @@
+     -- Both outward gestures toggle the persistent compact/full bar state.
+     local function toggle_bar(monitor)
+       local quoted = "'" .. monitor:gsub("'", "'\\''") .. "'"
+-      hl.exec_cmd("quickshell ipc -p /home/wilf/.config/HyprV/quickshell call bar toggle " .. quoted)
++      local binary = (assert(os.getenv("HOME")) .. "/.local/bin/hyprv-shell"):gsub("'", "'\\''")
++      hl.exec_cmd("'" .. binary .. "' ipc call bar toggle " .. quoted)
+     end
+     for _, mode in ipairs({"push", "move"}) do
+       assert(edge.rule({
+diff --git a/hypr/scripts/restore-session-layout.sh b/hypr/scripts/restore-session-layout.sh
+--- a/hypr/scripts/restore-session-layout.sh
++++ b/hypr/scripts/restore-session-layout.sh
+@@ -161,7 +161,7 @@
+   local approval_file dialog_status=0 decision=""
+   approval_file="$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/hyprv-startup-approval.XXXXXX")" || return 1
+   HYPRV_STARTUP_APPROVAL="$approval_file" \
+-    qs --path "$HOME/.config/HyprV/quickshell/StartupConfirm.qml" || dialog_status=$?
++    HYPRV_PROFILE=laptop "$HOME/.local/bin/hyprv-shell" startup-confirm || dialog_status=$?
+   decision="$(cat -- "$approval_file")"
+   rm -f -- "$approval_file"
+   [[ "$dialog_status" -eq 0 && "$decision" == "launch" ]]
+diff --git a/hypr/scripts/rotate-screen-ccw.sh b/hypr/scripts/rotate-screen-ccw.sh
+--- a/hypr/scripts/rotate-screen-ccw.sh
++++ b/hypr/scripts/rotate-screen-ccw.sh
+@@ -5,7 +5,7 @@
+ readonly state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyprv"
+ readonly state_file="$state_dir/monitor-transform"
+ readonly lock_file="$state_dir/monitor-transform.lock"
+-readonly deskflow_script="$HOME/.config/HyprV/quickshell/scripts/deskflow-target.sh"
++readonly hyprv_shell="$HOME/.local/bin/hyprv-shell"
+ readonly dropdown_script="$HOME/.config/HyprV/hypr/scripts/dropdown.sh"
+ readonly sidechat_script="$HOME/.config/HyprV/hypr/scripts/sidechat.sh"
+ 
+@@ -166,7 +166,7 @@
+   exit 1
+ fi
+ 
+-if [[ -x $deskflow_script ]] && ! "$deskflow_script" reflow >/dev/null; then
++if [[ -x $hyprv_shell ]] && ! HYPRV_PROFILE=laptop "$hyprv_shell" desktop deskflowReflow >/dev/null; then
+   rollback
+   printf 'rotate-screen: Deskflow topology update failed; restored the previous monitor layout\n' >&2
+   exit 1
+diff --git a/hypr/scripts/toggle-battery-mode.sh b/hypr/scripts/toggle-battery-mode.sh
+--- a/hypr/scripts/toggle-battery-mode.sh
++++ b/hypr/scripts/toggle-battery-mode.sh
+@@ -4,7 +4,7 @@
+ 
+ hyprv_dir="$HOME/.config/HyprV"
+ hypr_lua_link="$HOME/.config/hypr/hyprland.lua"
+-quickshell_variant_script="$hyprv_dir/quickshell/scripts/set-variant.sh"
++hyprv_shell="$HOME/.local/bin/hyprv-shell"
+ 
+ current_target="$(readlink -f "$hypr_lua_link" 2>/dev/null || true)"
+ 
+@@ -18,7 +18,7 @@
+ 
+ mkdir -p "$(dirname -- "$hypr_lua_link")"
+ ln -sfn "$next_lua" "$hypr_lua_link"
+-"$quickshell_variant_script" "$next_variant"
++HYPRV_PROFILE=laptop "$hyprv_shell" desktop setVariant "$next_variant"
+ 
+ if command -v hyprctl >/dev/null 2>&1; then
+     hyprctl reload >/dev/null 2>&1 || true

@@ -1,0 +1,5 @@
+[D-BUS Service]
+Name=org.hyprv.Shell.CpuPower
+Exec=/usr/libexec/hyprv-cpu-power
+User=root
+SystemdService=hyprv-cpu-power-only.service

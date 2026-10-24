@@ -1,0 +1,29 @@
+[Unit]
+Description=HyprV optional read-only CPU package power
+After=dbus.service
+
+[Service]
+Type=dbus
+BusName=org.hyprv.Shell.CpuPower
+UnsetEnvironment=HYPRV_PROFILE HYPRV_SYSFS_ROOT DBUS_SYSTEM_BUS_ADDRESS
+ExecCondition=/usr/libexec/hyprv-cpu-power --eligible
+ExecStart=/usr/libexec/hyprv-cpu-power
+User=root
+Group=root
+Restart=no
+TimeoutStopSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadOnlyPaths=/sys
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+PrivateDevices=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_UNIX
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictSUIDSGID=yes
+# D-Bus activation only. No boot enablement and no cooling/failsafe commands.

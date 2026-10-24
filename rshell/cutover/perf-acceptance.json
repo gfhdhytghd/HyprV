@@ -1,0 +1,9 @@
+{
+  "accepted_by": "user",
+  "date": "2026-10-23",
+  "reason": "User accepts current release performance for deployment; legacy Quickshell was reported at 2.7\u20132.9% under the same hooks. Hook events are allowed and must be reported separately; 0.1% remains the idle aspiration.",
+  "binary_sha256": "c364f556a1a5168a7bcac866616e1912a87b06951b7ac321b2a7a0f22d1d52df",
+  "controlled_quiet_max_pct": 0.5,
+  "live_hook_idle_max_pct": 2.0,
+  "hook_events_allowed": true
+}

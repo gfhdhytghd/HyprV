@@ -1,0 +1,9 @@
+{
+  "user": ["hyprv-fan-control.service", "fan-control.service"],
+  "system": ["hyprv-fan-control.service", "hyprv-fan-permissions.service", "hyprv-cpu-power.service"],
+  "notes": {
+    "user": "Observed installed unit is hyprv-fan-control.service; fan-control.service is the original source-name alias, touched only if installed.",
+    "system": "Names verified from installed /etc/systemd/system fragments. Original source files are fan-control-boot.service, fan-control-permissions.service and cpu-power-sampler.service.",
+    "excluded": "DankCal, NetworkManager, Bluetooth, PipeWire, SwayNC, Mihomo, Viewflow, portals and unrelated Quickshell configurations are not stopped."
+  }
+}

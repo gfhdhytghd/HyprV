@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN" "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>HyprV</vendor>
+  <action id="org.hyprv.shell.fan-control">
+    <description>Change HyprV chassis fan limits</description>
+    <message>Only the active local desktop owner may change fan limits</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+  </action>
+  <action id="org.hyprv.shell.egpu-remove">
+    <description>Disconnect an external GPU</description>
+    <message>Administrator authorization is required to remove the external GPU from the PCI bus</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+  <action id="org.hyprv.shell.cpu-power">
+    <description>Read HyprV CPU package power telemetry</description>
+    <message>Only the active local desktop owner may sample CPU package power</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+  </action>
+</policyconfig>

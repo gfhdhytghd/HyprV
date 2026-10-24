@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "accepted_by": "user",
+  "date": "2026-10-24",
+  "note": "user accepted visual parity; no re-render required",
+  "binary_sha256": "c364f556a1a5168a7bcac866616e1912a87b06951b7ac321b2a7a0f22d1d52df",
+  "evidence_release_id": "6719efa8ffa9c3d3ccba8dc82545ee2bee9a8b25976cb99260bf39bd04c56dac",
+  "last_passing_evidence": {
+    "preflight": {
+      "path": "docs/verify/raw/install-refresh/preflight.json",
+      "sha256": "0fc4107c5d28feca62b8bf8d6ca5666284e8cad5d569cb80eae42a9a66ed0461"
+    },
+    "release": {
+      "path": "docs/verify/raw/install-refresh/release-check.json",
+      "sha256": "c1f27be2169fae09f5a7df5209c7ac38d3ab9c0cce68a4e6e7cf0ca8df30984c"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+[Unit]
+Description=HyprV persistent cooling controller and privileged shell API
+DefaultDependencies=no
+After=systemd-modules-load.service local-fs.target
+Before=sysinit.target display-manager.service shutdown.target
+Conflicts=shutdown.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=notify
+NotifyAccess=main
+StateDirectory=hyprv-privhelper
+StateDirectoryMode=0700
+UnsetEnvironment=HYPRV_PROFILE HYPRV_SYSFS_ROOT DBUS_SYSTEM_BUS_ADDRESS
+ExecCondition=/usr/libexec/hyprv-privhelper --eligible-cooling
+UnsetEnvironment=HYPRV_PROFILE HYPRV_SYSFS_ROOT DBUS_SYSTEM_BUS_ADDRESS
+ExecCondition=/usr/libexec/hyprv-privhelper --eligible-cooling
+ExecStartPre=/usr/libexec/hyprv-cooling-failsafe
+ExecStart=/usr/libexec/hyprv-privhelper
+# Runs after normal exit, failed startup, signal, crash and watchdog termination.
+# Recovery neither reads persisted state nor requires the controller's locks.
+ExecStopPost=/usr/libexec/hyprv-cooling-failsafe
+User=root
+Group=root
+Restart=always
+RestartSec=1
+WatchdogSec=5s
+TimeoutStartSec=10s
+TimeoutStopSec=5s
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+# Class paths resolve into /sys/devices. Narrow per host only after validation.
+ReadWritePaths=/sys/devices
+ProtectKernelTunables=no
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+PrivateDevices=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+CapabilityBoundingSet=CAP_DAC_OVERRIDE
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=sysinit.target

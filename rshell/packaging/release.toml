@@ -1,0 +1,9 @@
+# Explicit production settings, passed with cargo --config. No workspace edits.
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+debug = false
+incremental = false
+strip = "debuginfo"

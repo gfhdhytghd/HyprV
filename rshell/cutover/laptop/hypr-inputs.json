@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "status": "phase-b-base-and-output-pinned",
+  "base_ref": "origin/laptop",
+  "base_commit": "24972f711735ce92e72ef1db5bdf27f85ae8cfc9",
+  "inputs": {
+    "hypr/controls.lua": "eb906f9c29037d07ff1e47a61e339f6d442248aeb1839abf9b5ed29fa597117a",
+    "hypr/hyprland-bind.lua": "daf41d0c24f54d5a4b166fdcbae5ac7b8bd97adf852e766a4f052164e2b9cef6",
+    "hypr/hyprland-exec-once.lua": "ab391d433babf0dc7fe270b26ebc4976c6905541f053cb54b76edc01d48945a5",
+    "hypr/hyprland-dropitem.lua": "02863250c9b3417b20035ac9b7326e50c9e25e2549cb93534b6fa1a22764d8b2",
+    "hypr/hyprland-plugins.lua": "d88c2372225687d75bb6ab9706af887acebe33db2499df8dd204a8b773cfa6da",
+    "hypr/scripts/restore-session-layout.sh": "0d5d09c0a9f075593b8153733219fa97108d19e3ab5cfad2e02270a8db9f9c3f",
+    "hypr/scripts/rotate-screen-ccw.sh": "965736c2d58e2377fae29cecd101dad5cf48be829960e0585a453137ac1d1c1d",
+    "hypr/scripts/toggle-battery-mode.sh": "6b3c082e110bf8046716815f07df05eb44aad213b0c038b0b248db04545cab79"
+  },
+  "files": {
+    "hypr/controls.lua": {
+      "before_sha256": "eb906f9c29037d07ff1e47a61e339f6d442248aeb1839abf9b5ed29fa597117a",
+      "after_sha256": "30ddbcd968d9514109cef119d89ef5778cb009e623690ad7b06b0be26c38b10f"
+    },
+    "hypr/hyprland-bind.lua": {
+      "before_sha256": "daf41d0c24f54d5a4b166fdcbae5ac7b8bd97adf852e766a4f052164e2b9cef6",
+      "after_sha256": "85e316ede326bf0a66cf58dc7a4a2360e084dbc994cb6a5c97e58c3013f19632"
+    },
+    "hypr/hyprland-exec-once.lua": {
+      "before_sha256": "ab391d433babf0dc7fe270b26ebc4976c6905541f053cb54b76edc01d48945a5",
+      "after_sha256": "3dba481bea1f6c6742b2335042b7a97a8ad04389f423105f09b4f70c4ab0a420"
+    },
+    "hypr/hyprland-dropitem.lua": {
+      "before_sha256": "02863250c9b3417b20035ac9b7326e50c9e25e2549cb93534b6fa1a22764d8b2",
+      "after_sha256": "df77e7182ad736f0b63ae79cdb837812da8fdb8eb4e19784ada5ddef44be1450"
+    },
+    "hypr/hyprland-plugins.lua": {
+      "before_sha256": "d88c2372225687d75bb6ab9706af887acebe33db2499df8dd204a8b773cfa6da",
+      "after_sha256": "28774807dd7a305cfbb65d2df428518a6798547c6bd0b80df6a9d5728bea81e1"
+    },
+    "hypr/scripts/restore-session-layout.sh": {
+      "before_sha256": "0d5d09c0a9f075593b8153733219fa97108d19e3ab5cfad2e02270a8db9f9c3f",
+      "after_sha256": "ac291bb53334cb1244d8da79c196a12a053d037fd85c10686e948f8592b203bb"
+    },
+    "hypr/scripts/rotate-screen-ccw.sh": {
+      "before_sha256": "965736c2d58e2377fae29cecd101dad5cf48be829960e0585a453137ac1d1c1d",
+      "after_sha256": "3f4445ecc4fd7d305e03eacfc54aa0eaebb0f916c64bad117fa158fadfa2131e"
+    },
+    "hypr/scripts/toggle-battery-mode.sh": {
+      "before_sha256": "6b3c082e110bf8046716815f07df05eb44aad213b0c038b0b248db04545cab79",
+      "after_sha256": "f3b7dd00c4e0963115c1d676c1fe0205be713cb4681efb280f704b12651af61a"
+    }
+  }
+}

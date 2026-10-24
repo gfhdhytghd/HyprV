@@ -1,0 +1,34 @@
+{
+  "files": {
+    "hypr/hyprland-exec-once.lua": {
+      "before_sha256": "cc79c2116007fea344d609a6993eccb687897fc3c3a1c7a3839a2ae7ca448f52",
+      "after_sha256": "a2b3c30cc929b316bb01a9a1b42b7bfa9a09807abd376bcde9ce56e121f8f547"
+    },
+    "hypr/hyprland-bind.lua": {
+      "before_sha256": "daf41d0c24f54d5a4b166fdcbae5ac7b8bd97adf852e766a4f052164e2b9cef6",
+      "after_sha256": "85e316ede326bf0a66cf58dc7a4a2360e084dbc994cb6a5c97e58c3013f19632"
+    },
+    "hypr/controls.lua": {
+      "before_sha256": "7b568fadd802c961542f1215351720dd2ad9b20a1653a08effece2efb76bd70f",
+      "after_sha256": "c04b237c937759266d8e05257b9357c0c4401c732feb7f78f0cb28054f1b4804"
+    },
+    "hypr/scripts/toggle-battery-mode.sh": {
+      "before_sha256": "6b3c082e110bf8046716815f07df05eb44aad213b0c038b0b248db04545cab79",
+      "after_sha256": "6bf30494c9ddf14fc06604a7d8f33ed3a2a281f82cc0856d1cbe864ffe8a5851"
+    },
+    "hypr/scripts/rotate-screen-ccw.sh": {
+      "before_sha256": "1209d9dedf8a5e474141bc4d0fc5d69aa596918cfeb7792d4545c89027bbbec8",
+      "after_sha256": "3b05372c70e8be01fbb4e842aa060cd5ff3fe02a7d7238d8f5d298ebdadd2c6a"
+    },
+    "hypr/scripts/restore-session-layout.sh": {
+      "before_sha256": "d2be19d7d7b1ab00fa79baa08ece4a4bfc0ea718e62739fd759ac275746bc0b9",
+      "after_sha256": "a110f3130e325e219e760e31916a74a28bef0fffd9ce77cafbbc1354f5e2d587"
+    }
+  },
+  "unchanged_rule_file": "hypr/hyprland-winrule.lua",
+  "namespaces": [
+    "hyprv-quickshell",
+    "shell:.*"
+  ],
+  "note": "Layer rule matchers are preserved. Layer rule display name layer-quickshell is an identifier, not a command. hyprv-screen-corner-overlay-* has no layer rule in hyprland-winrule.lua, so none is preserved or needed. Three hypr helper scripts are patched too: toggle-battery-mode.sh (variant via hyprv-shell desktop setVariant), rotate-screen-ccw.sh (Deskflow reflow via hyprv-shell desktop deskflowReflow; both use the running shell over IPC, else run in-process), restore-session-layout.sh (dialog via hyprv-shell startup-confirm)."
+}
