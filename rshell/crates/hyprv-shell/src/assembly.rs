@@ -2201,15 +2201,16 @@ pub fn run(
                     crate::assets::Ready::Art(art) if a.art_url == art.url => {
                         a.art = crate::assets::decode(&art.bytes);
                         a.dirty = true;
-                        engine.request_redraw();
                     }
                     crate::assets::Ready::Tray(ready) => {
                         a.tray_loader.complete(ready);
                         a.dirty = true;
-                        engine.request_redraw();
                     }
-                    _ => {}
+                    _ => return,
                 }
+                // request_redraw runs Adapter::update synchronously, which borrows the assembly.
+                drop(a);
+                engine.request_redraw();
             }
         })?;
     let (signal_send, signal_receive) = hyprv_core::calloop::channel::channel::<()>();
