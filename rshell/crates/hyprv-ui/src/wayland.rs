@@ -266,6 +266,8 @@ struct View {
     callback_time: Duration,
     feedback: Option<WpPresentationFeedback>,
     viewport_state: Option<((u32,u32),u64,bool)>,
+    /// Requested layer size not yet sent; applied with the first buffer drawn at it.
+    pending_size: Option<(u32, u32)>,
 }
 impl Drop for View {
     fn drop(&mut self) {
@@ -617,7 +619,17 @@ impl Engine {
             let size = v.config.legal_size(size);
             if v.config.size != size {
                 v.config.size = size;
-                v.layer.set_size(size.0, size.1);
+                // Layer size is double-buffered. Committing it alone makes the compositor
+                // scale the old-size buffer into the new box until a new buffer arrives
+                // (a 820->58 bar shrink shows a squashed, invisible bar for ~3 frames).
+                // Defer it to the next paint so it lands in the same commit as a buffer
+                // drawn at that size.
+                if v.configured && size.0 > 0 && size.1 > 0 {
+                    v.pending_size = Some(size);
+                    v.scene.invalidate();
+                } else {
+                    v.layer.set_size(size.0, size.1);
+                }
             }
             if v.config.layer != layer {
                 v.config.layer = layer;
@@ -726,6 +738,7 @@ impl Engine {
             callback_time: Duration::ZERO,
             feedback: None,
             viewport_state: None,
+            pending_size: None,
         });
         id
     }
@@ -924,6 +937,11 @@ impl Engine {
             return;
         }
         view.pending = false;
+        if let Some(size) = view.pending_size.take() {
+            view.layer.set_size(size.0, size.1);
+            view.size = size;
+            view.scene.invalidate();
+        }
         let now = self.epoch.elapsed();
         // wl_callback time wraps at 2^32 milliseconds. Anchor it to the app's monotonic epoch.
         let frame_time = if let Some(t) = time {
