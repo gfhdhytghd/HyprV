@@ -74,6 +74,54 @@ pub async fn apply(env: &Env, hypr: &Hypr, theme: Theme, variant: Variant) -> Er
     let cfg = env.hyprv_config_dir.clone();
     let sfx = p.suffix;
     let v = variant.as_str();
+    // Toolkit color scheme first: Chrome/Electron follow it through the settings portal,
+    // so it must not wait behind terminal, wallpaper or KDE reloads.
+    // XFConf xsettings channel (xfconf-query equivalents).
+    let xf = [
+        ("/Net/ThemeName", format!("Adwaita{sfx}")),
+        ("/Net/IconThemeName", format!("Adwaita{sfx}")),
+        ("/Gtk/CursorThemeName", p.cursor.to_string()),
+    ];
+    for (prop, value) in xf {
+        record(
+            &mut errors,
+            "xfconf",
+            xfconf(prop, zvariant::Value::from(value)).await,
+        );
+    }
+    record(
+        &mut errors,
+        "xfconf",
+        xfconf("/Gtk/CursorThemeSize", zvariant::Value::I32(24)).await,
+    );
+    // GSettings through the dconf writer service.
+    record(
+        &mut errors,
+        "gsettings",
+        super::dconf::write(&[
+            (
+                "/org/gnome/desktop/interface/gtk-theme",
+                zvariant::Value::from(p.gtk_theme.as_str()),
+            ),
+            (
+                "/org/gnome/desktop/interface/icon-theme",
+                zvariant::Value::from(p.icon_theme.as_str()),
+            ),
+            (
+                "/org/gnome/desktop/interface/cursor-theme",
+                zvariant::Value::from(p.cursor),
+            ),
+            (
+                "/org/gnome/desktop/interface/cursor-size",
+                zvariant::Value::I32(24),
+            ),
+            (
+                "/org/gnome/desktop/interface/color-scheme",
+                zvariant::Value::from(p.color_scheme),
+            ),
+        ])
+        .await,
+    );
     let links: [(&str, PathBuf, PathBuf); 5] = [
         (
             "wofi",
@@ -152,52 +200,6 @@ pub async fn apply(env: &Env, hypr: &Hypr, theme: Theme, variant: Variant) -> Er
     }
     record(&mut errors, "ghostty", reload_ghostty(hypr).await);
 
-    // XFConf xsettings channel (xfconf-query equivalents).
-    let xf = [
-        ("/Net/ThemeName", format!("Adwaita{sfx}")),
-        ("/Net/IconThemeName", format!("Adwaita{sfx}")),
-        ("/Gtk/CursorThemeName", p.cursor.to_string()),
-    ];
-    for (prop, value) in xf {
-        record(
-            &mut errors,
-            "xfconf",
-            xfconf(prop, zvariant::Value::from(value)).await,
-        );
-    }
-    record(
-        &mut errors,
-        "xfconf",
-        xfconf("/Gtk/CursorThemeSize", zvariant::Value::I32(24)).await,
-    );
-    // GSettings through the dconf writer service.
-    record(
-        &mut errors,
-        "gsettings",
-        super::dconf::write(&[
-            (
-                "/org/gnome/desktop/interface/gtk-theme",
-                zvariant::Value::from(p.gtk_theme.as_str()),
-            ),
-            (
-                "/org/gnome/desktop/interface/icon-theme",
-                zvariant::Value::from(p.icon_theme.as_str()),
-            ),
-            (
-                "/org/gnome/desktop/interface/cursor-theme",
-                zvariant::Value::from(p.cursor),
-            ),
-            (
-                "/org/gnome/desktop/interface/cursor-size",
-                zvariant::Value::I32(24),
-            ),
-            (
-                "/org/gnome/desktop/interface/color-scheme",
-                zvariant::Value::from(p.color_scheme),
-            ),
-        ])
-        .await,
-    );
     record(
         &mut errors,
         "activation-environment",

@@ -238,7 +238,7 @@ pub fn spawn(ctx: &Ctx) -> ThemeHandle {
                     let Some(envl) = msg else { return };
                     state.busy = true;
                     topic.publish(state.clone());
-                    let result = run(&env, &hypr, envl.action, &mut state).await;
+                    let result = run(&env, &hypr, envl.action, &mut state, ram_rgb.as_ref()).await;
                     state.busy = false;
                     envl.respond(result);
                 }
@@ -254,10 +254,16 @@ pub fn spawn(ctx: &Ctx) -> ThemeHandle {
 /// the actor; a running shell's actor picks up the new state through its file watch.
 pub async fn run_once(env: &Env, action: ThemeAction) -> ActionResult {
     let mut state = ThemeState::default();
-    run(env, &Hypr::new(env), action, &mut state).await
+    run(env, &Hypr::new(env), action, &mut state, None).await
 }
 
-async fn run(env: &Env, hypr: &Hypr, action: ThemeAction, state: &mut ThemeState) -> ActionResult {
+async fn run(
+    env: &Env,
+    hypr: &Hypr,
+    action: ThemeAction,
+    state: &mut ThemeState,
+    ram_rgb: Option<&tokio::sync::watch::Sender<Option<Theme>>>,
+) -> ActionResult {
     let path = state_file(env);
     let (mut theme, mut variant, _) = load_state(env);
     let note = match action {
@@ -285,6 +291,10 @@ async fn run(env: &Env, hypr: &Hypr, action: ThemeAction, state: &mut ThemeState
         state.theme = theme;
         state.variant = variant;
         state.dark_mode = theme == Theme::Dark;
+        // The LEDs follow the new theme now, not after the multi-second apply below.
+        if let Some(tx) = ram_rgb {
+            ram_rgb::request(tx, theme);
+        }
     }
     if let Some(label) = note {
         util::notify(
