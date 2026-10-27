@@ -152,3 +152,19 @@ fn cpu_tooltip_after_350ms_hover() {
     input.pointer(&mut m, PointerEvent::Leave);
     assert!(tooltip::rect(&m).is_none());
 }
+
+#[test]
+fn laptop_network_segment_yields_to_a_widened_island() {
+    let mut m = laptop();
+    m.expanded = true;
+    let narrow = layout::compute(&m, &m.theme);
+    assert!(narrow.target(&Target::Network).is_some());
+    let stats_end = |l: &layout::Layout| l.target(&Target::Memory).map(|r| r.x + r.width).unwrap();
+    m.island.width = 1440. - 2. * (stats_end(&narrow) - 20.);
+    let wide = layout::compute(&m, &m.theme);
+    assert!(wide.target(&Target::Network).is_none(), "network hides when the island would cover it");
+    assert!(wide.target(&Target::Memory).is_some() && wide.target(&Target::Cpu).is_some());
+    let mut d = baseline();
+    d.island.width = m.island.width;
+    assert!(layout::compute(&d, &d.theme).target(&Target::Network).is_some(), "desktop unchanged");
+}

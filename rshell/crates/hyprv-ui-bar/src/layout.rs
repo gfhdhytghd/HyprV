@@ -380,12 +380,21 @@ pub fn compute(m: &Model, theme: &Theme) -> Layout {
         x += width;
     }
     x = 10. + primary + spacing;
-    pills.push(Rect::new(x, 10., cpu_w + mem_w + net_w, 38.));
-    for (target, label, width, padding) in [
-        (Target::Cpu, cpu, cpu_w, (12., 4.)),
-        (Target::Memory, mem, mem_w, (6., 4.)),
-        (Target::Network, network, net_w, (6., 12.)),
-    ] {
+    // Laptop only (user request, not legacy): a widened island would cover the stats pill,
+    // so the network segment yields; memory then closes the pill with the network padding.
+    let net_hidden = m.laptop() && x + cpu_w + mem_w + net_w + spacing > center.x;
+    let stats: Vec<_> = if net_hidden {
+        let mem_w = Module::width(&mem, 16., (6., 12.), 0.);
+        vec![(Target::Cpu, cpu, cpu_w, (12., 4.)), (Target::Memory, mem, mem_w, (6., 12.))]
+    } else {
+        vec![
+            (Target::Cpu, cpu, cpu_w, (12., 4.)),
+            (Target::Memory, mem, mem_w, (6., 4.)),
+            (Target::Network, network, net_w, (6., 12.)),
+        ]
+    };
+    pills.push(Rect::new(x, 10., stats.iter().map(|s| s.2).sum(), 38.));
+    for (target, label, width, padding) in stats {
         add(
             target,
             label,
