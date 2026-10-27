@@ -98,7 +98,6 @@ pub enum Action {
 #[derive(Clone, Debug)]
 pub struct Config {
     pub directory: PathBuf,
-    pub workspace_count: i32,
 }
 impl Config {
     pub fn from_env() -> Result<Self> {
@@ -111,7 +110,6 @@ impl Config {
         }
         Ok(Self {
             directory: PathBuf::from(runtime).join("hypr").join(signature),
-            workspace_count: 8,
         })
     }
 }
@@ -276,19 +274,8 @@ impl Native {
                 }
             })
             .collect();
-        for id in 1..=c.workspace_count.clamp(0, 256) {
-            if !self.state.workspaces.iter().any(|w| w.id == id) {
-                self.state.workspaces.push(Workspace {
-                    id,
-                    name: id.to_string(),
-                    monitor: String::new(),
-                    active: false,
-                    windows: 0,
-                    tooltip: "Empty".into(),
-                    state: "empty".into(),
-                });
-            }
-        }
+        // Only workspaces Hyprland actually has, as the legacy bar's Hyprland.workspaces;
+        // no padding to a fixed 1..8 range.
         self.state.workspaces.sort_by_key(|w| w.id);
         if let Some(k) = devices["keyboards"]
             .as_array()
