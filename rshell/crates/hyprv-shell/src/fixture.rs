@@ -185,6 +185,7 @@ impl Fixture {
                 monitor: 0,
                 geometry: Default::default(),
                 fullscreen: hypr["fullscreen"] == true,
+                workspace: hypr["focusedWorkspace"].as_i64().unwrap_or(1) as i32,
             });
             m.desktop.active_window = Some("fixture-active".into());
         }

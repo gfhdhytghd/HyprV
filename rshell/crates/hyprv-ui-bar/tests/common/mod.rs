@@ -35,6 +35,7 @@ pub fn baseline() -> Model {
         },
         scale: 2.,
         transform: 0,
+        active_workspace: 1,
     }];
     m.desktop.windows = vec![DesktopWindow {
         address: "0x1".into(),
@@ -44,6 +45,7 @@ pub fn baseline() -> Model {
         monitor: 0,
         geometry: Default::default(),
         fullscreen: false,
+        workspace: 1,
     }];
     m.desktop.active_window = Some("0x1".into());
     m.stats.cpu_percent = Some(7.);

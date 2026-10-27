@@ -20,7 +20,10 @@ pub struct DesktopWindow {
     pub title: String,
     pub monitor: i32,
     pub geometry: Rect,
+    /// Exact Hyprland fullscreen mode 2; maximized windows (mode 1) keep the bar.
     pub fullscreen: bool,
+    #[serde(default)]
+    pub workspace: i32,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct DesktopMonitor {
@@ -29,6 +32,9 @@ pub struct DesktopMonitor {
     pub geometry: Rect,
     pub scale: f64,
     pub transform: u8,
+    /// The workspace this monitor currently shows (not the globally focused one).
+    #[serde(default)]
+    pub active_workspace: i32,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Workspace {
@@ -207,7 +213,8 @@ impl Native {
                     width: w["size"][0].as_f64().unwrap_or_default(),
                     height: w["size"][1].as_f64().unwrap_or_default(),
                 },
-                fullscreen: num(w, "fullscreen") != 0.,
+                fullscreen: num(w, "fullscreen") == 2.,
+                workspace: num(&w["workspace"], "id") as i32,
             })
             .collect();
         self.state.monitors = monitors
@@ -233,6 +240,7 @@ impl Native {
                     },
                     scale,
                     transform,
+                    active_workspace: num(&m["activeWorkspace"], "id") as i32,
                 }
             })
             .collect();

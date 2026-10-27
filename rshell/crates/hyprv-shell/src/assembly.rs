@@ -572,8 +572,8 @@ impl Assembly {
         let names: Vec<_> = self.outputs.keys().cloned().collect();
         for name in names {
             let mut next = self.bar_model(&name);
-            // Provider currently exposes only a bool fullscreen flag; only the active
-            // workspace on this output may hide its bar.
+            // Legacy BarScreenState: only a mode-2 fullscreen window on the workspace this
+            // output currently shows hides its bar (not other workspaces, not maximized).
             next.calendar_child_opening = self.owners.calendar_launch.contains_key(&name);
             next.calendar_child_active = next
                 .desktop
@@ -586,7 +586,7 @@ impl Assembly {
                         .desktop
                         .monitors
                         .iter()
-                        .any(|m| m.id == w.monitor && m.name == name)
+                        .any(|m| m.id == w.monitor && m.name == name && m.active_workspace == w.workspace)
             });
             self.owners
                 .panels
