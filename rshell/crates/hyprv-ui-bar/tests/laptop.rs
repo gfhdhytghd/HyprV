@@ -164,6 +164,7 @@ fn laptop_network_segment_yields_to_a_widened_island() {
     let wide = layout::compute(&m, &m.theme);
     assert!(wide.target(&Target::Network).is_none(), "network hides when the island would cover it");
     assert!(wide.target(&Target::Memory).is_some() && wide.target(&Target::Cpu).is_some());
+    assert_eq!(wide.title.width, 0., "window title pill hides with the network stat");
     let mut d = baseline();
     d.island.width = m.island.width;
     assert!(layout::compute(&d, &d.theme).target(&Target::Network).is_some(), "desktop unchanged");

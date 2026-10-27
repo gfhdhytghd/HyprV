@@ -637,7 +637,8 @@ pub fn compute(m: &Model, theme: &Theme) -> Layout {
         p.active_workspace_text,
     );
     let available_title = (center.x - left_end - 2. * spacing).max(0.);
-    let title_w = if title.is_empty() {
+    // When the island is wide enough to push out the network stat, the window title goes too.
+    let title_w = if title.is_empty() || net_hidden {
         0.
     } else {
         available_title.min((measure(title, 16., 700).0 + 24.).max(38.))
