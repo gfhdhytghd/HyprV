@@ -351,12 +351,19 @@ pub fn compact_strip(m: &Model) -> Strip {
             x += 10.;
         }
         let on = *id == active;
+        let blink = !on && m.urgent_workspaces.contains(id) && m.urgent_blink_lit();
         let (n, tw) = strip_text(
             label,
             x,
             11.,
             if on { 700 } else { 400 },
-            if on { white } else { hyprv_widgets::foundations::rgb("#858585") },
+            if on {
+                white
+            } else if blink {
+                hyprv_widgets::foundations::rgb("#a6e3a1")
+            } else {
+                hyprv_widgets::foundations::rgb("#858585")
+            },
         );
         push(&mut node, &mut items, Target::Workspace(*id), n);
         x += tw;

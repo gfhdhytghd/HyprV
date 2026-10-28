@@ -83,7 +83,7 @@ impl Controller {
         actions
     }
     pub fn next_deadline(&self) -> Option<Duration> {
-        [self.motion.next_deadline(), self.input.next_deadline()]
+        [self.motion.next_deadline(), self.input.next_deadline(), self.model.urgent_blink_deadline()]
             .into_iter()
             .flatten()
             .min()

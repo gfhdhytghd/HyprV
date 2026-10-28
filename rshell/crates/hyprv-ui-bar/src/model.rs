@@ -263,6 +263,20 @@ impl Model {
                     .is_some_and(|s| !s.is_empty()),
         )
     }
+    /// Laptop minimal strip (user request, not legacy): urgent workspace labels blink green.
+    /// Only runs while the strip shows an urgent unfocused workspace; no timer otherwise.
+    pub fn urgent_blink_active(&self) -> bool {
+        self.compact_strip_visible()
+            && self.urgent_workspaces.iter().any(|w| *w != self.focused_workspace())
+    }
+    pub fn urgent_blink_lit(&self) -> bool {
+        (self.now.as_millis() / URGENT_BLINK_MS) % 2 == 0
+    }
+    pub fn urgent_blink_deadline(&self) -> Option<Duration> {
+        self.urgent_blink_active().then(|| {
+            Duration::from_millis(((self.now.as_millis() / URGENT_BLINK_MS + 1) * URGENT_BLINK_MS) as u64)
+        })
+    }
     pub fn focused_workspace(&self) -> i32 {
         self.desktop
             .workspaces
@@ -351,6 +365,7 @@ pub const QUIRK_LAPTOP_BAR_STARTS_COMPACT: bool = true;
 pub const QUIRK_BAR_TOGGLE_GLOBAL_DEBOUNCE: bool = true;
 /// §1.1: contentRoot.visible=false hides the island and calendar while compact.
 pub const QUIRK_COMPACT_HIDES_ISLAND: bool = true;
+pub const URGENT_BLINK_MS: u128 = 500;
 /// §2: strip text has no renderType, so Qt draws it as distance-field text.
 pub const QUIRK_COMPACT_STRIP_DF_TEXT: bool = true;
 /// §2: the strip Wi-Fi glyph follows `wifiConnected` only (wired shows disconnected).

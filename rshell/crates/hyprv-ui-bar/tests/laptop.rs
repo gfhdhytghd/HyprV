@@ -169,3 +169,40 @@ fn laptop_network_segment_yields_to_a_widened_island() {
     d.island.width = m.island.width;
     assert!(layout::compute(&d, &d.theme).target(&Target::Network).is_some(), "desktop unchanged");
 }
+
+#[test]
+fn minimal_strip_blinks_urgent_workspaces_only_while_needed() {
+    let mut m = laptop();
+    let mut motion = Motion::new(&m);
+    motion.advance(&mut m, ms(0));
+    assert!(m.compact_strip_visible());
+    assert_eq!(m.urgent_blink_deadline(), None, "no urgent workspace: no timer");
+    let other = m.desktop.workspaces.iter().map(|w| w.id).find(|id| *id != m.focused_workspace())
+        .unwrap_or(m.focused_workspace() + 1);
+    if !m.desktop.workspaces.iter().any(|w| w.id == other) {
+        let mut w = m.desktop.workspaces[0].clone();
+        w.id = other;
+        w.name = other.to_string();
+        w.active = false;
+        m.desktop.workspaces.push(w);
+    }
+    m.urgent_workspaces = vec![other];
+    m.now = ms(1200);
+    assert_eq!(m.urgent_blink_deadline(), Some(ms(1500)));
+    fn has_color(n: &hyprv_ui::scene::Node, c: hyprv_ui::animation::Color) -> bool {
+        matches!(&n.content, hyprv_ui::scene::Content::Text(t) if t.color == c)
+            || n.children.iter().any(|ch| has_color(ch, c))
+    }
+    let green = |m: &Model| has_color(&surfaces::compact_strip(m).node, hyprv_widgets::foundations::rgb("#a6e3a1"));
+    m.now = ms(1000);
+    assert!(green(&m), "lit phase draws the urgent label green");
+    m.now = ms(1500);
+    assert!(!green(&m), "dark phase draws it grey");
+    m.urgent_workspaces = vec![m.focused_workspace()];
+    assert_eq!(m.urgent_blink_deadline(), None, "focused workspace never blinks");
+    m.urgent_workspaces = vec![other];
+    ipc::toggle(&mut m);
+    motion.sync(&m, ms(2000));
+    motion.advance(&mut m, ms(4000));
+    assert_eq!(m.urgent_blink_deadline(), None, "expanded bar uses the green pill, no timer");
+}
