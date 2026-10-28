@@ -910,6 +910,12 @@ impl Assembly {
                         output.clone(),
                         (value, self.now + Duration::from_millis(90)),
                     );
+                    // The caller (hypr/controls.lua) already holds the new target. Refresh
+                    // now so the OSD falls back to it, not to a level read before the key:
+                    // above 70 the backlight stays at max and no kernel event refreshes it.
+                    if crate::laptop::active() && self.fixture.is_none() {
+                        self.hub.brightness_probe();
+                    }
                 }
             }
             _ => return IpcResponse::error("unknown UI target"),
