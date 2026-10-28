@@ -293,7 +293,7 @@ The harness is the existing `hyprv-shell --nested-functional-test` with
 | `lap.bar.boot.compact` | start | all bars compact, exclusive zone 25, no island surface content |
 | `lap.bar.toggle` | `ipc call bar toggle eDP-1` | expanded after the slide; `layoutStatus` JSON matches the legacy keys |
 | `lap.bar.toggle.debounce` | two toggles 300 ms apart | one transition |
-| `lap.bar.toggle.permonitor` | two outputs, toggle one | the other stays compact |
+| `lap.bar.toggle.synced` | two outputs, toggle one | both expand together (user request; legacy was per output) |
 | `lap.battery.discharge.tick` | UPower percent 21 → 20 | glyph and colour flip; no other surface damage |
 | `lap.battery.plug` | `State` Discharging → Charging, `OnBattery` false | plug glyph |
 | `lap.battery.full` | FullyCharged | full rendering |

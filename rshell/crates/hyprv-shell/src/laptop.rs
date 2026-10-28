@@ -1,27 +1,25 @@
 //! Host-owned adaptive bar targets, shared by assembled and component hosts.
-use std::collections::HashSet;
+/// One compact/standard state for every output (user request; the laptop QML kept one per
+/// output). A toggle from any output flips all bars; new outputs follow the current state.
 #[derive(Default)]
 pub(crate) struct BarExpansion {
-    expanded: HashSet<String>,
+    expanded: bool,
     gate: hyprv_ui_bar::ipc::ToggleGate,
 }
 impl BarExpansion {
-    pub(crate) fn expanded(&self, output: &str) -> bool {
-        self.expanded.contains(output)
+    pub(crate) fn expanded(&self, _output: &str) -> bool {
+        self.expanded
     }
     /// Legacy Date.now debounce is global across monitors, including backward clock steps.
-    pub(crate) fn toggle(&mut self, output: &str, wall_ms: u64) -> bool {
+    pub(crate) fn toggle(&mut self, _output: &str, wall_ms: u64) -> bool {
         if !self.gate.allow(wall_ms) {
             return false;
         }
-        if !self.expanded.remove(output) {
-            self.expanded.insert(output.to_owned());
-        }
+        self.expanded = !self.expanded;
         true
     }
-    pub(crate) fn remove(&mut self, output: &str) {
-        self.expanded.remove(output);
-    }
+    /// Output removal no longer resets anything: the state is shared.
+    pub(crate) fn remove(&mut self, _output: &str) {}
 }
 pub(crate) fn wall_ms() -> u64 {
     std::time::SystemTime::now()
@@ -36,18 +34,17 @@ pub(crate) fn active() -> bool {
 mod tests {
     use super::*;
     #[test]
-    fn starts_compact_global_debounce_and_hotplug_reset() {
+    fn starts_compact_global_debounce_and_synced_outputs() {
         let mut b = BarExpansion::default();
         assert!(!b.expanded("A"));
         assert!(b.toggle("A", 1000));
-        assert!(b.expanded("A"));
-        assert!(!b.expanded("B"));
+        assert!(b.expanded("A") && b.expanded("B"), "every output follows one toggle");
         assert!(!b.toggle("B", 1300));
         assert!(!b.toggle("A", 900));
         assert!(b.toggle("B", 1500));
-        assert!(b.expanded("B"));
+        assert!(!b.expanded("A") && !b.expanded("B"));
         b.remove("A");
-        assert!(!b.expanded("A"));
-        assert!(b.expanded("B"));
+        assert!(b.toggle("A", 2100));
+        assert!(b.expanded("C"), "a new output follows the shared state");
     }
 }

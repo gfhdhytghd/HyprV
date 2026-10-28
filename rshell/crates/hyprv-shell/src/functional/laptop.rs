@@ -123,8 +123,8 @@ pub(super) fn run(s: &mut Suite) {
         check(v["expanded"] == true, "global debounce dropped")?;
         Ok(v)
     });
-    s.case("lap.bar.toggle.permonitor","laptop-bar.md §1",|s|{
-  s.reset()?;s.compositor("/output create headless LAPTOP-SECOND")?;s.compositor("/eval hl.monitor({output=\"LAPTOP-SECOND\",mode=\"1440x900@60\",position=\"1440x0\",scale=1})")?;s.settle(500);let n=primary(s)?;s.call("bar","toggle",vec![n.clone()])?;s.settle(850);let v=s.rpc("snapshot",None)?;let bars=v["bars"].as_array().ok_or("bars")?;check(bars.iter().any(|b|b["output"]==n&&b["expanded"]==true)&&bars.iter().any(|b|b["output"]=="LAPTOP-SECOND"&&b["expanded"]==false),"per-output expansion")?;s.compositor("/output remove LAPTOP-SECOND")?;s.settle(300);Ok(v)
+    s.case("lap.bar.toggle.synced","user request: bars toggle together",|s|{
+  s.reset()?;s.compositor("/output create headless LAPTOP-SECOND")?;s.compositor("/eval hl.monitor({output=\"LAPTOP-SECOND\",mode=\"1440x900@60\",position=\"1440x0\",scale=1})")?;s.settle(500);let n=primary(s)?;s.call("bar","toggle",vec![n.clone()])?;s.settle(850);let v=s.rpc("snapshot",None)?;let bars=v["bars"].as_array().ok_or("bars")?;check(bars.iter().any(|b|b["output"]==n&&b["expanded"]==true)&&bars.iter().any(|b|b["output"]=="LAPTOP-SECOND"&&b["expanded"]==true),"synced expansion")?;s.compositor("/output remove LAPTOP-SECOND")?;s.settle(300);Ok(v)
  });
     s.case("lap.brightness.osd", "laptop-quickadjust.md §1", |s| {
         s.reset()?;

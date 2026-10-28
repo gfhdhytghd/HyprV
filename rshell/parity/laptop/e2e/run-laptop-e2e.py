@@ -46,7 +46,7 @@ CASES = [
     ("lap.bar.boot.compact", "start", "all bars compact, exclusive zone 25, no island content", ["profile", "suite"]),
     ("lap.bar.toggle", "ipc call bar toggle eDP-1", "expanded after the slide; layoutStatus keys = legacy", ["profile", "suite"]),
     ("lap.bar.toggle.debounce", "two toggles 300 ms apart", "one transition", ["profile", "suite"]),
-    ("lap.bar.toggle.permonitor", "two outputs, toggle one", "other stays compact", ["profile", "suite"]),
+    ("lap.bar.toggle.synced", "two outputs, toggle one", "both expand together", ["profile", "suite"]),
     ("lap.battery.discharge.tick", "UPower Percentage 21 -> 20", "glyph/colour flip, no other damage", ["profile", "suite"]),
     ("lap.battery.plug", "State Discharging -> Charging, OnBattery false", "plug glyph", ["profile", "suite"]),
     ("lap.battery.full", "FullyCharged", "full rendering", ["profile", "suite"]),
