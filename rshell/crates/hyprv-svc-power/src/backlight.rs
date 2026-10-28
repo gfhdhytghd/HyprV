@@ -312,13 +312,14 @@ impl<T: Transport> Engine<T> {
             .ok_or("unknown output")?;
         let c = &self.configs[index];
         let latest = self.latest.clone();
+        // A newer queued Set makes this one obsolete on both curves: a fast slider drag
+        // must not replay every intermediate step through slow DDC writes and confirms.
         let superseded = || {
-            c.curve == CurveKind::Laptop
-                && latest
-                    .lock()
-                    .unwrap()
-                    .get(&output)
-                    .is_some_and(|n| *n > sequence)
+            latest
+                .lock()
+                .unwrap()
+                .get(&output)
+                .is_some_and(|n| *n > sequence)
         };
         if superseded() {
             return Ok(());
@@ -850,7 +851,7 @@ fn spawn_inner(
         },
         false,
     );
-    if profile == crate::Profile::Laptop {
+    {
         if let Some(latest) = latest {
             handle.action_observer = Some(Arc::new(move |action| {
                 if let Action::Set {

@@ -127,6 +127,18 @@ fn apply<T: Clone + PartialEq>(slot: &mut Option<(T, Duration, T)>, model: &mut 
     }
 }
 
+/// Slider targets: the backend reports intermediate values while it catches up (slow
+/// DDC), which must not pull the slider back; hold the target until it is reached.
+fn apply_until_reached<T: Clone + PartialEq>(slot: &mut Option<(T, Duration, T)>, model: &mut T, now: Duration) {
+    if let Some((v, at, _)) = slot.clone() {
+        if *model == v || now.saturating_sub(at) > ms(OPTIMISTIC_HOLD_MS) {
+            *slot = None;
+        } else {
+            *model = v;
+        }
+    }
+}
+
 /// `snapBrightnessPercent`: clamp, round to the 2 % UI step.
 pub fn snap_brightness(v: f32) -> i32 {
     let c = v.round().clamp(0., 100.);
@@ -417,7 +429,7 @@ impl ControlPanel {
         apply(&mut self.ov.playing, &mut e.media.playing, now);
         apply(&mut self.ov.volume, &mut e.audio.volume_percent, now);
         apply(&mut self.ov.muted, &mut e.audio.muted, now);
-        apply(&mut self.ov.brightness, &mut e.controls.brightness_percent, now);
+        apply_until_reached(&mut self.ov.brightness, &mut e.controls.brightness_percent, now);
         apply(&mut self.ov.chassis, &mut e.controls.chassis_fan_percent, now);
         apply(&mut self.ov.pump, &mut e.controls.pump_fan_percent, now);
         if self.ov.volume.is_some() || self.ov.muted.is_some() {
