@@ -575,6 +575,7 @@ impl Assembly {
             // Legacy BarScreenState: only a mode-2 fullscreen window on the workspace this
             // output currently shows hides its bar (not other workspaces, not maximized).
             next.calendar_child_opening = self.owners.calendar_launch.contains_key(&name);
+            next.urgent_workspaces = next.desktop.urgent_workspaces.clone();
             next.calendar_child_active = next
                 .desktop
                 .windows

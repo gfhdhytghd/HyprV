@@ -176,6 +176,7 @@ impl Fixture {
             .filter(|v| v["urgent"] == true)
             .filter_map(|v| v["id"].as_i64().map(|x| x as i32))
             .collect();
+        m.desktop.urgent_workspaces = m.urgent_workspaces.clone();
         if let Some(title) = hypr["activeToplevel"]["title"].as_str() {
             m.desktop.windows.push(DesktopWindow {
                 address: "fixture-active".into(),

@@ -53,6 +53,10 @@ pub struct State {
     pub windows: Vec<DesktopWindow>,
     pub monitors: Vec<DesktopMonitor>,
     pub workspaces: Vec<Workspace>,
+    /// Workspaces holding a window that raised `urgent`, until that workspace is focused
+    /// (Quickshell HyprlandWorkspace.urgent semantics).
+    #[serde(default)]
+    pub urgent_workspaces: Vec<i32>,
     pub keymap: String,
     pub move_duration_ms: u32,
     pub move_bezier: [f64; 6],
@@ -67,6 +71,7 @@ impl Default for State {
             windows: vec![],
             monitors: vec![],
             workspaces: vec![],
+            urgent_workspaces: vec![],
             keymap: String::new(),
             move_duration_ms: 700,
             move_bezier: [0.1, 0.9, 0.1, 1.05, 1., 1.],
@@ -277,6 +282,10 @@ impl Native {
         // Only workspaces Hyprland actually has, as the legacy bar's Hyprland.workspaces;
         // no padding to a fixed 1..8 range.
         self.state.workspaces.sort_by_key(|w| w.id);
+        let live: Vec<i32> = self.state.workspaces.iter().map(|w| w.id).collect();
+        self.state
+            .urgent_workspaces
+            .retain(|id| Some(*id as i64) != active_id && live.contains(id));
         if let Some(k) = devices["keyboards"]
             .as_array()
             .and_then(|ks| ks.iter().find(|k| k["main"] == true).or_else(|| ks.first()))
@@ -312,6 +321,19 @@ impl Backend for Native {
         loop {
             let event = line(self.events.as_mut().unwrap()).await?;
             let name = event.split_once(">>").map(|x| x.0).unwrap_or("");
+            if name == "urgent" {
+                // `urgent>>ADDRESS` (hex without 0x); the window list carries its workspace.
+                let address = format!("0x{}", event.split_once(">>").map(|x| x.1).unwrap_or(""));
+                let focused = self.state.workspaces.iter().find(|w| w.active).map(|w| w.id);
+                if let Some(id) = self.state.windows.iter().find(|w| w.address == address).map(|w| w.workspace) {
+                    if Some(id) != focused && id > 0 && !self.state.urgent_workspaces.contains(&id) {
+                        self.state.urgent_workspaces.push(id);
+                        self.state.urgent_workspaces.sort_unstable();
+                        return Ok(());
+                    }
+                }
+                continue;
+            }
             if name == "activelayout" {
                 self.state.keymap = event
                     .split_once(',')
@@ -425,5 +447,52 @@ mod transport_tests {
             "TEST"
         );
         server.await.unwrap();
+    }
+}
+
+#[cfg(test)]
+mod urgent_tests {
+    use super::*;
+    fn native(windows: &[(&str, i32)], focused: i32) -> Native {
+        let mut state = State::default();
+        state.windows = windows
+            .iter()
+            .map(|(a, ws)| DesktopWindow {
+                address: a.to_string(),
+                pid: None,
+                class: String::new(),
+                title: String::new(),
+                monitor: 0,
+                geometry: Rect { x: 0., y: 0., width: 0., height: 0. },
+                fullscreen: false,
+                workspace: *ws,
+            })
+            .collect();
+        state.workspaces = [1, 3]
+            .iter()
+            .map(|&id| Workspace {
+                id,
+                name: id.to_string(),
+                monitor: "M".into(),
+                active: id == focused,
+                windows: 1,
+                tooltip: String::new(),
+                state: String::new(),
+            })
+            .collect();
+        Native { state, config: Err(Error::new("test", "no compositor")), events: None }
+    }
+    async fn feed(n: &mut Native, lines_in: &str) {
+        let (mut w, r) = tokio::net::UnixStream::pair().unwrap();
+        tokio::io::AsyncWriteExt::write_all(&mut w, lines_in.as_bytes()).await.unwrap();
+        let (read, _) = r.into_split();
+        n.events = Some(lines(read));
+        n.next().await.unwrap();
+    }
+    #[tokio::test]
+    async fn urgent_marks_the_window_workspace_but_not_the_focused_one() {
+        let mut n = native(&[("0xaa", 3), ("0xbb", 1)], 1);
+        feed(&mut n, "urgent>>bb\nurgent>>aa\n").await;
+        assert_eq!(n.state.urgent_workspaces, vec![3]);
     }
 }
