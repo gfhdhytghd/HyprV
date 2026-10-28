@@ -1006,6 +1006,7 @@ impl Host {
                 config.exclusive_zone = -1;
                 config.input_passthrough = true;
                 config.full_redraw=true;
+                config.sparse=true;
                 config.anchor = Anchor::TOP|Anchor::BOTTOM|Anchor::LEFT|Anchor::RIGHT;
             }
             Role::Popup(slot) => {
@@ -1666,7 +1667,7 @@ mod tests {
         for c in 0..4 {
             let config = h.config(Role::Corner(c), "DP-1", Duration::ZERO);
             assert_eq!(config.size, (0, 0));
-            assert!(config.full_redraw);
+            assert!(config.full_redraw && config.sparse);
             assert!(config.input_passthrough);
             assert_eq!(config.exclusive_zone, -1);
         }

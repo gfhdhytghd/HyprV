@@ -2,7 +2,7 @@
 mod laptop;
 use super::*;
 use std::{error::Error, path::Path, time::Duration};
-struct Suite {
+pub(super) struct Suite {
     native: native::Native,
     runtime: hyprv_core::tokio::runtime::Runtime,
     results: Vec<Value>,
@@ -28,7 +28,7 @@ impl Suite {
         }
         Ok(serde_json::from_str(&response.result).unwrap_or(json!(response.result)))
     }
-    fn rpc(&self, name: &str, value: Option<Value>) -> Result<Value, Box<dyn Error>> {
+    pub(super) fn rpc(&self, name: &str, value: Option<Value>) -> Result<Value, Box<dyn Error>> {
         use std::io::{Read, Write};
         if name == "clear" {
             self.native.completion.set(None);
@@ -133,13 +133,13 @@ impl Suite {
         self.rpc("clear", None)?;
         self.island()
     }
-    fn settle(&self, ms: u64) {
+    pub(super) fn settle(&self, ms: u64) {
         std::thread::sleep(Duration::from_millis(ms));
     }
     fn reset(&mut self) -> Result<(), Box<dyn Error>> {
         self.reset_seed(None)
     }
-    fn reset_seed(&mut self, seed: Option<&str>) -> Result<(), Box<dyn Error>> {
+    pub(super) fn reset_seed(&mut self, seed: Option<&str>) -> Result<(), Box<dyn Error>> {
         let fixture = seed
             .map(|s| {
                 Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -311,7 +311,7 @@ impl Suite {
             module.clone(),
         ))
     }
-    fn case(
+    pub(super) fn case(
         &mut self,
         id: &str,
         source: &str,
@@ -448,6 +448,14 @@ pub fn run(directory: &Path) {
                 Ok(json!({"seconds":10.1,"stats_ticks":ticks,"projected_unchanged_samples":projected,"stats_metadata_ui_wakes":metadata_wakes,"main_dispatches":wakes,"main_voluntary_switches":voluntary,"paints":paints,"providers":"1Hz mock sampler through production projected bridge; native frame callbacks/deadlines enabled"}))
             });
             return Ok(json!({"pass":s.results.iter().all(|r|r["status"]=="PASS"),"cases":s.results}));
+        }
+        if std::env::var("HYPRV_FUNCTIONAL_LAYER_COMMITS_ONLY").as_deref() == Ok("1") {
+            super::layer_commits::run(&mut s);
+            return Ok(json!({"pass":s.results.iter().all(|r|r["status"]=="PASS"),"suite_complete":true,"cases":s.results,"services":"mock; layer resize protocol probe"}));
+        }
+        if std::env::var("HYPRV_FUNCTIONAL_CALLBACKS_ONLY").as_deref() == Ok("1") {
+            super::readiness::run(&mut s);
+            return Ok(json!({"pass":s.results.iter().all(|r|r["status"]=="PASS"),"suite_complete":true,"cases":s.results,"services":"UI mock graph; real Ready channel/worker and live Assembly Adapter"}));
         }
         if crate::laptop::active() {
             laptop::run(&mut s);

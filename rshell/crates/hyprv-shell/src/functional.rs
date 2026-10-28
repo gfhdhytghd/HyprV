@@ -7,6 +7,10 @@ use serde_json::{json, Value};
 mod native;
 #[path = "functional/suite.rs"]
 mod suite;
+#[path = "functional/readiness.rs"]
+mod readiness;
+#[path = "functional/layer_commits.rs"]
+mod layer_commits;
 thread_local! {static INPUTS:RefCell<Vec<String>>=const{RefCell::new(Vec::new())};}
 static IDLE_ARMED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 fn main_voluntary_switches() -> Result<u64, Box<dyn std::error::Error>> {
@@ -64,9 +68,25 @@ pub(super) fn dispatch(
             return Err("test RPC disabled".into());
         }
         match request.function.as_str() {
+            "layer-probe" if std::env::var("HYPRV_FUNCTIONAL_LAYER_COMMITS_ONLY").as_deref() == Ok("1") => {
+                drop(a);
+                layer_commits::dispatch(engine, &request.args)
+            }
             "idle-arm" if std::env::var("HYPRV_IDLE_TEST").as_deref() == Ok("1") => {
                 IDLE_ARMED.store(true, std::sync::atomic::Ordering::Release);
                 Ok(json!({}))
+            }
+            "asset-ready" => {
+                let kind: String = serde_json::from_str(request.args.first().ok_or("asset kind")?)?;
+                readiness::queue(&mut a, &[kind])
+            }
+            "asset-status" => readiness::status(&a),
+            "asset-held-borrow-control" if std::env::var("HYPRV_CALLBACK_NEGATIVE_CONTROL").as_deref() == Ok("1") => {
+                // Deliberately preserve a across synchronous Adapter::update;
+                // only the explicit private negative-control run reaches this.
+                engine.request_redraw();
+                drop(a);
+                Err("negative control failed to re-enter the live handler".into())
             }
             "snapshot" => Ok(snapshot(&a, engine)),
             "profile" => Ok(json!({"csv":hyprv_ui::diagnostics::csv(),"main_voluntary":main_voluntary_switches()?})),
@@ -183,7 +203,7 @@ pub(super) fn install(
             if let Event::Msg(message) = event {
                 let redraw = !matches!(
                     message.request.function.as_str(),
-                    "snapshot" | "clear" | "pixels" | "profile" | "profile-clear"
+                    "snapshot" | "clear" | "pixels" | "profile" | "profile-clear" | "asset-ready" | "asset-status"
                 );
                 let response = dispatch(&rpc_state, engine, message.request);
                 let _ = message.reply.send(response);

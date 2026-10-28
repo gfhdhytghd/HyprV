@@ -261,6 +261,29 @@ impl Renderer {
         let _exact = ExactGuard::new(self.gpu_exact_blending && canvas.recording_context().is_none());
         self.node(canvas, scene.root(), 1.)
     }
+    /// Paint `scene` with its logical point `origin` at the canvas origin; `damage` is in
+    /// canvas (target-local) logical coordinates. A region presented by its own buffer
+    /// uses an origin on the device grid, so the translation is whole device pixels
+    /// and every node keeps the device phase it has in the full-surface scene.
+    pub fn paint_at(
+        &mut self,
+        canvas: &Canvas,
+        scene: &Scene,
+        scale: f64,
+        origin: (f32, f32),
+        damage: Rect,
+    ) -> Result<(), RenderError> {
+        if origin == (0., 0.) {
+            return self.paint(canvas, scene, scale, damage);
+        }
+        let _restore = sk::AutoCanvasRestore::guard(canvas, true);
+        canvas.translate((
+            -(origin.0 as f64 * scale).round() as f32,
+            -(origin.1 as f64 * scale).round() as f32,
+        ));
+        let damage = Rect::new(damage.x + origin.0, damage.y + origin.1, damage.width, damage.height);
+        self.paint(canvas, scene, scale, damage)
+    }
     /// Drops cached state of nodes that left the scene. Runs only when the scene changed
     /// since the last prune, as one traversal (PERF-UI-3).
     fn prune(&mut self, scene: &Scene) {

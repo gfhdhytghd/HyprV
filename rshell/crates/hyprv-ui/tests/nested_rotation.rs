@@ -212,11 +212,22 @@ impl UiHandler for Handler {
         p.mapped = true;
         let bar = LayerConfig { namespace: "rot-bar".into(), layer: Layer::Top, anchor: Anchor::TOP | Anchor::LEFT | Anchor::RIGHT, size: (0, BAR_H), exclusive_zone: BAR_H as i32, ..Default::default() };
         let overlay = LayerConfig { namespace: "rot-overlay".into(), layer: Layer::Overlay, anchor: Anchor::all(), size: (0, 0), exclusive_zone: -1, input_passthrough: true, ..Default::default() };
+        // Corner-overlay topology: one transparent pixel plus region subsurfaces whose
+        // viewports and positions must follow every configure.
+        let sparse = LayerConfig { namespace: "rot-sparse".into(), sparse: true, full_redraw: true, ..overlay.clone() };
         let popup_a = LayerConfig { namespace: "rot-popup-a".into(), ..LayerConfig::popup(POPUP_A) };
         let popup_b = LayerConfig { namespace: "rot-popup-b".into(), anchor: Anchor::TOP | Anchor::RIGHT, margins: (BAR_H as i32 + 8, 8, 0, 0), keyboard: KeyboardInteractivity::None, ..LayerConfig::popup(POPUP_B) };
         vec![
             (bar, filled(Color::rgba(0.1, 0.1, 0.2, 0.9))),
             (overlay, filled(Color::rgba(0., 0., 0., 0.05))),
+            (sparse, {
+                let mut root = Node::new(Rect::new(0., 0., 4096., 4096.), Content::Group);
+                for (x, y) in [(0., 0.), (500., 7.5), (13., 500.)] {
+                    root.add(Node::new(Rect::new(x, y, 27., 27.), Content::Rect(Rectangle {
+                        fill: Fill::Solid(Color::rgba(0., 0., 0., 1.)), radii: [9.; 4], border: None })));
+                }
+                Scene::new(root)
+            }),
             (popup_a, filled(Color::rgba(0.2, 0.4, 0.8, 0.95))),
             (popup_b, filled(Color::rgba(0.8, 0.4, 0.2, 0.95))),
         ]
@@ -235,6 +246,7 @@ fn expected(logical: (u32, u32)) -> BTreeMap<String, (u32, u32)> {
     BTreeMap::from([
         ("rot-bar".into(), (logical.0, BAR_H)),
         ("rot-overlay".into(), logical),
+        ("rot-sparse".into(), logical),
         ("rot-popup-a".into(), POPUP_A),
         ("rot-popup-b".into(), POPUP_B),
     ])

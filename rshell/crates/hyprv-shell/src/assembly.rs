@@ -1602,9 +1602,11 @@ fn surface_card(scene: &Scene) -> Option<Rect> {
         .first()
         .map(|n| n.frame)
 }
-/// Match the legacy full-output Canvas window. Texture sampling depends on the
-/// original viewport; four cropped surfaces change the presented alpha fringes.
-/// Direct full redraw avoids an additional full-output retained target/copy.
+/// Match the legacy full-output Canvas window: one all-edge layer per output whose
+/// scene stays in full-output coordinates, so the shared atlas keeps its screen-sized
+/// UVs (four cropped scenes change the presented alpha fringes). The layer itself is
+/// sparse: a transparent 1x1 buffer, with the shades (and laptop strip) drawn
+/// directly into region-sized subsurfaces instead of an output-sized swapchain.
 fn corner_surfaces(mut config: LayerConfig, node: hyprv_ui::scene::Node, scale: f32)
     -> Vec<(LayerConfig, hyprv_ui::scene::Node)>
 {
@@ -1613,6 +1615,7 @@ fn corner_surfaces(mut config: LayerConfig, node: hyprv_ui::scene::Node, scale: 
     let top=node.children[0].frame.y;
     let bottom=height-27.-node.children[2].frame.y;
     config.full_redraw=true;
+    config.sparse=true;
     let mut atlas=bar::surfaces::corner_window(width,height,scale,top,bottom);
     for child in node.children.into_iter().skip(4) { atlas.add(child); }
     vec![(config,atlas)]
@@ -1754,6 +1757,7 @@ fn same_binding(a: &LayerConfig, b: &LayerConfig) -> bool {
         && a.margins == b.margins
         && a.input_only == b.input_only
         && a.full_redraw == b.full_redraw
+        && a.sparse == b.sparse
 }
 fn quick_adjust_ipc(
     controller: &mut panels::Panels,
@@ -2371,7 +2375,7 @@ mod review_regressions {
             let views=corner_surfaces(requirement.layer_config(),node,scale);
             assert_eq!(views.len(),1);
             let (config,node)=&views[0];
-            assert!(config.full_redraw && config.input_passthrough);
+            assert!(config.full_redraw && config.sparse && config.input_passthrough);
             assert_eq!(config.size,(0,0));
             assert_eq!(config.anchor,Anchor::TOP|Anchor::BOTTOM|Anchor::LEFT|Anchor::RIGHT);
             assert_eq!(config.exclusive_zone,-1);
@@ -2381,6 +2385,16 @@ mod review_regressions {
             for (i,corner) in node.children.iter().enumerate(){
                 assert!(matches!(corner.image_sampling,hyprv_ui::image::ImageSampling::QtCanvasAtlas {corner,..} if corner==i as u8));
             }
+            // No output-sized buffer: two short full-width bands (top and bottom shades).
+            let (w,h)=(model.output.width,model.output.height);
+            let scene=Scene::new(views.into_iter().next().unwrap().1);
+            let bands=scene.sparse_regions(Rect::new(0.,0.,w,h),scale as f64);
+            assert_eq!(bands.len(),2,"{bands:?}");
+            let top=model.top_corner_offset();
+            // 27 px shade, 1 px damage outset each side, whole-device-pixel step (4 at 1.25).
+            assert!(bands.iter().all(|b|b.width==w && b.height<=27.+2.+2.*4.),"{bands:?}");
+            assert!(bands[0].y<=top && bands[0].y+bands[0].height>=top+27.,"{bands:?}");
+            assert_eq!(bands[1].y+bands[1].height,h);
         }}
     }
 

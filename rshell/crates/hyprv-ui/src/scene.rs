@@ -440,6 +440,64 @@ impl Scene {
     pub fn hit_test(&self, x: f32, y: f32) -> Option<NodeId> {
         self.root.hit(x, y)
     }
+    /// Regions of a sparse layer (LayerConfig::sparse), one subsurface each:
+    /// full-width bands covering the conservative damage bounds of every visible
+    /// top-level child, clamped to `extent` and snapped outward to whole logical and
+    /// device pixels. Overlapping bands merge, so every output pixel belongs to at
+    /// most one buffer and the compositor never blends two copies of a scene pixel.
+    /// Bands keep the layer's horizontal extent: the compositor's texture sampling
+    /// depends on it (Hyprland 0.56/NVIDIA moves corner-shade fringes by one alpha
+    /// level for corner-sized buffers, none for full-width bands of any height).
+    /// A root that paints itself (content, clip or effects) is presented as one region.
+    pub fn sparse_regions(&self, extent: Rect, scale: f64) -> Vec<Rect> {
+        let root = &self.root;
+        let plain = matches!(root.content, Content::Group)
+            && root.clip.is_none()
+            && root.effects.outset() == 0.
+            && root.effects.tint.is_none();
+        if !plain {
+            return vec![extent];
+        }
+        // A logical step whose device size is integral at this wp_fractional_scale
+        // (n/120): subsurface positions and viewport sizes are integer logical.
+        let n = (scale * 120.).round() as u64;
+        let step = if n > 0 && (scale * 120. - n as f64).abs() < 1e-6 {
+            let (mut a, mut b) = (n, 120);
+            while b != 0 {
+                (a, b) = (b, a % b);
+            }
+            (120 / a) as f32
+        } else {
+            1.
+        };
+        let matrix = root.local_matrix();
+        let (top, bottom) = (extent.y, extent.y + extent.height);
+        let mut bands: Vec<(f32, f32)> = Vec::new();
+        for child in root.children.iter().filter(|c| c.visible) {
+            let b = child.bounds(&matrix);
+            if b.x >= extent.x + extent.width || b.x + b.width <= extent.x {
+                continue;
+            }
+            let y0 = ((b.y / step).floor() * step).max(top);
+            let y1 = (((b.y + b.height) / step).ceil() * step).min(bottom);
+            if y1 > y0 {
+                bands.push((y0, y1));
+            }
+        }
+        'merge: loop {
+            for i in 0..bands.len() {
+                for j in i + 1..bands.len() {
+                    if bands[i].0 < bands[j].1 && bands[j].0 < bands[i].1 {
+                        let (y0, y1) = bands.remove(j);
+                        bands[i] = (bands[i].0.min(y0), bands[i].1.max(y1));
+                        continue 'merge;
+                    }
+                }
+            }
+            break;
+        }
+        bands.into_iter().map(|(y0, y1)| Rect::new(extent.x, y0, extent.width, y1 - y0)).collect()
+    }
 }
 #[cfg(test)]
 mod tests {
@@ -470,5 +528,69 @@ mod damage_tests {
         let d = scene.take_damage(extent).unwrap();
         assert!(d.x <= 10. && d.x + d.width >= 60.);
         assert!(d.width < 100. && d.height < 100.);
+    }
+}
+
+#[cfg(test)]
+mod sparse_tests {
+    use super::*;
+    fn overlay(top: f32, strip: bool) -> Scene {
+        let mut root = Node::new(Rect::new(0., 0., 1440., 900.), Content::Group);
+        for (x, y) in [(0., top), (1413., top), (0., 873.), (1413., 873.)] {
+            root.add(Node::new(Rect::new(x, y, 27., 27.), Content::Group));
+        }
+        let mut s = Node::new(Rect::new(0., top - 15., 1440., 15.), Content::Group);
+        s.add(Node::new(Rect::new(0., 0., 1440., 15.), Content::Rect(Rectangle::default())));
+        s.visible = strip;
+        root.add(s);
+        Scene::new(root)
+    }
+    fn disjoint(r: &[Rect]) -> bool {
+        r.iter().enumerate().all(|(i, a)| r[i + 1..].iter().all(|b| {
+            a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y
+        }))
+    }
+    #[test]
+    fn corners_share_full_width_device_aligned_bands() {
+        let extent = Rect::new(0., 0., 1440., 900.);
+        let r = overlay(0., false).sparse_regions(extent, 2.);
+        // Conservative damage bounds (1 px outset), clamped at the output edges.
+        assert_eq!(r, vec![Rect::new(0., 0., 1440., 28.), Rect::new(0., 872., 1440., 28.)]);
+        // Fractional reveal offsets keep the child phase inside a whole-pixel band.
+        let r = overlay(7.3, false).sparse_regions(extent, 2.);
+        assert_eq!(r[0], Rect::new(0., 6., 1440., 30.));
+        assert!(disjoint(&r));
+    }
+    #[test]
+    fn overlapping_strip_and_top_corners_share_one_band() {
+        let extent = Rect::new(0., 0., 1440., 900.);
+        for top in [15., 9.25, 0.5] {
+            let r = overlay(top, true).sparse_regions(extent, 2.);
+            assert_eq!(r.len(), 2, "top {top}: {r:?}");
+            assert_eq!((r[0].x, r[0].y, r[0].width), (0., 0., 1440.));
+            assert!(r[0].y + r[0].height >= top + 28.);
+            assert!(disjoint(&r));
+        }
+    }
+    #[test]
+    fn fractional_scales_snap_to_whole_device_pixels() {
+        let extent = Rect::new(0., 0., 1280., 720.);
+        for scale in [1.25, 1.5, 1.75] {
+            for r in overlay(5.5, true).sparse_regions(extent, scale) {
+                for v in [r.x, r.y, r.width, r.height] {
+                    let device = v as f64 * scale;
+                    assert!((device - device.round()).abs() < 1e-9, "{scale} {r:?}");
+                }
+            }
+        }
+    }
+    #[test]
+    fn root_with_own_paint_is_one_region() {
+        let mut root = Node::new(Rect::new(0., 0., 100., 100.), Content::Rect(Rectangle::default()));
+        root.add(Node::new(Rect::new(0., 0., 10., 10.), Content::Group));
+        let extent = Rect::new(0., 0., 100., 100.);
+        assert_eq!(Scene::new(root).sparse_regions(extent, 1.), vec![extent]);
+        let empty = Scene::new(Node::new(Rect::new(0., 0., 100., 100.), Content::Group));
+        assert!(empty.sparse_regions(extent, 1.).is_empty());
     }
 }

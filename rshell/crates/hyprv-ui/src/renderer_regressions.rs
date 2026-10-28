@@ -106,6 +106,18 @@ impl Gpu {
         h: i32,
         scale: f64,
     ) -> Result<Vec<u8>, crate::render::RenderError> {
+        self.paint_region(r, s, (0., 0.), w, h, scale)
+    }
+    /// A `w`×`h` device-pixel target presenting the scene from logical `origin`.
+    fn paint_region(
+        &mut self,
+        r: &mut Renderer,
+        s: &Scene,
+        origin: (f32, f32),
+        w: i32,
+        h: i32,
+        scale: f64,
+    ) -> Result<Vec<u8>, crate::render::RenderError> {
         let mut surface = self.surface(w, h);
         let backend = sk::gpu::surfaces::get_backend_render_target(
             &mut surface,
@@ -118,10 +130,11 @@ impl Gpu {
             backend.gl_framebuffer_info().unwrap().fboid,
             (w, h),
         );
-        r.paint(
+        r.paint_at(
             surface.canvas(),
             s,
             scale,
+            origin,
             Rect::new(0., 0., w as f32 / scale as f32, h as f32 / scale as f32),
         )?;
         drop(guard);
@@ -839,4 +852,65 @@ fn retired_window_keeps_shared_glyphs_without_reupload() {
     assert!(gpu.native.borrow().review_upload_budget_untouched());
     gpu.native.borrow_mut().release_owner(2);
     assert_eq!(gpu.native.borrow().review_stats().0,0);
+}
+
+/// LayerConfig::sparse presents a full-output scene through region-sized buffers.
+/// Every region must hold exactly the full-output target's pixels, including the
+/// screen-sized Canvas atlas fringes, fractional reveal offsets and strip text.
+#[test]
+#[ignore = "requires surfaceless EGL; run tests/run-renderer-regressions.sh"]
+fn sparse_regions_match_the_full_output_target_exactly() {
+    let mut gpu = Gpu::new();
+    let info = sk::ImageInfo::new((54,216),sk::ColorType::Alpha8,sk::AlphaType::Premul,None);
+    let image = sk::images::raster_from_data(&info,
+        sk::Data::new_copy(include_bytes!("../tests/qt-canvas/corners-a8.bin")),54).unwrap();
+    for (w, h, top) in [(3072., 1728., 0.), (1440., 900., 15.), (1440., 900., 7.3125), (1440., 900., 2.71828)] {
+        let scale = 2.;
+        let mut root = Node::new(Rect::new(0., 0., w, h), Content::Group);
+        root.native_materials = Some(true);
+        let atlas = (((w * 2.) as u32).next_power_of_two(), ((h * 2.) as u32).next_power_of_two());
+        for (corner, (x, y)) in [(0., top), (w - 27., top), (0., h - 27.), (w - 27., h - 27.)].into_iter().enumerate() {
+            let mut node = Node::new(Rect::new(x, y, 27., 27.), Content::Image(image.clone()));
+            node.image_sampling = crate::image::ImageSampling::QtCanvasAtlas { size: atlas, corner: corner as u8 };
+            root.add(node);
+        }
+        if top > 0. {
+            let mut strip = Node::new(Rect::new(0., top - 15., w, 15.), Content::Group);
+            strip.add(rect(0., 0., w, 15., Color::rgba(0., 0., 0., 1.)));
+            for (i, (x, mode)) in [(10.3, RenderType::QtRendering), (w / 2. - 31.7, RenderType::QtRendering),
+                (w - 97.45, RenderType::NativeRendering)].into_iter().enumerate() {
+                let mut text = Node::new(Rect::new(x, 0.65, 90., 13.7), Content::Text(Text {
+                    text: format!("Wed 12:3{i} \u{f2db} 7%"), size: 11., render_type: mode,
+                    color: Color::rgba(1., 1., 1., 1.), ..Default::default()
+                }));
+                if mode == RenderType::NativeRendering { text.native_text_mode = NativeTextMode::QtGl; }
+                strip.add(text);
+            }
+            root.add(strip);
+        }
+        let scene = Scene::new(root);
+        let (fw, fh) = ((w * 2.) as usize, (h * 2.) as usize);
+        let full = gpu.paint_scaled(&mut Renderer::new(), &scene, fw as i32, fh as i32, scale).unwrap();
+        assert!(full.chunks_exact(4).any(|p| p[3] > 0 && p[3] < 255), "no antialiased fringe rendered");
+        let regions = scene.sparse_regions(Rect::new(0., 0., w, h), scale);
+        assert!(!regions.is_empty());
+        let mut covered = vec![false; fw * fh];
+        for r in &regions {
+            let (x, y, rw, rh) = ((r.x * 2.) as usize, (r.y * 2.) as usize, (r.width * 2.) as usize, (r.height * 2.) as usize);
+            let tile = gpu.paint_region(&mut Renderer::new(), &scene, (r.x, r.y), rw as i32, rh as i32, scale).unwrap();
+            for row in 0..rh {
+                let (a, b) = (&full[((y + row) * fw + x) * 4..][..rw * 4], &tile[row * rw * 4..][..rw * 4]);
+                if a != b {
+                    let col = (0..rw).find(|c| a[c * 4..c * 4 + 4] != b[c * 4..c * 4 + 4]).unwrap();
+                    panic!("{w}x{h} top {top}: region {r:?} differs at device ({}, {}): {:?} vs {:?}",
+                        x + col, y + row, &a[col * 4..col * 4 + 4], &b[col * 4..col * 4 + 4]);
+                }
+                covered[(y + row) * fw + x..][..rw].fill(true);
+            }
+        }
+        // Nothing painted outside the regions.
+        for (i, px) in full.chunks_exact(4).enumerate() {
+            assert!(covered[i] || px[3] == 0, "{w}x{h} top {top}: uncovered paint at {}", i);
+        }
+    }
 }

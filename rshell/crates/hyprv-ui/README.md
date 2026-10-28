@@ -558,3 +558,11 @@ CPU mip sources, Canvas rasters, Qt-rect coverage and Qt-rect rasters each have 
 prunes effect/bounds entries against all surviving scenes, including shared trees.
 No eviction/purge maintenance timer is installed. See
 `docs/spec/laptop-minimal-resources.md` for measurement and parity boundaries.
+
+Mapped layer sizes are published with the next buffer, including stretched
+(zero) axes. Use `Engine::configure_surface` rather than raw layer `set_size` and
+`commit`; input-region, focus and frame-callback commits can remain independent.
+`python3 crates/hyprv-ui/tests/layer-commits.py --binary target/debug/hyprv-shell
+--output target/layer-commits-new-run` runs private compositor wire regressions
+(set `HYPRV_ASSET_ROOT` to staged assets). With no arguments it runs parser tests.
+Audit and measured traces: [layer-size-commits.md](../../docs/verify/layer-size-commits.md).

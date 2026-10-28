@@ -3234,3 +3234,21 @@ one2MiB family envelope, alongside2MiB each Canvas/QtRect coverage/QtRect raster
 This is a cache residency change, not sampling arithmetic. Rerendering canonical
 GL controls after final input hashes; earlier mid-build receipts may be stale.
 No more production UI edits intended after this audit unless validation fails.
+
+### engine — atomic layer-size commit review (2026-10-26)
+
+Reviewed and preserved c1cdc57. Extended deferral to mapped stretched-axis sizes
+(e.g. `(0,58)`); the old positive-both-axes guard still allowed a standalone
+height resize and could leave an older explicit pending request behind. Zero
+axes now retain their last configured buffer extent until compositor configure.
+Protocol regression: `crates/hyprv-ui/tests/layer-commits.py`, plus private shell
+probe. Desktop/laptop probes each5 mapped transitions/39 commits, no violations;
+assembled desktop25 transitions/970 commits, no violations. Pre-fix artifact
+negative control detects25 bad commits. Five parser tests and all25 explicit GPU
+regressions pass; UI/shell all-target Clippy passes. Full audit and reproduction:
+`docs/verify/layer-size-commits.md`. Other metadata/frame/initial-handshake commits
+are intentional; no other in-tree raw layer resize caller found. No live actions.
+
+Final checkpoint: desktop nested e2e **204/204 pass**; shell library65 pass
+(2 opt-in dump diagnostics ignored). Completed nested executable pins removed;
+small trace/manifests/hash receipts retained. Changes are not installed.

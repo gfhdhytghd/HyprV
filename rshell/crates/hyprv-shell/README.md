@@ -77,9 +77,13 @@ Captures require every surface configured/rendered at the requested mode and DPR
 then use private Hyprland screencopy (`grim`) with stable black/white/black mattes,
 matching the Qt references including compositor sampling. Raw per-surface EGL PNGs
 remain diagnostic evidence; CPU SourceOver is not the assembled acceptance path.
-The corner overlay uses one full-output passive surface with direct full redraw,
-no retained offscreen target or blit, and a shared R8 Qt Canvas atlas. Direct-window
-readback redraws before reading rather than trusting a recycled post-swap buffer.
+The corner overlay uses one full-output passive layer per output with a full-output
+scene and a shared R8 Qt Canvas atlas, but no output-sized buffer: the layer is
+`LayerConfig::sparse` (a transparent 1×1 buffer scaled by its viewport), and the
+shades and laptop strip are drawn directly into full-width band subsurfaces
+(`docs/verify/corner-overlay-memory.md`). No retained offscreen target or blit.
+Diagnostic surface dumps replay the whole scene offscreen; direct-window readback
+redraws before reading rather than trusting a recycled post-swap buffer.
 
 `fullscreen-results.json` links each job's manifest, which links its unique
 `capture_manifest`; PNG file names in captures resolve relative to that manifest.
@@ -432,3 +436,12 @@ font/material startup scratch before entering the UI loop; no trim runs on a
 reveal/close frame. The setting is shared by desktop/laptop and does not change
 rendering arithmetic. Memory measurements distinguish `RssAnon`, executable pages,
 driver mappings and PSS; llvmpipe software allocations are not physical-XPS proof.
+
+Asset-completion callback regressions run with
+`python3 crates/hyprv-shell/test-ready-callbacks.py --output target/ready-callbacks-new-run`
+after building the shared debug target (set `HYPRV_ASSET_ROOT` to staged assets).
+They exercise real tray/art Ready delivery with a live Adapter in private desktop
+and laptop compositors, and require an opt-in negative child to reproduce the old
+held-borrow panic. See [the callback audit](../../docs/verify/ready-callbacks.md).
+Engine scheduling can invoke host handlers synchronously: release host `RefCell`
+guards before `request_redraw`, `animate`, `render_now`, or `replay_input`.

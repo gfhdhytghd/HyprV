@@ -424,6 +424,8 @@ pub struct EglWindow {
     damage_history: BufferDamage,
     interval_set: bool,
     full_redraw: bool,
+    /// Scene point drawn at this window's origin (a sparse-layer region).
+    origin: (f32, f32),
     resource_owner: u64,
 }
 impl EglWindow {
@@ -454,6 +456,7 @@ impl EglWindow {
             damage_history: BufferDamage::default(),
             interval_set: false,
             full_redraw: false,
+            origin: (0., 0.),
             resource_owner: {
                 static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
                 NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
@@ -470,6 +473,10 @@ impl EglWindow {
             self.damage_history.clear();
             self.full_redraw=enabled;
         }
+    }
+    /// Present the scene region starting at `origin` (logical, on the device grid).
+    pub fn set_origin(&mut self, origin: (f32, f32)) {
+        self.origin = origin;
     }
     pub(crate) fn capture(&self, renderer: &mut Renderer, scene: &Scene,
         logical: (f32,f32), scale: f64, path: &std::path::Path) -> Result<(), EglError> {
@@ -649,7 +656,7 @@ impl EglWindow {
             .ok_or_else(|| EglError::Init("GPU retained target".into()))?;
         // Diagnostic A/B switch; no alternative runtime backend or Qt dependency.
         if std::env::var_os("HYPRV_NATIVE_GL_DISABLE").is_some() || !renderer.native_gl_required(scene) {
-            for damage in &damages {renderer.paint(retained.canvas(), scene, scale, *damage)?;}
+            for damage in &damages {renderer.paint_at(retained.canvas(), scene, scale, self.origin, *damage)?;}
         } else {
             shared.native_context(context)?.borrow_mut().set_resource_owner(self.resource_owner);
             // FlushWrite resolves pending work/COW before exposing this framebuffer.
@@ -669,7 +676,7 @@ impl EglWindow {
                     fbo,
                     size,
                 );
-                for damage in &damages {renderer.paint(retained.canvas(), scene, scale, *damage)?;}
+                for damage in &damages {renderer.paint_at(retained.canvas(), scene, scale, self.origin, *damage)?;}
             }
         }
         #[cfg(debug_assertions)]

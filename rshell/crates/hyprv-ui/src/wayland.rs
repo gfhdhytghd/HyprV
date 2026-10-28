@@ -27,6 +27,7 @@ use sctk::{
         wlr_layer::{LayerShell, LayerShellHandler, LayerSurface, LayerSurfaceConfigure},
         WaylandSurface,
     },
+    subcompositor::SubcompositorState,
 };
 use smithay_client_toolkit as sctk;
 use std::{
@@ -36,7 +37,7 @@ use std::{
 };
 use wayland_client::{
     globals::registry_queue_init,
-    protocol::{wl_keyboard, wl_output, wl_pointer, wl_seat, wl_surface},
+    protocol::{wl_keyboard, wl_output, wl_pointer, wl_seat, wl_subsurface, wl_surface},
     Connection, Dispatch, Proxy, QueueHandle,
 };
 pub use wayland_protocols::wp::cursor_shape::v1::client::wp_cursor_shape_device_v1::Shape as CursorShape;
@@ -73,6 +74,14 @@ pub struct LayerConfig {
     /// Paint the complete scene directly into the window on every damaged frame.
     /// Passive full-output artwork avoids an additional retained GPU target.
     pub full_redraw: bool,
+    /// Sparse artwork on a large layer (requires viewporter and subcompositor).
+    /// The layer surface keeps its role, size, input region and namespace, but its
+    /// own buffer is one transparent pixel scaled by the viewport. The scene, still
+    /// in layer coordinates, is presented through synchronized subsurfaces covering
+    /// Scene::sparse_regions only (full-width bands around the painted children), so
+    /// no layer-sized buffer is ever allocated.
+    /// Subsurfaces take no input; with full_redraw they are direct windows too.
+    pub sparse: bool,
 }
 impl Default for LayerConfig {
     fn default() -> Self {
@@ -88,6 +97,7 @@ impl Default for LayerConfig {
             input_passthrough: false,
             input_only: false,
             full_redraw: false,
+            sparse: false,
         }
     }
 }
@@ -268,9 +278,21 @@ struct View {
     viewport_state: Option<((u32,u32),u64,bool)>,
     /// Requested layer size not yet sent; applied with the first buffer drawn at it.
     pending_size: Option<(u32, u32)>,
+    /// LayerConfig::sparse subsurfaces, reused by index across region changes.
+    tiles: Vec<Tile>,
+}
+impl View {
+    /// Retire idle direct-window swapchains; the compositor keeps the last buffers.
+    fn release_idle_drawables(&mut self) -> Result<(), crate::egl::EglError> {
+        for window in self.window.iter_mut().chain(self.tiles.iter_mut().filter_map(|t| t.window.as_mut())) {
+            window.release_idle_drawable()?;
+        }
+        Ok(())
+    }
 }
 impl Drop for View {
     fn drop(&mut self) {
+        self.tiles.clear();
         self.window.take();
         if let Some(f) = self.fractional.take() {
             f.destroy();
@@ -279,6 +301,27 @@ impl Drop for View {
             v.destroy();
         }
         self.feedback.take();
+    }
+}
+/// One synchronized subsurface of a sparse layer presenting a device-aligned scene
+/// region. Its buffer, position and viewport apply with the next layer commit.
+struct Tile {
+    window: Option<EglWindow>,
+    viewport: WpViewport,
+    subsurface: wl_subsurface::WlSubsurface,
+    surface: wl_surface::WlSurface,
+    /// Logical region in layer coordinates; None while unmapped.
+    rect: Option<Rect>,
+    /// Committed position, viewport destination and scale bits.
+    state: Option<((i32, i32), (i32, i32), u64)>,
+}
+impl Drop for Tile {
+    fn drop(&mut self) {
+        // The EGL surface and wl_egl_window go before their wl_surface.
+        self.window.take();
+        self.viewport.destroy();
+        self.subsurface.destroy();
+        self.surface.destroy();
     }
 }
 struct Seat {
@@ -321,6 +364,7 @@ pub struct Engine {
     registry: RegistryState,
     pending_seat_global: Option<u32>,
     compositor: CompositorState,
+    subcompositor: Option<SubcompositorState>,
     layer_shell: LayerShell,
     outputs: OutputState,
     seats: SeatState,
@@ -372,6 +416,8 @@ impl Application {
             CompositorState::bind(&globals, &qh).map_err(|e| Error::Wayland(e.to_string()))?;
         let layer_shell =
             LayerShell::bind(&globals, &qh).map_err(|e| Error::Wayland(e.to_string()))?;
+        let subcompositor =
+            SubcompositorState::bind(compositor.wl_compositor().clone(), &globals, &qh).ok();
         let viewport: Option<WpViewporter> = globals.bind(&qh, 1..=1, ()).ok();
         // Fractional scaling is only usable together with viewporter.
         let fractional_manager = if viewport.is_some() {
@@ -385,6 +431,7 @@ impl Application {
             outputs: OutputState::new(&globals, &qh),
             seats: SeatState::new(&globals, &qh),
             compositor,
+            subcompositor,
             layer_shell,
             fractional_manager,
             viewporter: viewport,
@@ -514,6 +561,7 @@ impl Engine {
     /// direct-window drawables after their last submitted frame.
     #[cfg(debug_assertions)]
     pub fn retain_idle_drawables_for_test(&mut self) { self.retire_idle_drawables = false; }
+    /// Invokes clock/frame callbacks; release host RefCell guards before calling.
     pub fn render_now(&mut self) {
         let ids: Vec<_> = self
             .views
@@ -529,6 +577,7 @@ impl Engine {
         }
     }
     /// Host-local synthetic input for deterministic replay, without compositor injection.
+    /// Invokes input/update synchronously; release host RefCell guards first.
     pub fn replay_input(&mut self, id: SurfaceId, event: InputEvent) {
         self.emit(id, event);
         self.schedule();
@@ -559,7 +608,7 @@ impl Engine {
         for (index, view) in self.views.iter_mut().enumerate() {
             if let Some(window) = view.window.as_mut() {
                 let name = format!("surface-{index:02}.png");
-                if view.config.full_redraw {
+                if view.config.full_redraw || view.config.sparse {
                     let logical=(view.size.0 as f32,view.size.1 as f32);
                     window.capture(&mut self.renderer,
                         &view.scene,logical,view.scale,&directory.join(&name))?;
@@ -607,6 +656,8 @@ impl Engine {
             )
         })
     }
+    /// Update layer policy. On mapped surfaces, size is published atomically
+    /// with the next correctly sized buffer; zero axes retain compositor sizing.
     pub fn configure_surface(
         &mut self,
         id: SurfaceId,
@@ -624,7 +675,7 @@ impl Engine {
                 // (a 820->58 bar shrink shows a squashed, invisible bar for ~3 frames).
                 // Defer it to the next paint so it lands in the same commit as a buffer
                 // drawn at that size.
-                if v.configured && size.0 > 0 && size.1 > 0 {
+                if v.configured {
                     v.pending_size = Some(size);
                     v.scene.invalidate();
                 } else {
@@ -683,6 +734,7 @@ impl Engine {
         crate::diagnostics::mark("surface.created", &config.namespace);
         scene.invalidate();
         config.input_only &= self.viewporter.is_some();
+        config.sparse &= self.viewporter.is_some() && self.subcompositor.is_some() && !config.input_only;
         config.size = config.legal_size(config.size);
         let id = SurfaceId(self.next_id);
         self.next_id += 1;
@@ -739,14 +791,20 @@ impl Engine {
             feedback: None,
             viewport_state: None,
             pending_size: None,
+            tiles: Vec::new(),
         });
         id
     }
     /// Advanced layer-shell controls. Commit changes explicitly via WaylandSurface::commit.
+    /// For mapped size changes use configure_surface; direct set_size + commit
+    /// bypasses its atomic size/buffer publication and can scale stale content.
     pub fn layer_surface(&self, id: SurfaceId) -> Option<&LayerSurface> {
         self.views.iter().find(|v| v.id == id).map(|v| &v.layer)
     }
     /// Flush scene edits made directly on the UI thread. Handle::send does this automatically.
+    /// Calls the attached UiHandler::update synchronously: release host RefCell
+    /// borrows before calling. During update the handler is temporarily detached,
+    /// so scheduling from update itself does not re-enter the handler.
     pub fn request_redraw(&mut self) {
         self.schedule();
     }
@@ -756,6 +814,7 @@ impl Engine {
             .find(|v| v.id == id)
             .map(|v| &mut v.scene)
     }
+    /// Schedule animation; shares request_redraw's synchronous handler contract.
     pub fn animate(&mut self, id: SurfaceId) {
         if let Some(v) = self.views.iter_mut().find(|v| v.id == id) {
             v.animate = true;
@@ -879,10 +938,8 @@ impl Engine {
         if self.retire_idle_drawables && !self.handler.as_ref().is_some_and(|h|h.resource_transition_active()) {
             for view in &mut self.views {
                 if view.config.full_redraw && !view.animate && !view.pending {
-                    if let Some(window) = &mut view.window {
-                        if let Err(error) = window.release_idle_drawable() {
-                            self.error = Some(error.into()); self.running = false; return;
-                        }
+                    if let Err(error) = view.release_idle_drawables() {
+                        self.error = Some(error.into()); self.running = false; return;
                     }
                 }
             }
@@ -939,7 +996,13 @@ impl Engine {
         view.pending = false;
         if let Some(size) = view.pending_size.take() {
             view.layer.set_size(size.0, size.1);
-            view.size = size;
+            // Zero means compositor-selected on a stretched axis, not a zero
+            // pixel buffer. Retain that axis's last configure until the next
+            // compositor configure; explicit axes resize atomically below.
+            view.size = (
+                if size.0 == 0 { view.size.0 } else { size.0 },
+                if size.1 == 0 { view.size.1 } else { size.1 },
+            );
             view.scene.invalidate();
         }
         let now = self.epoch.elapsed();
@@ -966,24 +1029,52 @@ impl Engine {
                 refresh: view.refresh,
             },
         );
-        let logical = if view.config.input_only {
+        // Input-only and sparse layers own one transparent viewport-scaled pixel.
+        let one_pixel = view.config.input_only || view.config.sparse;
+        let logical = if one_pixel {
             (1., 1.)
         } else {
             (view.size.0 as f32, view.size.1 as f32)
         };
-        let render_scale = if view.config.input_only {
+        let render_scale = if one_pixel {
             1.
         } else {
             view.scale
         };
         let extent = Rect::new(0., 0., logical.0, logical.1);
-        let damages=view.scene.take_damage_regions(extent);
-        if !damages.is_empty() {
+        let viewport_state=(view.size,render_scale.to_bits(),one_pixel);
+        // Sparse scene damage (layer coordinates) belongs to the subsurfaces. The layer's
+        // pixel is redrawn only with a new viewport: Hyprland resizes a layer on a buffer
+        // commit, not on a viewport-only commit. Other frames commit subsurface state.
+        let (damages, tile_damages) = if view.config.sparse {
+            let surface = Rect::new(0., 0., view.size.0 as f32, view.size.1 as f32);
+            let tiles = view.scene.take_damage_regions(surface);
+            let pixel = view.window.is_none() || view.viewport_state != Some(viewport_state);
+            (if pixel { vec![extent] } else { Vec::new() }, tiles)
+        } else {
+            (view.scene.take_damage_regions(extent), Vec::new())
+        };
+        if !damages.is_empty() || !tile_damages.is_empty() {
             crate::diagnostics::mark("frame.begin", &view.config.namespace);
             let started = Instant::now();
+            let blank = (view.config.sparse && !damages.is_empty()).then(|| Scene::new(crate::scene::Node::new(
+                Rect::default(), crate::scene::Content::Group)));
             let result: Result<(),crate::egl::EglError> = (|| {
                 if self.graphics.is_none() {
                     self.graphics = Some(SharedEgl::new(&self.connection)?);
+                }
+                // Subsurface commits are cached until the layer commit below.
+                if !tile_damages.is_empty() {
+                    let (Some(subcompositor), Some(viewporter)) = (&self.subcompositor, &self.viewporter) else {
+                        unreachable!("sparse layers require subcompositor and viewporter");
+                    };
+                    paint_tiles(view, &tile_damages, &Present {
+                        graphics: self.graphics.as_ref().unwrap(),
+                        subcompositor,
+                        compositor: &self.compositor,
+                        viewporter,
+                        qh: &self.qh,
+                    }, &mut self.renderer)?;
                 }
                 let size = crate::render::physical_size(extent.width, extent.height, render_scale)
                     .map_err(crate::egl::EglError::from)?;
@@ -994,10 +1085,10 @@ impl Engine {
                 // source after an output rotation: wp_viewport "Box doesn't fit".
                 // A size change (configure or scale) therefore recreates the EGL window,
                 // whose first buffer is created at the new size.
-                if view.window.as_ref().is_some_and(|w| w.size() != size) {
+                if !damages.is_empty() && view.window.as_ref().is_some_and(|w| w.size() != size) {
                     view.window = None;
                 }
-                if view.window.is_none() {
+                if !damages.is_empty() && view.window.is_none() {
                     let _timing = crate::diagnostics::scope("engine.egl_create");
                     view.window = Some(EglWindow::new(
                         self.graphics.as_ref().unwrap().clone(),
@@ -1005,8 +1096,9 @@ impl Engine {
                         size,
                     )?);
                 }
-                view.window.as_mut().unwrap().set_full_redraw(view.config.full_redraw);
-                let viewport_state=(view.size,render_scale.to_bits(),view.config.input_only);
+                if let Some(window) = view.window.as_mut() {
+                    window.set_full_redraw(view.config.full_redraw);
+                }
                 if view.viewport_state!=Some(viewport_state) {
                     if let Some(v)=&view.viewport {
                         view.layer.wl_surface().set_buffer_scale(1);
@@ -1032,9 +1124,15 @@ impl Engine {
                         view.feedback = Some(p.feedback(view.layer.wl_surface(), &self.qh, id));
                     }
                 }
+                if damages.is_empty() {
+                    // Sparse frame: the layer keeps its pixel; this commit applies the
+                    // cached subsurface buffers, positions and viewports atomically.
+                    view.layer.commit();
+                    return Ok(());
+                }
                 view.window.as_mut().unwrap().draw_regions(
                     &mut self.renderer,
-                    &view.scene,
+                    blank.as_ref().unwrap_or(&view.scene),
                     (extent.width, extent.height),
                     render_scale,
                     damages,
@@ -1055,10 +1153,8 @@ impl Engine {
         }
         if self.retire_idle_drawables && view.config.full_redraw && !view.animate
             && !self.handler.as_ref().is_some_and(|h|h.resource_transition_active()) {
-            if let Some(window) = &mut view.window {
-                if let Err(error) = window.release_idle_drawable() {
-                    self.error = Some(error.into()); self.running = false; return;
-                }
+            if let Err(error) = view.release_idle_drawables() {
+                self.error = Some(error.into()); self.running = false; return;
             }
         }
         if reschedule {
@@ -1066,6 +1162,90 @@ impl Engine {
             self.schedule_with_update(update);
         }
     }
+}
+/// Engine globals a sparse layer presents its subsurfaces with.
+struct Present<'a> {
+    graphics: &'a Rc<SharedEgl>,
+    subcompositor: &'a SubcompositorState,
+    compositor: &'a CompositorState,
+    viewporter: &'a WpViewporter,
+    qh: &'a QueueHandle<Engine>,
+}
+/// Draw the damaged regions of a sparse layer, each into its own region-sized
+/// subsurface buffer. Commits are cached (synchronized subsurfaces); the caller's
+/// layer commit publishes them together with positions and viewports.
+fn paint_tiles(view: &mut View, damages: &[Rect], present: &Present, renderer: &mut Renderer)
+    -> Result<(), crate::egl::EglError>
+{
+    let _timing = crate::diagnostics::scope("engine.sparse_tiles");
+    let scale = view.scale;
+    let surface = Rect::new(0., 0., view.size.0 as f32, view.size.1 as f32);
+    let regions = view.scene.sparse_regions(surface, scale);
+    for (index, rect) in regions.iter().copied().enumerate() {
+        if view.tiles.len() == index {
+            let (subsurface, wl) = present.subcompositor.create_subsurface(view.layer.wl_surface().clone(), present.qh);
+            // Input stays with the layer surface and its own input region.
+            let region = present.compositor.wl_compositor().create_region(present.qh, ());
+            wl.set_input_region(Some(&region));
+            region.destroy();
+            let viewport = present.viewporter.get_viewport(&wl, present.qh, ());
+            view.tiles.push(Tile { window: None, viewport, subsurface, surface: wl, rect: None, state: None });
+        }
+        let tile = &mut view.tiles[index];
+        let size = crate::render::physical_size(rect.width, rect.height, scale)?;
+        let state = ((rect.x as i32, rect.y as i32), (rect.width as i32, rect.height as i32), scale.to_bits());
+        let local = Rect::new(0., 0., rect.width, rect.height);
+        let regions: Vec<Rect> = if tile.rect != Some(rect) || tile.state != Some(state) {
+            vec![local]
+        } else {
+            damages.iter().filter_map(|d| {
+                let x0 = d.x.max(rect.x);
+                let y0 = d.y.max(rect.y);
+                let x1 = (d.x + d.width).min(rect.x + rect.width);
+                let y1 = (d.y + d.height).min(rect.y + rect.height);
+                (x1 > x0 && y1 > y0).then(|| Rect::new(x0 - rect.x, y0 - rect.y, x1 - x0, y1 - y0))
+            }).collect()
+        };
+        if regions.is_empty() {
+            continue;
+        }
+        // As for layer windows: a new extent gets a new EGL window whose first buffer
+        // has that size. The old swapchain is released before the new one exists.
+        if tile.window.as_ref().is_some_and(|w| w.size() != size) {
+            tile.window = None;
+        }
+        if tile.window.is_none() {
+            tile.window = Some(EglWindow::new(present.graphics.clone(), &tile.surface, size)?);
+        }
+        if tile.state != Some(state) {
+            if tile.state.is_none_or(|s| s.0 != state.0) {
+                tile.subsurface.set_position(state.0 .0, state.0 .1);
+            }
+            tile.surface.set_buffer_scale(1);
+            tile.viewport.set_destination(state.1 .0, state.1 .1);
+            tile.viewport.set_source(0., 0., size.0 as f64, size.1 as f64);
+            tile.state = Some(state);
+        }
+        for damage in &regions {
+            let (x, y, w, h) = damage.physical(scale);
+            tile.surface.damage_buffer(x, y, w, h);
+        }
+        let window = tile.window.as_mut().unwrap();
+        window.set_full_redraw(view.config.full_redraw);
+        window.set_origin((rect.x, rect.y));
+        window.draw_regions(renderer, &view.scene, (rect.width, rect.height), scale, regions)?;
+        tile.rect = Some(rect);
+    }
+    // Surplus subsurfaces unmap with the same layer commit; kept for reuse.
+    for tile in view.tiles.iter_mut().skip(regions.len()) {
+        if tile.rect.take().is_some() {
+            tile.window = None;
+            tile.state = None;
+            tile.surface.attach(None, 0, 0);
+            tile.surface.commit();
+        }
+    }
+    Ok(())
 }
 impl CompositorHandler for Engine {
     fn scale_factor_changed(
@@ -1594,6 +1774,7 @@ sctk::delegate_keyboard!(Engine);
 sctk::delegate_pointer!(Engine, pointer: []);
 wayland_client::delegate_noop!(Engine:ignore wl_seat::WlSeat);
 sctk::delegate_layer!(Engine);
+sctk::delegate_subcompositor!(Engine);
 sctk::delegate_registry!(Engine);
 impl ProvidesRegistryState for Engine {
     fn registry(&mut self) -> &mut RegistryState {

@@ -1805,3 +1805,21 @@ physical-XPS or120MiB pass. CPU0.0333%NVIDIA; CPU0.2885%softwareMesa (not iris).
 Desktop204/204, laptop39/39; fresh GL island380/380, bar300reachable/300 with the
 existing12exclusions, panels300/300; all current source fingerprints PASS.
 Before/after table and timing/proxy limitations: docs/verify/laptop-impl-engine.md.
+
+### engine — XPS Ready callback regression and scheduling audit (2026-10-26)
+
+Preserved the user-supplied `drop(a)` fix in production `art_receive`. Added
+real-channel art and real-worker tray completion tests with the live Assembly
+Adapter in private desktop/laptop compositors; both profiles pass 2/2. The
+separate expected-failure child reproduces `RefCell already borrowed`. Queue and
+status RPCs never redraw, so completion must reconcile itself. Reusable runner:
+`crates/hyprv-shell/test-ready-callbacks.py`; audit and evidence:
+`docs/verify/ready-callbacks.md`. Audited assembly/compatibility-host service, IPC,
+clock, smoke, replay and functional scheduling paths; no additional unsafe
+production path found. Engine API docs now describe synchronous handler calls.
+Shell library65 passed (2 opt-in dump diagnostics ignored); scoped Clippy passes.
+No live shell/compositor/helper was modified or restarted.
+
+Final checkpoint: desktop nested functional **204/204 pass**; final focused
+runner rechecked both Ready variants on both profiles and the expected panic.
+Raw manifests and SHA256 receipts are linked from the audit report.
