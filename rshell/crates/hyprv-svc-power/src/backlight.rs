@@ -175,6 +175,16 @@ pub trait Transport: Send + Sync + 'static {
     async fn write(&self, config: &OutputConfig, raw: u32) -> Result<()>;
     async fn reference(&self, config: &OutputConfig, nits: f64) -> Result<()>;
     async fn persist(&self, config: &OutputConfig, level: f64) -> Result<()>;
+    /// Laptop legacy path (laptop shell.qml): hand the level to `hypr/controls.lua`, which
+    /// owns the backlight, the SDR reference and any display synced to it. `false` means
+    /// unavailable, and the native curve below is used instead.
+    async fn controls_set(&self, _level: f64) -> Result<bool> {
+        Ok(false)
+    }
+    /// `brightness_get()` from `hypr/controls.lua`: the user's target while one is held.
+    async fn controls_get(&self) -> Result<Option<f64>> {
+        Ok(None)
+    }
 }
 pub struct Engine<T: Transport> {
     pub transport: T,
@@ -213,6 +223,12 @@ impl<T: Transport> Engine<T> {
         for (i, c) in self.configs.iter().enumerate() {
             if c.curve != CurveKind::Laptop && self.state.outputs[i].dragging {
                 continue;
+            }
+            if c.curve == CurveKind::Laptop {
+                if let Some(level) = self.transport.controls_get().await? {
+                    self.state.outputs[i].level_percent = level.round().clamp(0., 100.);
+                    continue;
+                }
             }
             match self.transport.read(c).await {
                 Ok((raw, max)) => {
@@ -316,6 +332,19 @@ impl<T: Transport> Engine<T> {
             return Err("brightness must be finite".into());
         }
         let level = level.round().clamp(0., 100.);
+        if c.curve == CurveKind::Laptop && self.transport.controls_set(level).await? {
+            s.request_sequence = sequence;
+            s.level_percent = level;
+            s.confirmed_sequence = Some(sequence);
+            s.failed = false;
+            s.last_error = None;
+            s.retries = 0;
+            if finish {
+                s.dragging = false;
+            }
+            self.saved[index] = level;
+            return Ok(());
+        }
         if s.raw_max.is_none() {
             let (raw, max) = self.transport.read(c).await?;
             if max == 0 || raw > max {
@@ -560,6 +589,32 @@ impl Transport for NativeTransport {
             return Err(format!("compositor rejected luminance: {text}").into());
         }
         Ok(())
+    }
+    async fn controls_set(&self, level: f64) -> Result<bool> {
+        let command = format!(
+            "/repl require('hypr.controls').brightness_set({},false);return 'hyprv-brightness-ok'",
+            level.round().clamp(0., 100.) as u32
+        );
+        // No reachable compositor: fall back to the native curve.
+        let Ok(reply) = hypr_request(&self.ctx, command).await else {
+            return Ok(false);
+        };
+        let text = String::from_utf8_lossy(&reply);
+        if text.starts_with("error:") || !text.contains("hyprv-brightness-ok") {
+            return Err(format!("hypr.controls rejected brightness: {text}").into());
+        }
+        Ok(true)
+    }
+    async fn controls_get(&self) -> Result<Option<f64>> {
+        let Ok(reply) = hypr_request(
+            &self.ctx,
+            "/repl return tostring(require('hypr.controls').brightness_get())".into(),
+        )
+        .await
+        else {
+            return Ok(None);
+        };
+        Ok(String::from_utf8_lossy(&reply).trim().parse::<f64>().ok())
     }
     async fn persist(&self, config: &OutputConfig, level: f64) -> Result<()> {
         let path = self.ctx.paths.state.join("brightness-hdr.json");
