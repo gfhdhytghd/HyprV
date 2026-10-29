@@ -50,6 +50,17 @@ pub fn spawn_detached(argv: &[&str]) -> Result<(), ServiceError> {
     });
     Ok(())
 }
+/// Long-lived helpers (`nohup xsettingsd &` in the source) must outlive the shell. A
+/// plain detached child stays in hyprv-shell.service's cgroup and dies with every shell
+/// restart, so give it its own transient scope when systemd-run is available.
+fn spawn_daemon(env: &Env, argv: &[&str]) -> Result<(), ServiceError> {
+    if util::which("systemd-run", env.var("PATH")).is_none() {
+        return spawn_detached(argv);
+    }
+    let mut scoped = vec!["systemd-run", "--user", "--scope", "--collect", "--quiet", "--"];
+    scoped.extend_from_slice(argv);
+    spawn_detached(&scoped)
+}
 fn pids_named(comm: &str) -> Vec<i32> {
     let proc = util::Proc::default();
     proc.pids()
@@ -72,7 +83,7 @@ pub fn restart_xsettingsd(env: &Env) -> Result<(), ServiceError> {
     }
     signal_all("xsettingsd", libc::SIGTERM);
     if env.var("DISPLAY").is_some() {
-        spawn_detached(&["xsettingsd"])?;
+        spawn_daemon(env, &["xsettingsd"])?;
     }
     Ok(())
 }
@@ -94,7 +105,7 @@ pub async fn wallpaper(env: &Env, background: &Path) -> Result<(), ServiceError>
         return Ok(());
     }
     if pids_named("awww-daemon").is_empty() {
-        spawn_detached(&["awww-daemon"])?;
+        spawn_daemon(env, &["awww-daemon"])?;
         tokio::time::sleep(Duration::from_millis(200)).await;
     }
     let bg = background.display().to_string();
