@@ -99,7 +99,17 @@ impl InstanceLock {
             Err(e) if e.kind() == io::ErrorKind::AlreadyExists => (),
             Err(e) => return Err(e),
         }
-        let metadata = std::fs::symlink_metadata(parent)?;
+        let mut metadata = std::fs::symlink_metadata(parent)?;
+        // Another runtime user may create this directory first with the default umask
+        // (seen at boot on the laptop). Our own, non-symlink directory is tightened
+        // in place; anything else is still refused.
+        if metadata.is_dir()
+            && metadata.uid() == unsafe { libc::geteuid() }
+            && metadata.mode() & 0o077 != 0
+        {
+            std::fs::set_permissions(parent, std::fs::Permissions::from_mode(0o700))?;
+            metadata = std::fs::symlink_metadata(parent)?;
+        }
         if !metadata.is_dir()
             || metadata.uid() != unsafe { libc::geteuid() }
             || metadata.mode() & 0o077 != 0
@@ -285,6 +295,17 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         dir
+    }
+    #[test]
+    fn own_loose_ipc_dir_is_tightened_not_refused() {
+        let dir = scratch("loose");
+        let ipc = dir.join("ipc");
+        std::fs::create_dir(&ipc).unwrap();
+        std::fs::set_permissions(&ipc, std::fs::Permissions::from_mode(0o755)).unwrap();
+        let lock = InstanceLock::acquire(&ipc.join("s.sock")).unwrap();
+        assert_eq!(std::fs::metadata(&ipc).unwrap().mode() & 0o777, 0o700);
+        drop(lock);
+        std::fs::remove_dir_all(dir).unwrap();
     }
     #[tokio::test(flavor = "current_thread")]
     async fn drop_preserves_replacement_file() {
