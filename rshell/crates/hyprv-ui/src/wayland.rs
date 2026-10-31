@@ -21,6 +21,7 @@ use sctk::{
     seat::{
         keyboard::{KeyEvent, KeyboardHandler, Keysym, Modifiers},
         pointer::{PointerEvent, PointerEventKind, PointerHandler},
+        touch::TouchHandler,
         Capability, SeatHandler, SeatState,
     },
     shell::{
@@ -37,7 +38,7 @@ use std::{
 };
 use wayland_client::{
     globals::registry_queue_init,
-    protocol::{wl_keyboard, wl_output, wl_pointer, wl_seat, wl_subsurface, wl_surface},
+    protocol::{wl_keyboard, wl_output, wl_pointer, wl_seat, wl_subsurface, wl_surface, wl_touch},
     Connection, Dispatch, Proxy, QueueHandle,
 };
 pub use wayland_protocols::wp::cursor_shape::v1::client::wp_cursor_shape_device_v1::Shape as CursorShape;
@@ -337,6 +338,9 @@ struct Seat {
     keyboard_focus: Option<SurfaceId>,
     hover: Option<(SurfaceId, NodeId)>,
     pressed: HashMap<u32, (SurfaceId, NodeId)>,
+    touch: Option<wl_touch::WlTouch>,
+    /// The one touch point driven as a left-button pointer (id, surface, position).
+    touch_point: Option<(i32, wl_surface::WlSurface, (f64, f64))>,
 }
 impl Drop for Seat {
     fn drop(&mut self) {
@@ -1416,6 +1420,8 @@ impl SeatHandler for Engine {
             keyboard_focus: None,
             hover: None,
             pressed: HashMap::new(),
+            touch: None,
+            touch_point: None,
         });
     }
     fn new_capability(
@@ -1440,6 +1446,9 @@ impl SeatHandler for Engine {
         }
         if c == Capability::Keyboard && s.keyboard.is_none() {
             s.keyboard = self.seats.get_keyboard(qh, &seat, None).ok();
+        }
+        if c == Capability::Touch && s.touch.is_none() {
+            s.touch = self.seats.get_touch(qh, &seat).ok();
         }
     }
     fn remove_capability(
@@ -1467,6 +1476,14 @@ impl SeatHandler for Engine {
                 s.pointer_focus = None;
                 s.scroll_target = None;
                 s.scroll = Default::default();
+            }
+            if c == Capability::Touch {
+                if let Some(t) = s.touch.take() {
+                    if t.version() >= 3 {
+                        t.release();
+                    }
+                }
+                s.touch_point = None;
             }
             if c == Capability::Keyboard {
                 if let Some(k) = s.keyboard.take() {
@@ -1500,6 +1517,13 @@ impl PointerHandler for Engine {
         else {
             return;
         };
+        self.pointer_events(seat_index, events, false);
+    }
+}
+impl Engine {
+    /// Pointer events from a real pointer, or synthesized from the primary touch point
+    /// (`touch`: no cursor shape exists to update).
+    fn pointer_events(&mut self, seat_index: usize, events: &[PointerEvent], touch: bool) {
         for e in events {
             let Some(id) = self.surface_id(&e.surface) else {
                 continue;
@@ -1521,8 +1545,10 @@ impl PointerHandler for Engine {
                 match &e.kind {
                     PointerEventKind::Enter { serial } => {
                         seat.serial = *serial;
-                        if let Some(device) = &seat.shape {
-                            device.set_shape(*serial, Shape::Default);
+                        if !touch {
+                            if let Some(device) = &seat.shape {
+                                device.set_shape(*serial, Shape::Default);
+                            }
                         }
                     }
                     PointerEventKind::Leave { .. } => {
@@ -1560,13 +1586,103 @@ impl PointerHandler for Engine {
                     target,
                 },
             );
-            if let Some(shape) = response.cursor {
+            if let Some(shape) = response.cursor.filter(|_| !touch) {
                 let seat = self.input[seat_index].seat.clone();
                 self.set_cursor(&seat, shape);
             }
             if let Some((target, button)) = click {
                 self.emit(id, InputEvent::Click { target, button });
             }
+        }
+        self.schedule();
+    }
+}
+/// Linux BTN_LEFT: a single touch point acts as the left button, as Qt's touch-to-mouse
+/// synthesis did for the QML shell. Further simultaneous touch points are ignored.
+const TOUCH_BUTTON: u32 = 0x110;
+impl TouchHandler for Engine {
+    fn down(
+        &mut self,
+        _: &Connection,
+        _: &QueueHandle<Self>,
+        touch: &wl_touch::WlTouch,
+        serial: u32,
+        time: u32,
+        surface: wl_surface::WlSurface,
+        id: i32,
+        position: (f64, f64),
+    ) {
+        let Some(i) = self.input.iter().position(|s| s.touch.as_ref() == Some(touch)) else {
+            return;
+        };
+        if self.input[i].touch_point.is_some() {
+            return;
+        }
+        self.input[i].touch_point = Some((id, surface.clone(), position));
+        let events = [
+            PointerEvent { surface: surface.clone(), position, kind: PointerEventKind::Enter { serial } },
+            PointerEvent { surface: surface.clone(), position, kind: PointerEventKind::Motion { time } },
+            PointerEvent { surface, position, kind: PointerEventKind::Press { time, button: TOUCH_BUTTON, serial } },
+        ];
+        self.pointer_events(i, &events, true);
+        self.schedule();
+    }
+    fn up(
+        &mut self,
+        _: &Connection,
+        _: &QueueHandle<Self>,
+        touch: &wl_touch::WlTouch,
+        serial: u32,
+        time: u32,
+        id: i32,
+    ) {
+        let Some(i) = self.input.iter().position(|s| s.touch.as_ref() == Some(touch)) else {
+            return;
+        };
+        let Some((_, surface, position)) = self.input[i].touch_point.take_if(|p| p.0 == id) else {
+            return;
+        };
+        let events = [
+            PointerEvent { surface: surface.clone(), position, kind: PointerEventKind::Release { time, button: TOUCH_BUTTON, serial } },
+            PointerEvent { surface, position, kind: PointerEventKind::Leave { serial } },
+        ];
+        self.pointer_events(i, &events, true);
+        self.schedule();
+    }
+    fn motion(
+        &mut self,
+        _: &Connection,
+        _: &QueueHandle<Self>,
+        touch: &wl_touch::WlTouch,
+        time: u32,
+        id: i32,
+        position: (f64, f64),
+    ) {
+        let Some(i) = self.input.iter().position(|s| s.touch.as_ref() == Some(touch)) else {
+            return;
+        };
+        let Some(point) = self.input[i].touch_point.as_mut().filter(|p| p.0 == id) else {
+            return;
+        };
+        point.2 = position;
+        let surface = point.1.clone();
+        self.pointer_events(i, &[PointerEvent { surface, position, kind: PointerEventKind::Motion { time } }], true);
+        self.schedule();
+    }
+    fn shape(&mut self, _: &Connection, _: &QueueHandle<Self>, _: &wl_touch::WlTouch, _: i32, _: f64, _: f64) {}
+    fn orientation(&mut self, _: &Connection, _: &QueueHandle<Self>, _: &wl_touch::WlTouch, _: i32, _: f64) {}
+    fn cancel(&mut self, _: &Connection, _: &QueueHandle<Self>, touch: &wl_touch::WlTouch) {
+        let Some(i) = self.input.iter().position(|s| s.touch.as_ref() == Some(touch)) else {
+            return;
+        };
+        if self.input[i].touch_point.take().is_some() {
+            // The compositor took the sequence (e.g. a gesture): drop the press, no click.
+            let seat = self.input[i].seat.clone();
+            self.cancel_seat_pointer(&seat);
+            let s = &mut self.input[i];
+            s.pressed.remove(&TOUCH_BUTTON);
+            s.hover = None;
+            s.pointer_focus = None;
         }
         self.schedule();
     }
@@ -1772,6 +1888,7 @@ sctk::delegate_output!(Engine);
 sctk::delegate_seat!(Engine);
 sctk::delegate_keyboard!(Engine);
 sctk::delegate_pointer!(Engine, pointer: []);
+sctk::delegate_touch!(Engine);
 wayland_client::delegate_noop!(Engine:ignore wl_seat::WlSeat);
 sctk::delegate_layer!(Engine);
 sctk::delegate_subcompositor!(Engine);
