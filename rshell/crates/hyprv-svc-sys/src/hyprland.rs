@@ -366,7 +366,10 @@ impl Backend for Native {
         }
     }
     async fn action(&mut self, _id: u64, a: Action) -> Result<Value> {
-        let command = match a {
+        // A Lua config parses `dispatch ARGS` as `hl.dispatch(ARGS)`, so the legacy
+        // `workspace N` is a Lua syntax error there. Try the Lua dispatcher first and
+        // fall back to the legacy form, as hypr/scripts/workspace_action.sh does.
+        let (lua, legacy) = match a {
             Action::Refresh => {
                 self.snapshot(true).await?;
                 return Ok(Value::Null);
@@ -379,20 +382,29 @@ impl Backend for Native {
                 {
                     return Err(Error::new("address", "invalid window address"));
                 }
-                format!("dispatch focuswindow address:{address}")
+                (
+                    format!("hl.dsp.focus({{ window = 'address:{address}' }})"),
+                    format!("focuswindow address:{address}"),
+                )
             }
-            Action::WorkspaceActivate(id) => format!("dispatch workspace {id}"),
-            Action::WorkspaceMoveWindow(id) => format!("dispatch movetoworkspace {id}"),
+            Action::WorkspaceActivate(id) => (
+                format!("hl.dsp.focus({{ workspace = {id} }})"),
+                format!("workspace {id}"),
+            ),
+            Action::WorkspaceMoveWindow(id) => (
+                format!("hl.dsp.window.move({{ workspace = {id} }})"),
+                format!("movetoworkspace {id}"),
+            ),
         };
-        let reply = request(
-            &self.config.as_ref().map_err(Clone::clone)?.directory,
-            &command,
-        )
-        .await?;
-        if reply.trim() != "ok" {
-            return Err(Error::new("compositor", reply));
+        let directory = &self.config.as_ref().map_err(Clone::clone)?.directory;
+        let mut reply = String::new();
+        for command in [lua, legacy] {
+            reply = request(directory, &format!("dispatch {command}")).await?;
+            if reply.trim() == "ok" {
+                return Ok(json!({"accepted":true}));
+            }
         }
-        Ok(json!({"accepted":true}))
+        Err(Error::new("compositor", reply))
     }
 }
 pub fn spawn(ctx: Context) -> Handle<State, Action> {
