@@ -48,3 +48,4 @@ pub mod events;
 pub mod rapl;
 pub mod cpu_power;
 pub mod eligibility;
+pub mod service;

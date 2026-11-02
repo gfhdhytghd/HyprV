@@ -1,4 +1,3 @@
-use futures_util::StreamExt;
 use hyprv_privhelper::{cooling::Controller, events::KernelEvents, FanChannel, BUS, PATH, VERSION};
 use std::{
     collections::HashMap,
@@ -210,34 +209,6 @@ impl Helper {
         state: &str,
     ) -> zbus::Result<()>;
 }
-async fn graphical(connection: &zbus::Connection, uid: u32) -> zbus::Result<bool> {
-    let manager = zbus::Proxy::new(
-        connection,
-        "org.freedesktop.login1",
-        "/org/freedesktop/login1",
-        "org.freedesktop.login1.Manager",
-    )
-    .await?;
-    let sessions: Vec<(String, u32, String, String, zbus::zvariant::OwnedObjectPath)> =
-        manager.call("ListSessions", &()).await?;
-    for (_, owner, _, _, path) in sessions {
-        if owner != uid {
-            continue;
-        }
-        let session = zbus::Proxy::new(
-            connection,
-            "org.freedesktop.login1",
-            path,
-            "org.freedesktop.login1.Session",
-        )
-        .await?;
-        let kind: String = session.get_property("Type").await?;
-        if kind == "wayland" || kind == "x11" {
-            return Ok(true);
-        }
-    }
-    Ok(false)
-}
 async fn safety_loop(
     controller: Arc<tokio::sync::Mutex<Controller>>,
     desktop: Arc<AtomicBool>,
@@ -349,48 +320,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             _=tokio::signal::ctrl_c()=>break,
         };
         backoff = Duration::from_millis(250);
-        let rule = zbus::MatchRule::builder()
-            .msg_type(zbus::message::Type::Signal)
-            .sender("org.freedesktop.login1")?
-            .build();
-        let mut sessions = zbus::MessageStream::for_match_rule(rule, &connection, Some(64)).await?;
-        let rule = zbus::MatchRule::builder()
-            .msg_type(zbus::message::Type::Signal)
-            .sender("org.freedesktop.DBus")?
-            .member("NameOwnerChanged")?
-            .build();
-        let mut owners = zbus::MessageStream::for_match_rule(rule, &connection, Some(16)).await?;
-        desktop.store(
-            graphical(&connection, uid).await.unwrap_or(false),
-            Ordering::Release,
-        );
-        let emitter = zbus::object_server::SignalEmitter::new(&connection, PATH)?;
-        let (power_updates, mut watts) =
-            tokio::sync::watch::channel(hyprv_privhelper::rapl::State::default());
-        // Kept as a pinned future rather than a detached task: bus loss and
-        // service exit synchronously drop all sampling/timer state.
-        let sampling = hyprv_privhelper::rapl::run(
-            power.clone(),
-            hyprv_core::profile::sys_path("sys/class/powercap"),
-            power_updates,
-        );
-        tokio::pin!(sampling);
-
-        loop {
-            tokio::select! {
-                _=&mut sampling=>return Err("CPU power sampler unexpectedly stopped".into()),
-                result=watts.changed()=>{if result.is_err(){break;}let next=watts.borrow_and_update().clone();if Helper::cpu_power_changed(&emitter,&serde_json::to_string(&next)?).await.is_err(){break;}},
-                result=&mut safety=>return Err(format!("cooling task stopped: {result:?}").into()),
-                result=updates.changed()=>{if result.is_err(){return Err("cooling state channel closed".into());}let next=updates.borrow_and_update().clone();if Helper::fan_state_changed(&emitter,&serde_json::to_string(&next)?).await.is_err(){break;}},
-                event=sessions.next()=>{match event{Some(Ok(_))=>desktop.store(graphical(&connection,uid).await.unwrap_or(false),Ordering::Release),_=>break}},
-                event=owners.next()=>{match event{Some(Ok(message))=>{
-                    let (name,_,new):(String,String,String)=message.body().deserialize()?;
-                    if name.starts_with(':') && new.is_empty() {power.unsubscribe(&name);}
-                    if name=="org.freedesktop.login1" {desktop.store(graphical(&connection,uid).await.unwrap_or(false),Ordering::Release);}
-                },_=>break}},
-                _=terminate.recv()=>break 'service,
-                _=tokio::signal::ctrl_c()=>break 'service,
-            }
+        tokio::select! {
+            result=hyprv_privhelper::service::run(
+                &connection,
+                uid,
+                &desktop,
+                &power,
+                &mut updates,
+                hyprv_core::profile::sys_path("sys/class/powercap"),
+            )=>result?,
+            result=&mut safety=>return Err(format!("cooling task stopped: {result:?}").into()),
+            _=terminate.recv()=>break 'service,
+            _=tokio::signal::ctrl_c()=>break 'service,
         }
         power.clear();
         desktop.store(false, Ordering::Release);
