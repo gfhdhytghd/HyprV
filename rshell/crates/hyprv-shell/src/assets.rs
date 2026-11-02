@@ -98,7 +98,8 @@ pub(crate) fn fixture_tray(item: &TrayItem, scale: f32) -> Option<sk::Image> {
             }
         }
         let image = std::thread::scope(|scope| scope.spawn(||
-            tray_pixmap(item, scale).or_else(|| themed_icon(item, sizes)))
+            (item.id != LAIS_ID).then(|| tray_pixmap(item, scale)).flatten()
+                .or_else(|| themed_icon(item, sizes)))
             .join().ok().flatten());
         let mut cache = cache.borrow_mut();
         let image_bytes = image.as_ref().map_or(0, |i| i.width() as usize * i.height() as usize * 4);
@@ -121,6 +122,9 @@ use fixture_tray as tray;
 fn themed_icon(item: &TrayItem, sizes: tray_loader::Sizes) -> Option<sk::Image> {
     let request = sizes.request;
     let physical = request * sizes.theme_scale;
+    if let Some(image) = bundled_icon(item, physical) {
+        return Some(image);
+    }
     let name = if item.status == "NeedsAttention" && !item.attention_icon_name.is_empty() {
         &item.attention_icon_name
     } else {
@@ -151,6 +155,16 @@ fn themed_icon(item: &TrayItem, sizes: tray_loader::Sizes) -> Option<sk::Image> 
     };
     // Quickshell's missingPixmap also uses the device-pixel request itself.
     image.or_else(|| Some(missing_icon(request)))
+}
+/// shell.qml `trayIconSource`: the local AI service uses the bundled LAIS icon,
+/// independently of its pixmaps and the installed icon theme.
+pub(crate) const LAIS_ID: &str = "local-ai-service";
+fn bundled_icon(item: &TrayItem, physical: u32) -> Option<sk::Image> {
+    if item.id != LAIS_ID {
+        return None;
+    }
+    let root = crate::runtime_assets::installed().ok()?;
+    icon_file(&root.join("assets/lais/lais.svg"), physical)
 }
 /// One theme-icon file as QIcon renders it at `size` device px: raster files larger
 /// than the request are smooth-downscaled (Qt's area averaging, aspect kept), smaller
@@ -335,6 +349,22 @@ mod tests {
         let mut px = [0u8; 4];
         assert!(image.read_pixels(&info, &mut px, 4, (x, y), sk::image::CachingHint::Allow));
         px
+    }
+    #[test]
+    fn lais_uses_its_bundled_icon_whatever_the_theme() {
+        if crate::runtime_assets::installed().is_err() {
+            return;
+        }
+        let item = TrayItem {
+            key: "lais".into(),
+            id: LAIS_ID.into(),
+            icon_name: "hyprv-test-no-such-icon-anywhere".into(),
+            ..Default::default()
+        };
+        let image = bundled_icon(&item, 36).expect("bundled LAIS icon");
+        assert_eq!((image.width(), image.height()), (36, 36));
+        let other = TrayItem { id: "something-else".into(), ..item };
+        assert!(bundled_icon(&other, 36).is_none());
     }
     #[test]
     fn unresolvable_icon_names_draw_quickshells_missing_icon_not_a_letter() {

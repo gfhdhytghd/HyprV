@@ -105,13 +105,14 @@ impl TrayLoader {
         }
         // Bound retained/request metadata, including supplied pixmap arrays.
         let input_bytes = icon_input_bytes(item)?;
-        let direct = tray_pixmap(item, dpr);
+        let bundled = item.id == super::LAIS_ID;
+        let direct = if bundled { None } else { tray_pixmap(item, dpr) };
         let name = if item.status == "NeedsAttention" && !item.attention_icon_name.is_empty() {
             &item.attention_icon_name
         } else {
             &item.icon_name
         };
-        let needs_file = direct.is_none() && !name.is_empty();
+        let needs_file = direct.is_none() && (bundled || !name.is_empty());
         if needs_file && state.inflight.len() >= MAX_JOBS {
             // A completion triggers a refresh and retries deferred requests.
             return state
@@ -159,6 +160,7 @@ impl TrayLoader {
         if needs_file {
             state.inflight.insert(token);
             let job = TrayItem {
+                id: item.id.clone(),
                 icon_name: name.clone(),
                 icon_theme_path: item.icon_theme_path.clone(),
                 ..Default::default()
