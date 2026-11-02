@@ -3,6 +3,9 @@
 use crate::actor::{self, Result};
 use futures_util::StreamExt;
 use hyprv_privhelper::{rapl::State, BUS, INTERFACE, PATH};
+/// The sampler awaits these calls inline: a wedged helper (seen after days of uptime)
+/// must cost one bounded wait and a missing watts value, not all CPU/memory/network stats.
+const HELPER_CALL_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
 
 #[derive(Clone, Copy)]
 struct Endpoint {
@@ -79,10 +82,10 @@ impl Client {
                 let _ = job.await;
             }
             let result: Result<()> = async {
-                actor::proxy(&bus, endpoint.bus, endpoint.path, endpoint.interface)
-                    .await?
-                    .call::<_, _, ()>("UnsubscribeCpuPower", &())
-                    .await?;
+                let proxy = actor::proxy(&bus, endpoint.bus, endpoint.path, endpoint.interface).await?;
+                tokio::time::timeout(HELPER_CALL_TIMEOUT, proxy.call::<_, _, ()>("UnsubscribeCpuPower", &()))
+                    .await
+                    .map_err(|_| "UnsubscribeCpuPower timed out")??;
                 Ok(())
             }
             .await;
@@ -170,7 +173,9 @@ impl Client {
             let endpoint = self.endpoint;
             self.acquisition = Some(tokio::spawn(async move {
                 let p = actor::proxy(&bus, endpoint.bus, endpoint.path, endpoint.interface).await?;
-                Ok(p.call("SubscribeCpuPower", &()).await?)
+                Ok(tokio::time::timeout(HELPER_CALL_TIMEOUT, p.call("SubscribeCpuPower", &()))
+                    .await
+                    .map_err(|_| "SubscribeCpuPower timed out")??)
             }));
         }
         if let Some(job) = self.acquisition.as_mut() {
