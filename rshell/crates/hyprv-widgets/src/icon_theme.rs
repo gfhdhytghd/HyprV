@@ -2,8 +2,8 @@
 //! `QIconLoader` lookup (qiconloader.cpp) as reached through Quickshell's
 //! `image://icon/<name>` provider, `QIcon::fromTheme(name).pixmap(size)`.
 //!
-//! - **Theme.** The live quickshell runs with `QT_QPA_PLATFORMTHEME=qt6ct`, but qt6ct-kde
-//!   0.11 fails to load under Qt 6.12, so Qt uses its generic Unix theme. That theme gives
+//! - **Theme.** The live quickshell runs with `QT_QPA_PLATFORMTHEME=qt6ct`. While qt6ct-kde
+//!   0.11 failed to load under Qt 6.12 (fixed by a rebuild), Qt used its generic Unix theme. That theme gives
 //!   no system icon theme name, so `QIconLoader` uses the fallback theme `hicolor`
 //!   (verified against the nested references: `discord` resolves from
 //!   hicolor/256x256, while `telegram`, present only in Fluent/Papirus-style themes, is
@@ -43,10 +43,59 @@ const FALLBACK_THEME: &str = "hicolor";
 
 /// Icon theme the live shell's Qt resolves (see module docs).
 pub fn system_theme() -> String {
-    std::env::var("HYPRV_ICON_THEME")
-        .ok()
+    if let Some(t) = std::env::var("HYPRV_ICON_THEME").ok().filter(|t| !t.is_empty()) {
+        return t;
+    }
+    // Nested/parity runs pin their search roots and keep the captured hicolor.
+    if std::env::var_os("HYPRV_ICON_SEARCH_PATHS").is_some() {
+        return FALLBACK_THEME.into();
+    }
+    configured_theme()
+}
+
+static CONFIGURED: Mutex<Option<String>> = Mutex::new(None);
+
+/// With a working qt6ct platform theme, `QIconLoader` uses qt6ct's `[Appearance]
+/// icon_theme` (Fluent-dark/Fluent-light here, rewritten on every theme switch), so
+/// names such as `preferences-system` resolve. Read once and cached; owners call
+/// [`reload_system_theme`] when the desktop theme changes.
+fn configured_theme() -> String {
+    let mut cached = CONFIGURED.lock().unwrap();
+    if let Some(t) = cached.as_ref() {
+        return t.clone();
+    }
+    let config = std::env::var_os("XDG_CONFIG_HOME")
+        .filter(|v| !v.is_empty())
+        .map(PathBuf::from)
+        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config")));
+    let theme = config
+        .and_then(|c| std::fs::read_to_string(c.join("qt6ct/qt6ct.conf")).ok())
+        .and_then(|text| ini_value(&text, "Appearance", "icon_theme"))
         .filter(|t| !t.is_empty())
-        .unwrap_or_else(|| "hicolor".into())
+        .unwrap_or_else(|| FALLBACK_THEME.into());
+    *cached = Some(theme.clone());
+    theme
+}
+
+/// Forget the cached qt6ct icon theme (call after a desktop theme switch).
+pub fn reload_system_theme() {
+    *CONFIGURED.lock().unwrap() = None;
+}
+
+fn ini_value(text: &str, group: &str, key: &str) -> Option<String> {
+    let mut in_group = false;
+    for line in text.lines().map(str::trim) {
+        if line.starts_with('[') {
+            in_group = line == format!("[{group}]");
+        } else if in_group {
+            if let Some((k, v)) = line.split_once('=') {
+                if k.trim() == key {
+                    return Some(v.trim().to_string());
+                }
+            }
+        }
+    }
+    None
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -788,6 +837,12 @@ mod icon_theme_regressions;
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn qt6ct_icon_theme_is_read_from_its_appearance_group() {
+        let conf = "[Fonts]\nicon_theme=wrong\n[Appearance]\nstyle=kvantum\nicon_theme = Fluent-dark\n";
+        assert_eq!(ini_value(conf, "Appearance", "icon_theme").as_deref(), Some("Fluent-dark"));
+        assert_eq!(ini_value("[Appearance]\nstyle=x\n", "Appearance", "icon_theme"), None);
+    }
     use std::path::Path;
 
     fn tmp(tag: &str) -> PathBuf {
@@ -1175,10 +1230,18 @@ mod tests {
     }
 
     #[test]
-    fn system_theme_is_qt_generic_fallback() {
-        if std::env::var_os("HYPRV_ICON_THEME").is_none() {
-            assert_eq!(system_theme(), "hicolor");
+    fn system_theme_follows_qt6ct_else_hicolor() {
+        if std::env::var_os("HYPRV_ICON_THEME").is_some() {
+            return;
         }
+        let pinned = std::env::var_os("HYPRV_ICON_SEARCH_PATHS").is_some();
+        let configured = std::env::var_os("XDG_CONFIG_HOME")
+            .map(PathBuf::from)
+            .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config")))
+            .and_then(|c| std::fs::read_to_string(c.join("qt6ct/qt6ct.conf")).ok())
+            .and_then(|t| ini_value(&t, "Appearance", "icon_theme"))
+            .filter(|t| !t.is_empty() && !pinned);
+        assert_eq!(system_theme(), configured.unwrap_or_else(|| "hicolor".into()));
     }
 
     /// Diagnostic: `HYPRV_ICON_LOOKUP=name,… cargo test -p hyprv-widgets --lib

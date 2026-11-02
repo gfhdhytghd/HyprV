@@ -545,10 +545,16 @@ impl Assembly {
     }
     fn refresh(&mut self) {
         let _timing = hyprv_ui::diagnostics::scope("shell.refresh");
-        self.dark = self
+        let dark = self
             .fixture
             .as_ref()
             .map_or_else(|| self.hub.desktop.theme.state().dark_mode, |f| f.dark);
+        if dark != self.dark && self.fixture.is_none() {
+            // The theme apply rewrote qt6ct's icon theme before publishing the new mode.
+            hyprv_widgets::icon_theme::reload_system_theme();
+            self.tray_loader.clear();
+        }
+        self.dark = dark;
         let url = if self.hub.is_mock() {
             String::new()
         } else {

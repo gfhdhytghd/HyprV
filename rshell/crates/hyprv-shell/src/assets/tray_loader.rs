@@ -69,6 +69,12 @@ fn fallback(state: &mut State, request: u32) -> sk::Image {
 }
 
 impl TrayLoader {
+    /// Drop every cached icon (the icon theme changed); in-flight replies are ignored.
+    pub fn clear(&self) {
+        let mut state = self.state.borrow_mut();
+        state.entries.clear();
+        state.bytes = 0;
+    }
     pub fn retain(&self, items: &[TrayItem], scales: impl Iterator<Item = f32>) {
         let sizes: Vec<_> = scales.filter_map(Sizes::new).collect();
         let mut state = self.state.borrow_mut();
