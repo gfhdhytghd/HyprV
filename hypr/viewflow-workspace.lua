@@ -8,7 +8,7 @@ local function keep_floating(window)
     local workspace = window.workspace
     if not workspace or (workspace.name ~= workspace_name and workspace.name ~= "viewflow-underlay") then return end
     applying = true
-    hl.dsp.window.float({ action = "enable", window = window })()
+    hl.dispatch(hl.dsp.window.float({ action = "enable", window = window }))
     applying = false
 end
 hl.on("window.open", keep_floating)
