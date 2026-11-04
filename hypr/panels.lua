@@ -47,10 +47,11 @@ local function save(p)
   local w = hl.get_active_window()
   p.previous = normal(w) and { address = w.address, workspace = w.workspace.id } or nil
 end
-local function restore(p)
+local function restore(p, no_warp)
   local previous = p.previous
   p.previous = nil
-  if not previous then return end
+  -- Edge activation keeps the pointer where it is; focus dispatches warp it.
+  if not previous or no_warp then return end
   local w = hl.get_window("address:" .. previous.address)
   local ws = hl.get_active_workspace()
   if normal(w) and ws and ws.id == previous.workspace and w.workspace.id == previous.workspace then
@@ -71,19 +72,19 @@ local function geometry(p, w, mon)
   hl.dispatch(hl.dsp.window.resize({ x = side and 360 or 1080, y = side and math.max(1, height - 72) or 225, window = w }))
   hl.dispatch(hl.dsp.window.move({ x = mon.x + x, y = mon.y + 60, relative = false, window = w }))
 end
-local function show(p, w, mon, workspace)
+local function show(p, w, mon, workspace, no_warp)
   pin(w, false)
   hl.dispatch(hl.dsp.window.move({ workspace = tostring(workspace), window = w, follow = false }))
   geometry(p, w, mon)
-  hl.dispatch(hl.dsp.focus({ window = w }))
+  if not no_warp then hl.dispatch(hl.dsp.focus({ window = w })) end
   pin(w, true)
   if p == panels.sidechat then hl.dispatch(hl.dsp.window.alter_zorder({ mode = "top", window = w })) end
   trace(p, "shown addr=" .. w.address .. " ws=" .. workspace)
 end
-local function hide(p, w)
+local function hide(p, w, no_warp)
   pin(w, false)
   -- Restore before moving so the compositor cannot choose a special window.
-  restore(p)
+  restore(p, no_warp)
   hl.dispatch(hl.dsp.window.move({ workspace = p.hidden, window = w, follow = false }))
   trace(p, "hidden addr=" .. w.address)
 end
@@ -107,7 +108,8 @@ local function launch(p)
   local script = (os.getenv("HOME") or "/home/wilf") .. "/.config/HyprV/hypr/scripts/panel-launch.sh"
   hl.exec_cmd("bash " .. shell_quote(script) .. " " .. (p == panels.dropdown and "dropdown" or "sidechat") .. " " .. shell_quote(p.pidfile))
 end
-local function run(p, action, monitor)
+local function run(p, action, monitor, opts)
+  local no_warp = opts and opts.no_warp or false
   assert(action == "toggle" or action == "show" or action == "hide" or action == "reflow", "invalid panel action")
   local mon
   if monitor and monitor ~= "" then
@@ -130,7 +132,7 @@ local function run(p, action, monitor)
     return
   end
   if action == "hide" or (action == "toggle" and w and not hidden(p, w)) then
-    if w and not hidden(p, w) then hide(p, w) end
+    if w and not hidden(p, w) then hide(p, w, no_warp) end
     return
   end
   if w and not hidden(p, w) and (not mon or w.monitor.name == mon.name) then return end
@@ -141,8 +143,8 @@ local function run(p, action, monitor)
   end
   assert(mon and mon.active_workspace and mon.active_workspace.id > 0, "normal target workspace unavailable")
   save(p)
-  if w then show(p, w, mon, mon.active_workspace.id); return end
-  local pending = { action = "show", monitor = mon, workspace = mon.active_workspace.id, attempts = 0 }
+  if w then show(p, w, mon, mon.active_workspace.id, no_warp); return end
+  local pending = { action = "show", monitor = mon, workspace = mon.active_workspace.id, attempts = 0, no_warp = no_warp }
   p.pending = pending
   launch(p)
   local function poll()
@@ -151,8 +153,8 @@ local function run(p, action, monitor)
     if found then
       p.pending = nil
       finish_launch(p, false)
-      if pending.action == "hide" then hide(p, found)
-      else show(p, found, pending.monitor, pending.workspace) end
+      if pending.action == "hide" then hide(p, found, pending.no_warp)
+      else show(p, found, pending.monitor, pending.workspace, pending.no_warp) end
       return
     end
     pending.attempts = pending.attempts + 1
@@ -168,8 +170,8 @@ local function run(p, action, monitor)
   p.wait_timer = later(p, 100, poll)
 end
 for name, p in pairs(panels) do
-  M[name] = function(action, monitor)
-    return guarded(p, function() run(p, action or "toggle", monitor) end)
+  M[name] = function(action, monitor, opts)
+    return guarded(p, function() run(p, action or "toggle", monitor, opts) end)
   end
 end
 return M

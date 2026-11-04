@@ -203,8 +203,8 @@ do
       monitor = "*", target = "right", mode = "move",
       move_ms = 200, movement_gap_ms = 80, noise = 0.5, band = 2, cooldown_ms = 400,
       hold_wait_ms = 5000, exit_distance = 80,
-      on_enter = function(monitor) require("hypr.panels").sidechat("show", monitor) end,
-      on_exit = function() require("hypr.panels").sidechat("hide") end,
+      on_enter = function(monitor) require("hypr.panels").sidechat("show", monitor, { no_warp = true }) end,
+      on_exit = function() require("hypr.panels").sidechat("hide", "", { no_warp = true }) end,
       hold = ai_region,
     }))
   end
