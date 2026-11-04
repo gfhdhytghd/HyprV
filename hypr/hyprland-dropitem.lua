@@ -7,9 +7,9 @@ hl.window_rule({
   float = true,
   move = "monitor_w*0.125 60",
 })
-lib.bind_exec("SUPER + SHIFT + T", "$HOME/.config/hypr/scripts/dropdown.sh")
+hl.bind("SUPER + SHIFT + T", function() require("hypr.panels").dropdown() end)
 
-lib.bind_exec("SUPER + SPACE", "bash $HOME/.config/hypr/scripts/sidechat.sh")
+hl.bind("SUPER + SPACE", function() require("hypr.panels").sidechat() end)
 lib.bind_exec("SUPER + SHIFT + F23", "bash $HOME/.config/hypr/scripts/sidechat.sh")
 hl.window_rule({
   name = "dropdown-ai-hub",

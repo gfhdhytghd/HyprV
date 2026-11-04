@@ -209,7 +209,6 @@ do
 
     -- The right strip follows actual AI-HUB window geometry, including the gap
     -- between its right edge and the output boundary. No fixed 360/370 px snapshot.
-    local function shell_quote(s) return "'" .. s:gsub("'", "'\\''") .. "'" end
     local function ai_region(name)
       for _, win in ipairs(hl.get_windows()) do
         local mon, ws = win.monitor, win.workspace
@@ -230,8 +229,8 @@ do
       monitor = "*", target = "right", mode = "move",
       move_ms = 200, movement_gap_ms = 80, noise = 0.5, band = 2, cooldown_ms = 400,
       hold_wait_ms = 5000, exit_distance = 80,
-      on_enter = function(monitor) hl.exec_cmd("bash /home/wilf/.config/HyprV/hypr/scripts/sidechat.sh show " .. shell_quote(monitor) .. " --no-cursor-warp") end,
-      on_exit = function() hl.exec_cmd("bash /home/wilf/.config/HyprV/hypr/scripts/sidechat.sh hide '' --no-cursor-warp") end,
+      on_enter = function(monitor) require("hypr.panels").sidechat("show", monitor, { no_warp = true }) end,
+      on_exit = function() require("hypr.panels").sidechat("hide", "", { no_warp = true }) end,
       hold = ai_region,
     }))
   end

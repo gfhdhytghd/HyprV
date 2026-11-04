@@ -68,8 +68,8 @@ lib.call_plugin_fn("hymission", "gesture", {
   action = "scroll",
   args = "layout",
 })
-hl.gesture({ fingers = 3, direction = "horizontal", action = function() hl.exec_cmd("$HOME/.config/HyprV/hypr/scripts/sidechat.sh") end })
-hl.gesture({ fingers = 3, direction = "vertical", action = function() hl.exec_cmd("$HOME/.config/HyprV/hypr/scripts/dropdown.sh") end })
+hl.gesture({ fingers = 3, direction = "horizontal", action = function() require("hypr.panels").sidechat() end })
+hl.gesture({ fingers = 3, direction = "vertical", action = function() require("hypr.panels").dropdown() end })
 hl.gesture({ fingers = 3, direction = "vertical", mods = "SUPER", action = function() hl.exec_cmd("$HOME/.config/HyprV/hypr/scripts/dropcalender.sh") end })
 hl.gesture({ fingers = 3, direction = "swipe", mods = "SUPER", scale = 1.5, action = "move" })
 
