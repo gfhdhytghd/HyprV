@@ -4046,11 +4046,7 @@ ShellRoot {
                         NumberAnimation { duration: 210; easing.type: Easing.OutCubic }
                     }
 
-                    CalendarBridge {
-                        id: calendarBridge
-                        weekStart: new Date()
-                        onChildWindowRequested: root.beginCalendarChild()
-                    }
+
 
                     DynamicIsland {
                         id: dynamicIsland
@@ -4114,33 +4110,41 @@ ShellRoot {
                         onNextClicked: root.runDetached(["playerctl", "next"])
                     }
 
-                    WeekCalendarPanel {
+                    Loader {
                         id: calendarPanel
 
+                        readonly property bool pointerInside: item?.pointerInside ?? false
+                        active: barWindow.calendarPanelPresented
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: Math.min(520, contentRoot.width - 48)
                         height: Math.min(500, barWindow.height - 78)
-                        shellRoot: root
-                        bridge: calendarBridge
-                        embeddedSurface: true
-                        visible: barWindow.calendarPanelPresented
+                        visible: active
                         opacity: barWindow.calendarProgress
                         transformOrigin: Item.Top
+                        sourceComponent: WeekCalendarPanel {
+                            anchors.fill: parent
+                            shellRoot: root
+                            bridge: calendarBridge
+                            embeddedSurface: true
 
-                        onPointerInsideChanged: {
-                            if (!barWindow.calendarVisible)
-                                return;
-                            if (pointerInside) {
-                                calendarLeaveTimer.stop();
-                            } else if (!root.calendarChildOpening && !root.calendarChildActive) {
-                                calendarLeaveTimer.restart();
+                            CalendarBridge {
+                                id: calendarBridge
+                                weekStart: new Date()
+                                onChildWindowRequested: root.beginCalendarChild()
                             }
-                        }
-                        onCloseRequested: root.requestCalendarClose()
-                        onExpandRequested: {
-                            root.requestCalendarClose(true);
-                            calendarBridge.showFullApp();
+
+                            onPointerInsideChanged: {
+                                if (!barWindow.calendarVisible) return;
+                                if (pointerInside) calendarLeaveTimer.stop();
+                                else if (!root.calendarChildOpening && !root.calendarChildActive)
+                                    calendarLeaveTimer.restart();
+                            }
+                            onCloseRequested: root.requestCalendarClose()
+                            onExpandRequested: {
+                                root.requestCalendarClose(true);
+                                calendarBridge.showFullApp();
+                            }
                         }
                     }
                 }

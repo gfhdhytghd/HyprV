@@ -4,19 +4,23 @@
 #[derive(Default)]
 pub(crate) struct BarExpansion {
     expanded: bool,
+    battery_mode: bool,
     gate: hyprv_ui_bar::ipc::ToggleGate,
 }
 impl BarExpansion {
     pub(crate) fn expanded(&self, _output: &str) -> bool {
-        self.expanded
+        self.expanded && !self.battery_mode
     }
     /// Legacy Date.now debounce is global across monitors, including backward clock steps.
     pub(crate) fn toggle(&mut self, _output: &str, wall_ms: u64) -> bool {
-        if !self.gate.allow(wall_ms) {
+        if self.battery_mode || !self.gate.allow(wall_ms) {
             return false;
         }
         self.expanded = !self.expanded;
         true
+    }
+    pub(crate) fn set_battery_mode(&mut self, enabled: bool) {
+        self.battery_mode = enabled;
     }
     /// Output removal no longer resets anything: the state is shared.
     pub(crate) fn remove(&mut self, _output: &str) {}
@@ -33,6 +37,18 @@ pub(crate) fn active() -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn battery_mode_locks_compact_and_restores_user_choice() {
+        let mut b = BarExpansion::default();
+        assert!(b.toggle("A", 1000));
+        b.set_battery_mode(true);
+        assert!(!b.expanded("A") && !b.expanded("B"));
+        assert!(!b.toggle("B", 2000));
+        b.set_battery_mode(false);
+        assert!(b.expanded("A"));
+        assert!(b.toggle("A", 2100));
+        assert!(!b.expanded("A"));
+    }
     #[test]
     fn starts_compact_global_debounce_and_synced_outputs() {
         let mut b = BarExpansion::default();

@@ -45,6 +45,7 @@ pub enum Page {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Z {
+    Tray(usize),
     Card,
     WifiIcon,
     WifiText,
@@ -483,8 +484,10 @@ impl ControlPanel {
 
     // ------------------------------------------------------------------ building
 
-    fn style(&self, pal: &Palette) -> GlassStyle {
-        if self.page == Page::Main {
+    fn style(&self, pal: &Palette, battery: bool) -> GlassStyle {
+        if battery && self.page != Page::Main {
+            GlassStyle { radius:19., fill:with_alpha(pal.glass_fill,1.), stroke:pal.glass_stroke, surface_opacity:1., shadow:Color::default() }
+        } else if self.page == Page::Main {
             GlassStyle { radius: 19., fill: Color::default(), stroke: Color::default(), surface_opacity: 0., shadow: Color::default() }
         } else {
             GlassStyle { radius: 19., fill: pal.glass_fill, stroke: pal.glass_stroke, surface_opacity: 0.82, shadow: Color::default() }
@@ -494,7 +497,7 @@ impl ControlPanel {
     /// Page content (card-local) and its height.
     fn page_nodes(&mut self, e: &Model, card_abs: (f32, f32)) -> (Vec<Node>, f32) {
         self.sync_bt_scroll(e);
-        let pal = Palette::new(e.theme.dark);
+        let pal = panel_palette(e.theme.dark, e.battery_mode);
         let mut zones = Vec::new();
         let dpr = e.output.scale;
         let inter = self.inter.clone();
@@ -502,7 +505,7 @@ impl ControlPanel {
         if self.page == Page::Mihomo && self.pulse_start.is_none() {
             self.pulse_start = Some(e.now);
         }
-        let (nodes, h) = {
+        let (mut nodes, mut h) = {
             let mut c = Ctx { dpr, pal: &pal, zones: &mut zones };
             match self.page {
                 Page::Main => main_page(&mut c, e, card_abs, &inter, &sliders, self.laptop),
@@ -515,6 +518,40 @@ impl ControlPanel {
                 Page::Mihomo => mihomo_page(&mut c, e, card_abs, &inter, e.now.saturating_sub(self.pulse_start.unwrap_or(e.now))),
             }
         };
+        if e.battery_mode && self.page == Page::Main {
+            // Flatten each module against the same neutral backing, leaving gaps transparent.
+            for node in &mut nodes {
+                if let hyprv_ui::scene::Content::Rect(rect) = &mut node.content {
+                    if let hyprv_ui::scene::Fill::Solid(fill) = &mut rect.fill {
+                        *fill = opaque_module(*fill, &pal);
+                    }
+                }
+            }
+        }
+        if self.laptop && e.minimal_bar && self.page == Page::Main && !e.tray.is_empty() {
+            let rows = e.tray.len().div_ceil(8).max(1);
+            let row_height = 8. + rows as f32 * 32.;
+            let offset = row_height + 10.;
+            for node in &mut nodes { node.frame.y += offset; }
+            for zone in &mut zones { zone.rect.y += offset; }
+            let mut row = rect(Rect::new(0., 0., self.popup_width(), row_height), 12.,
+                if e.battery_mode { opaque_module(pal.active_fill, &pal) } else { pal.active_fill }, None);
+            for (index, item) in e.tray.iter().enumerate() {
+                let slot = Rect::new(11. + (index % 8) as f32 * 32., 4. + (index / 8) as f32 * 32., 30., 30.);
+                zones.push(Zone { id: Z::Tray(index), rect: abs(card_abs,slot), cursor: Cursor::Pointer, enabled:true });
+                if inter.hovered == Some(Z::Tray(index)) { row.add(rect(slot,6.,pal.island_hover_fill,None)); }
+                if let Some(image) = &item.image {
+                    let mut icon = Node::new(Rect::new(slot.x+6.,slot.y+6.,18.,18.),hyprv_ui::scene::Content::Image(image.clone()));
+                    icon.image_sampling=hyprv_ui::image::ImageSampling::Mipmap;
+                    row.add(icon);
+                } else {
+                    let label=TextBox::new(item.title.chars().next().unwrap_or('•').to_string(),Font::qt(13.,NORMAL),pal.primary_text);
+                    row.add(text(&label,slot,card_abs,dpr));
+                }
+            }
+            nodes.insert(0,row);
+            h += offset;
+        }
         self.zones = zones;
         (nodes, h)
     }
@@ -589,7 +626,7 @@ impl ControlPanel {
         let (nodes, h) = self.page_nodes(&e, (0., 0.));
         let pal = Palette::new(e.theme.dark);
         let w = self.popup_width();
-        let (card, _) = popup::glass(Rect::new(0., 0., w, h), h, h, 1., 0., &self.style(&pal), nodes, model.output.scale);
+        let (card, _) = popup::glass(Rect::new(0., 0., w, h), h, h, 1., 0., &self.style(&pal, e.battery_mode), nodes, model.output.scale);
         (card, w, h)
     }
 
@@ -612,7 +649,7 @@ impl ControlPanel {
         let mut zones = vec![Zone { id: Z::Card, rect: card, cursor: Cursor::Default, enabled: true }];
         zones.append(&mut self.zones);
         self.zones = zones;
-        let (card_node, gids) = popup::glass(card, h, v.height, v.opacity, v.offset, &self.style(&pal), nodes, model.output.scale);
+        let (card_node, gids) = popup::glass(card, h, v.height, v.opacity, v.offset, &self.style(&pal, e.battery_mode), nodes, model.output.scale);
         root.children.push(card_node);
         let key = self.page_key(&e);
         self.ids = Some(Ids { root: rid, glass: gids, key });
@@ -622,7 +659,7 @@ impl ControlPanel {
     fn page_key(&self, e: &Model) -> String {
         format!(
             "{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{}|{:?}|{:?}|{:?}|{:?}|{:?}",
-            self.page,
+            (self.page,e.battery_mode,e.minimal_bar,e.tray.iter().map(|i|(&i.key,&i.title,i.image.as_ref().map(|v|v.unique_id()))).collect::<Vec<_>>()),
             e.theme,
             e.network,
             e.bluetooth,
@@ -659,7 +696,7 @@ impl ControlPanel {
         let key = self.page_key(&e);
         let rev = scene.revision();
         let pal = Palette::new(e.theme.dark);
-        let style = self.style(&pal);
+        let style = self.style(&pal, e.battery_mode);
         if key != self.ids.as_ref().unwrap().key {
             let (nodes, h, card) = self.layout(model, &e);
             self.m.set_full_height(h);
@@ -772,6 +809,13 @@ impl ControlPanel {
                         self.sliders[i] = SliderState { adjusting: false, preview: v };
                         r.actions.extend(self.slider_change(id, v, &e, now));
                         r.actions.extend(self.slider_finish(id, v));
+                    }
+                } else if inside && matches!(id,Z::Tray(_)) && matches!(button,Button::Left|Button::Right) {
+                    if let Z::Tray(i)=id {
+                        if let (Some(item),Some(zone))=(e.tray.get(i),zones.iter().find(|z|z.id==id)) {
+                            let a=zone.rect;
+                            r.actions.push(Action::Host(HostAction::TrayClick {key:item.key.clone(),right:button==Button::Right,anchor:Anchor{x:a.x,y:a.y,width:a.width,height:a.height}}));
+                        }
                     }
                 } else if inside && button == Button::Left {
                     r.actions.extend(self.click(id, &e, now));
@@ -1007,6 +1051,27 @@ fn slider_index(id: Z) -> Option<usize> {
         Z::Pump => Some(3),
         _ => None,
     }
+}
+
+// Claude-designed solid palette, scoped to battery control-panel content.
+fn panel_palette(dark: bool, battery: bool) -> Palette {
+    let mut pal = Palette::new(dark);
+    if battery {
+        pal.active_fill = rgb(if dark { "#2E4A6E" } else { "#D6E4F7" });
+        pal.card_fill = rgb(if dark { "#1C2230" } else { "#F4F6FA" });
+        pal.glass_fill = pal.card_fill;
+        pal.primary_text = rgb(if dark { "#E8EEF7" } else { "#14213D" });
+        pal.muted_text = rgb(if dark { "#B3C0D4" } else { "#4A5670" });
+        pal.accent = rgb(if dark { "#EAF2FF" } else { "#1B3A6B" });
+        pal.active_stroke = rgb(if dark { "#4C6690" } else { "#A9BCD9" });
+        pal.card_stroke = pal.active_stroke;
+    }
+    pal
+}
+
+fn opaque_module(fill: Color, pal: &Palette) -> Color {
+    let base=pal.glass_fill;
+    Color::rgba(fill.r*fill.a+base.r*(1.-fill.a),fill.g*fill.a+base.g*(1.-fill.a),fill.b*fill.a+base.b*(1.-fill.a),1.)
 }
 
 fn switch_colors(pal: &Palette, on: bool) -> (Color, Color) {
@@ -1719,5 +1784,49 @@ mod laptop_tests {
         assert!(!r.actions.iter().any(|a| matches!(a, Action::BrightnessFinish(_))), "{:?}", r.actions);
         assert_eq!(snap_brightness_for(true, 37.4), 37);
         assert_eq!(snap_brightness_for(false, 37.4), 38);
+    }
+}
+
+#[cfg(test)]
+mod minimal_tray_tests {
+    use super::*;
+    #[test]
+    fn battery_panel_is_opaque_and_minimal_tray_routes_both_buttons() {
+        let mut model=Model {battery_mode:true,minimal_bar:true,..Default::default()};
+        model.tray=(0..9).map(|i|TrayIcon{key:format!("item-{i}"),title:format!("Item {i}"),image:None}).collect();
+        let mut panel=ControlPanel::with_profile(true);
+        panel.toggle_centered("DP-4",model.now);
+        panel.build(&model);
+        let rect=panel.zones.iter().find(|z|z.id==Z::Tray(8)).unwrap().rect;
+        let wifi=panel.zones.iter().find(|z|z.id==Z::WifiIcon).unwrap().rect;
+        assert!(rect.y+rect.height < wifi.y,"wrapped row stays above controls");
+        for button in [Button::Left,Button::Right] {
+            let (x,y)=(rect.x+10.,rect.y+10.);
+            panel.pointer(Pointer::Press{x,y,button},&model);
+            let reply=panel.pointer(Pointer::Release{x,y,button},&model);
+            assert!(reply.actions.iter().any(|a|matches!(a,Action::Host(HostAction::TrayClick{key,right,..}) if key=="item-8" && *right==(button==Button::Right))));
+        }
+        for dark in [false,true] {
+            for page in [Page::Main,Page::Bluetooth,Page::Mihomo] {
+                panel.page=page;
+                let style=panel.style(&Palette::new(dark),true);
+                assert_eq!(style.fill.a,if page==Page::Main {0.} else {1.});
+                assert_eq!(style.surface_opacity,if page==Page::Main {0.} else {1.});
+            }
+        }
+        panel.page=Page::Main;
+        let (nodes,_) = panel.page_nodes(&model,(0.,0.));
+        for node in &nodes {
+            if let hyprv_ui::scene::Content::Rect(rect)=&node.content {
+                if let hyprv_ui::scene::Fill::Solid(fill)=rect.fill { assert_eq!(fill.a,1.); }
+            }
+        }
+        if let hyprv_ui::scene::Content::Rect(rect)=&nodes[0].content {
+            if let hyprv_ui::scene::Fill::Solid(fill)=rect.fill { assert_eq!(fill,panel_palette(false,true).active_fill); }
+        }
+        model.minimal_bar=false;
+        panel.page=Page::Main;
+        panel.build(&model);
+        assert!(!panel.zones.iter().any(|z|matches!(z.id,Z::Tray(_))));
     }
 }

@@ -38,6 +38,15 @@ if action == "audio-status" then
   print("available=true\nmuted=" .. tostring(s:find("[MUTED]",1,true)~=nil) .. "\nvolume=" .. math.floor(volume*100+.5))
   os.exit(0)
 end
+if action == "ddc-set" then
+  -- LG 6K brightness from controls.lua's display sync: bus and 0..100 value only.
+  local bus, v = tonumber(arg[3]), tonumber(arg[4])
+  local ok = bus and v and v >= 0 and v <= 100 and v == math.floor(v)
+    and os.execute("ddcutil --bus " .. bus .. " --skip-ddc-checks --noverify setvcp 10 " .. v .. " >/dev/null 2>&1")
+  local f=assert(io.open(result .. ".tmp","w")); f:write(ok and ("ok " .. v .. " 100") or "error ddc-set failed"); f:close()
+  assert(os.rename(result .. ".tmp",result))
+  os.exit(ok and 0 or 1)
+end
 assert(action == "hardware")
 local ok, raw, max = pcall(hardware)
 local f=assert(io.open(result .. ".tmp","w"))

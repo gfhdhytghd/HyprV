@@ -161,7 +161,7 @@ confirm_startup() {
   local approval_file dialog_status=0 decision=""
   approval_file="$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/hyprv-startup-approval.XXXXXX")" || return 1
   HYPRV_STARTUP_APPROVAL="$approval_file" \
-    qs --path "$HOME/.config/HyprV/quickshell/StartupConfirm.qml" || dialog_status=$?
+    HYPRV_PROFILE=laptop "$HOME/.local/bin/hyprv-shell" startup-confirm || dialog_status=$?
   decision="$(cat -- "$approval_file")"
   rm -f -- "$approval_file"
   [[ "$dialog_status" -eq 0 && "$decision" == "launch" ]]

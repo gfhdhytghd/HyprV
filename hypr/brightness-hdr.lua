@@ -6,13 +6,9 @@ if f then
   level = tonumber(f:read("*a"):match('"level"%s*:%s*(%d+)')) or 70
   f:close()
 end
+package.loaded["hypr.brightness-sync"] = nil
+local sync = require("hypr.brightness-sync")
+if sync.lg_monitor() then return sync.plan(level).xps_ref end
 local t = math.max(0, math.min(1, (level - 70) / 30))
 local desktop = math.floor(153 + (400 - 153) * t + 0.5)
-local client = desktop
-require("hypr.lib").plugin_config_if_available("plugin.hypr_sdr_white.reference_luminance", {
-  plugin = { hypr_sdr_white = { reference_luminance = client } },
-})
-if hl.plugin and hl.plugin.hypr_sdr_white and hl.plugin.hypr_sdr_white.refresh then
-  hl.plugin.hypr_sdr_white.refresh()
-end
 return desktop

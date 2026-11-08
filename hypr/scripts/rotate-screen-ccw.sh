@@ -5,7 +5,7 @@ readonly main_output="${HYPRV_ROTATE_OUTPUT:-eDP-1}"
 readonly state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyprv"
 readonly state_file="$state_dir/monitor-transform"
 readonly lock_file="$state_dir/monitor-transform.lock"
-readonly deskflow_script="$HOME/.config/HyprV/quickshell/scripts/deskflow-target.sh"
+readonly hyprv_shell="$HOME/.local/bin/hyprv-shell"
 readonly dropdown_script="$HOME/.config/HyprV/hypr/scripts/dropdown.sh"
 readonly sidechat_script="$HOME/.config/HyprV/hypr/scripts/sidechat.sh"
 
@@ -166,7 +166,7 @@ if ! wait_for_transform "$new_transform"; then
   exit 1
 fi
 
-if [[ -x $deskflow_script ]] && ! "$deskflow_script" reflow >/dev/null; then
+if [[ -x $hyprv_shell ]] && ! HYPRV_PROFILE=laptop "$hyprv_shell" desktop deskflowReflow >/dev/null; then
   rollback
   printf 'rotate-screen: Deskflow topology update failed; restored the previous monitor layout\n' >&2
   exit 1

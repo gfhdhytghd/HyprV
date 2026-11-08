@@ -15,7 +15,7 @@ pub struct Diagnostics {
     pub agent_watcher_alive: Option<bool>,
 }
 pub fn layout_status(m: Option<&Model>) -> String {
-    match m{None=>"null".into(),Some(m)=>serde_json::json!({"expanded":!m.laptop()||m.expanded,"fullscreen":m.fullscreen,"reveal":m.reveal,"fullscreenHide":m.fullscreen_hide,"compactOffset":-15.*m.fullscreen_hide,"topCornerOffset":m.top_corner_offset(),"bottomCornerOffset":0,"presented":m.fullscreen_hide<1.,"duration":m.desktop.move_duration_ms,"curve":m.desktop.move_bezier}).to_string()}
+    match m{None=>"null".into(),Some(m)=>serde_json::json!({"batteryMode":m.laptop()&&m.battery_mode,"screenCorners":!(m.laptop()&&m.battery_mode),"reservedTop":crate::surfaces::bar(m).exclusive_zone,"expanded":!m.laptop()||m.expanded,"fullscreen":m.fullscreen,"reveal":m.reveal,"fullscreenHide":m.fullscreen_hide,"compactOffset":-15.*m.fullscreen_hide,"topCornerOffset":m.top_corner_offset(),"bottomCornerOffset":0,"presented":m.fullscreen_hide<1.,"duration":m.desktop.move_duration_ms,"curve":m.desktop.move_bezier}).to_string()}
 }
 pub fn input_status(m: Option<&Model>) -> String {
     match m {

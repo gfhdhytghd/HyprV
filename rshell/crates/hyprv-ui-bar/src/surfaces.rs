@@ -55,7 +55,7 @@ pub fn bar(m: &Model) -> Requirement {
             left: true,
             right: true,
         },
-        exclusive_zone: (25. + 33. * m.reveal).round() as i32,
+        exclusive_zone: if m.laptop() && m.battery_mode { 15 } else { (25. + 33. * m.reveal).round() as i32 },
         keyboard: Keyboard::None,
         input_regions: l.input_regions,
         input_passthrough: false,
@@ -89,6 +89,7 @@ pub fn corners(m: &Model) -> Vec<(Requirement, Node)> {
             m.output.height - 27.,
         ),
     ] {
+        if m.laptop() && m.battery_mode { continue; }
         let mut child = corner_node_at_scale(corner, m.output.scale);
         child.frame.x = x;
         child.frame.y = y;
@@ -429,4 +430,23 @@ pub fn compact_strip(m: &Model) -> Strip {
 }
 fn view_center(v: f32) -> f32 {
     hyprv_ui::geometry::qt_center_half(v)
+}
+
+#[cfg(test)]
+mod battery_mode_tests {
+    use super::*;
+    #[test]
+    fn battery_desktop_keeps_strip_without_shades_or_extra_gap() {
+        let mut m = Model { profile: crate::model::Profile::Laptop, battery_mode: true, reveal: 0., ..Default::default() };
+        assert_eq!(bar(&m).exclusive_zone, 15);
+        assert_eq!(corners(&m)[0].1.children.len(), 1, "compact strip only");
+        assert!(!corner_input(&m).is_empty(), "strip remains interactive");
+        m.battery_mode = false;
+        assert_eq!(bar(&m).exclusive_zone, 25);
+        assert_eq!(corners(&m)[0].1.children.len(), 5);
+        m.profile = crate::model::Profile::Desktop;
+        m.battery_mode = true;
+        assert_eq!(bar(&m).exclusive_zone, 25);
+        assert_eq!(corners(&m)[0].1.children.len(), 4);
+    }
 }

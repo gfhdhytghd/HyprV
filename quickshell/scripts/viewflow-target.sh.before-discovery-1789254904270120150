@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+set -euo pipefail
+readonly config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/viewflow"
+readonly state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyprv"
+readonly runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/viewflow"
+readonly script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+unit_for() {
+  case "$1" in
+    windows) echo viewflow-desktop.service ;;
+    macos) echo viewflow-macos-input.service ;;
+    *) return 2 ;;
+  esac
+}
+current_target() {
+  if systemctl --user is-active --quiet viewflow-macos-input.service; then echo macos
+  elif systemctl --user is-active --quiet viewflow-windows-input.service || systemctl --user is-active --quiet viewflow-desktop.service; then echo windows
+  elif [[ -r "$state_dir/viewflow-target" ]]; then cat "$state_dir/viewflow-target"
+  else echo windows
+  fi
+}
+start_target() {
+  if [[ "$1" == windows ]]; then
+    # The paired input receiver runs in session 0, including before login.
+    python3 - <<'WINDOWS'
+import base64, subprocess
+script="if ((Get-ScheduledTask -TaskName 'ViewflowInput-Prelogin').State -ne 'Running') { Start-ScheduledTask -TaskName 'ViewflowInput-Prelogin' }"
+encoded=base64.b64encode(script.encode('utf-16le')).decode()
+subprocess.run(['ssh','-o','BatchMode=yes','-o','ConnectTimeout=5',
+    'wilf@172.16.105.70','powershell.exe','-NoProfile','-NonInteractive',
+    '-EncodedCommand',encoded],check=True,timeout=10,stdout=subprocess.DEVNULL)
+WINDOWS
+    [[ $? == 0 ]] || return 1
+  fi
+  systemctl --user start "$(unit_for "$1")"
+}
+wait_ready() {
+  local target=$1 offset=$2
+  python3 - "$target" "$runtime" "$offset" <<'CHECK'
+import pathlib,sys,time,subprocess,os
+name,root,offset=sys.argv[1],pathlib.Path(sys.argv[2]),int(sys.argv[3])
+expected='vf-cursor-peer'
+for _ in range(100):
+    try:
+        pid=int((root/'desktop-drag/daemon.pid').read_text())
+        executable=pathlib.Path(f'/proc/{pid}/exe').resolve(strict=True)
+        valid=executable.name==expected and (root/'hyprland.sock').exists()
+        valid=valid and int((root/'cursor-ready').read_text())==pid
+        import json
+        config=json.loads((root/'desktop-drag/config').read_text())
+        expected_remote='172.16.105.70:44149' if name=='windows' else '172.16.105.83:44139'
+        valid=valid and config['remote']==expected_remote
+        if valid: sys.exit(0)
+    except (OSError,ValueError): pass
+    time.sleep(.2)
+raise SystemExit('Viewflow '+name+' 连接未就绪；请检查服务日志。')
+CHECK
+}
+case "${1:-}" in
+  status)
+    if [[ -r "$state_dir/hdmi-target" ]]; then cat "$state_dir/hdmi-target"
+    else current_target
+    fi
+    ;;
+  set)
+    requested=${2:-}
+    requested_unit=$(unit_for "$requested") || { echo '目标必须是 windows 或 macos' >&2; exit 2; }
+    mkdir -p "$config_dir" "$state_dir"
+    exec 9>"$config_dir/target-switch.lock"
+    flock 9
+    # HDMI must remain usable even when a Viewflow peer cannot connect.
+    case "$requested" in windows) button=input1 ;; macos) button=input2 ;; esac
+    if ! "$script_dir/hdmi-switch-ir.py" send "$button" >/dev/null; then
+      printf 'HDMI 切换到 %s 失败。\n' "$requested" >&2
+      exit 1
+    fi
+    temporary=$(mktemp "$state_dir/.hdmi-target.XXXXXX")
+    printf '%s\n' "$requested" > "$temporary"
+    mv -f "$temporary" "$state_dir/hdmi-target"
+    previous=$(current_target)
+    previous_unit=$(unit_for "$previous")
+    if [[ "$requested" != "$previous" ]] || ! systemctl --user is-active --quiet "$requested_unit"; then
+      offset=$(stat -c %s "$runtime/desktop-drag/source.log" 2>/dev/null || echo 0)
+      systemctl --user stop "$previous_unit"
+      if ! start_target "$requested" || ! wait_ready "$requested" "$offset"; then
+        systemctl --user stop "$requested_unit" || true
+        start_target "$previous" || true
+        echo 'HDMI 已切换；Viewflow 连接失败，已尝试恢复原控制目标。' >&2
+        exit 1
+      fi
+    fi
+    # Remember the selected input route across login/reboot.
+    systemctl --user enable "$requested_unit" >/dev/null
+    if [[ "$previous_unit" != "$requested_unit" ]]; then
+      systemctl --user disable "$previous_unit" >/dev/null
+    fi
+    temporary=$(mktemp "$state_dir/.viewflow-target.XXXXXX")
+    printf '%s\n' "$requested" > "$temporary"
+    mv -f "$temporary" "$state_dir/viewflow-target"
+    cat "$state_dir/hdmi-target"
+    ;;
+  *) echo "Usage: $0 {status|set windows|set macos}" >&2; exit 2 ;;
+esac

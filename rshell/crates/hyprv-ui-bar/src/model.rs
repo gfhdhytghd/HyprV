@@ -105,6 +105,8 @@ pub struct Model {
     pub profile: Profile,
     /// Laptop: this output's adaptive-bar target (laptop-bar.md §1). Desktop ignores it.
     pub expanded: bool,
+    /// Laptop battery desktop variant: compact bar, square screen corners, no extra top gap.
+    pub battery_mode: bool,
     pub clock: WallClock,
     pub output: Output,
     pub theme: Theme,
@@ -151,6 +153,7 @@ impl Default for Model {
         Self {
             profile: Profile::Desktop,
             expanded: false,
+            battery_mode: false,
             clock: WallClock::default(),
             output: Output::default(),
             theme: Theme::default(),

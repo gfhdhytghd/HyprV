@@ -12,3 +12,6 @@ require("hypr.hyprland-bind")
 require("hypr.hyprland-dropitem")
 require("hypr.hyprland-winrule")
 require("hypr.hyprland-plugins")
+
+-- Apply once at login into battery mode; manual power-profile changes stay intact.
+lib.exec_once("powerprofilesctl set power-saver")

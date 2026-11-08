@@ -10,7 +10,8 @@ hl.window_rule({
 hl.bind("SUPER + SHIFT + T", function() require("hypr.panels").dropdown() end)
 
 hl.bind("SUPER + SPACE", function() require("hypr.panels").sidechat() end)
-lib.bind_exec("SUPER + SHIFT + F23", "bash $HOME/.config/hypr/scripts/sidechat.sh")
+-- Copilot is assigned to hold-to-talk in hypr.lais-voice.
+-- lib.bind_exec("SUPER + SHIFT + F23", "bash $HOME/.config/hypr/scripts/sidechat.sh")
 hl.window_rule({
   name = "dropdown-ai-hub",
   match = { class = "^(ai-hub-firefox)$" },
@@ -28,7 +29,7 @@ hl.window_rule({
 
 lib.bind_exec(
   "SUPER + C",
-  "quickshell ipc -p $HOME/.config/HyprV/quickshell call calendar toggle"
+  "\"$HOME/.local/bin/hyprv-shell\" ipc call calendar toggle"
 )
 hl.window_rule({
   name = "dropdown-calendar",

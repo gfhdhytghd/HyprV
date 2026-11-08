@@ -17,3 +17,5 @@ require("hypr.hyprland-winrule")
 require("hypr.hyprland-plugins")
 
 require("hypr.viewflow-workspace")
+
+require("hypr.lais-voice")

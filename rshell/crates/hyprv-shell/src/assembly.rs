@@ -368,6 +368,9 @@ impl Assembly {
             .collect();
         bar::model::Assets { images }
     }
+    fn battery_mode(&self) -> bool {
+        crate::laptop::active() && self.hub.desktop.theme.state().variant == hyprv_svc_desktop::theme::Variant::Bt
+    }
     fn bar_model(&self, name: &str) -> bar::Model {
         let _timing = hyprv_ui::diagnostics::scope("shell.bar_model");
         if let Some(fixture) = &self.fixture {
@@ -375,6 +378,7 @@ impl Assembly {
             m.is_primary = self.primary.as_deref() == Some(name);
             m.profile = hyprv_core::profile::profile();
             m.expanded = self.bar_expansion.expanded(name);
+            m.battery_mode = self.battery_mode();
             m.clock = wall_clock(fixture.wall());
             return m;
         }
@@ -382,6 +386,7 @@ impl Assembly {
             output: self.outputs[name].1.clone(),
             profile: hyprv_core::profile::profile(),
             expanded: self.bar_expansion.expanded(name),
+            battery_mode: self.battery_mode(),
             theme: bar::Theme { dark: self.dark },
             clock: wall_clock(chrono::Local::now().naive_local()),
             now: self.now,
@@ -469,7 +474,16 @@ impl Assembly {
     fn laptop_panel_geometry(&self,name:&str,model:&mut panels::Model) {
         if crate::laptop::active() {
             model.controls.fan_available=false;
-            model.shell.bar_exclusive_zone=self.owners.bars.get(name).map_or(25.,|c|(25.+33.*c.model.reveal).round() as f32);
+            model.battery_mode=self.battery_mode();
+            model.minimal_bar=!self.bar_expansion.expanded(name);
+            if model.minimal_bar {
+                let bar=self.bar_model(name);
+                model.tray=bar.tray.items.iter().filter(|i| i.status != "Passive").map(|i| panels::model::TrayIcon {
+                    key:i.key.clone(),title:if i.title.is_empty(){i.id.clone()}else{i.title.clone()},
+                    image:bar.assets.images.get(&i.key).cloned().or_else(||bar::view::tray_pixmap(i,bar.output.scale)),
+                }).collect();
+            }
+            model.shell.bar_exclusive_zone=self.owners.bars.get(name).map_or(25.,|c|bar::surfaces::bar(&c.model).exclusive_zone as f32);
         }
     }
     fn island_inputs(&self, name: &str) -> hyprv_ui_island::Inputs {
@@ -545,6 +559,7 @@ impl Assembly {
     }
     fn refresh(&mut self) {
         let _timing = hyprv_ui::diagnostics::scope("shell.refresh");
+        self.bar_expansion.set_battery_mode(self.battery_mode());
         let dark = self
             .fixture
             .as_ref()
@@ -781,6 +796,20 @@ impl Assembly {
         }
         if let panels::Action::Host(host) = action {
             match host {
+                panels::HostAction::TrayClick { key, right, anchor } => {
+                    let model=self.bar_model(output);
+                    if let Some(item)=model.tray.items.iter().find(|i| i.key==key) {
+                        let rect=Rect::new(anchor.x,anchor.y,anchor.width,anchor.height);
+                        if (right || item.only_menu) && item.has_menu {
+                            let actions=self.popups.command(&model,bar::PopupCommand::Menu {item:key.clone(),anchor:rect,source:bar::model::Target::Tray(key)},self.now);
+                            for action in actions { self.action(action,output); }
+                        } else if !right && !item.only_menu {
+                            self.action(bar::Action::Tray(hyprv_svc_media::tray::TrayAction::Activate {item:key,x:(model.output.global_x+anchor.x).round() as i32,y:(model.output.global_y+anchor.bottom()).round() as i32}),output);
+                        } else if right {
+                            self.action(bar::Action::Tray(hyprv_svc_media::tray::TrayAction::SecondaryActivate {item:key,x:(model.output.global_x+anchor.x).round() as i32,y:(model.output.global_y+anchor.bottom()).round() as i32}),output);
+                        }
+                    }
+                }
                 panels::HostAction::StartupDecision(approved) => {
                     let hub = self.hub.clone();
                     if !hub.read_only {
@@ -948,8 +977,7 @@ impl Assembly {
                 if controller.model.compact_strip_visible() && matches!(&mount.role,Role::Corner(output,_) if output == name) {
                     if let Some(scene) = engine.scene(*id) {
                         let m=&controller.model;
-                        let mut node=bar::surfaces::corner_window(m.output.width,m.output.height,m.output.scale,m.top_corner_offset(),0.);
-                        node.add(bar::surfaces::compact_strip(m).node);
+                        let node=corner_tree(m);
                         bar::view::reconcile(scene,scene.root().id(),node);
                     }
                     continue;
@@ -1397,12 +1425,7 @@ impl Assembly {
                     Role::Panel(_, _) => {}
                     Role::Corner(name,_) => {
                         if let Some(existing)=engine.scene(id) {
-                            let root=scene.root();
-                            let top=self.owners.bars[name].model.top_corner_offset();
-                            let bottom=0.;
-                            let mut node=bar::surfaces::corner_window(root.frame.width,root.frame.height,
-                                self.outputs[name].1.scale,top,bottom);
-                            if self.owners.bars[name].model.compact_strip_visible() { node.add(bar::surfaces::compact_strip(&self.owners.bars[name].model).node); }
+                            let node=corner_tree(&self.owners.bars[name].model);
                             let root_id=existing.root().id();
                             bar::view::reconcile(existing,root_id,node);
                         }
@@ -1613,9 +1636,22 @@ fn surface_card(scene: &Scene) -> Option<Rect> {
 /// UVs (four cropped scenes change the presented alpha fringes). The layer itself is
 /// sparse: a transparent 1x1 buffer, with the shades (and laptop strip) drawn
 /// directly into region-sized subsurfaces instead of an output-sized swapchain.
+fn corner_tree(m: &bar::Model) -> hyprv_ui::scene::Node {
+    let mut node = if m.laptop() && m.battery_mode {
+        hyprv_ui::scene::Node::new(Rect::new(0., 0., m.output.width, m.output.height), hyprv_ui::scene::Content::Group)
+    } else {
+        bar::surfaces::corner_window(m.output.width, m.output.height, m.output.scale, m.top_corner_offset(), 0.)
+    };
+    node.native_materials=Some(true);
+    if m.compact_strip_visible() { node.add(bar::surfaces::compact_strip(m).node); }
+    node
+}
+
 fn corner_surfaces(mut config: LayerConfig, node: hyprv_ui::scene::Node, scale: f32)
     -> Vec<(LayerConfig, hyprv_ui::scene::Node)>
 {
+    config.full_redraw=true;
+    config.sparse=true;
     if node.children.len()<4 {return vec![(config,node)];}
     let (width,height)=(node.frame.width,node.frame.height);
     let top=node.children[0].frame.y;
@@ -2889,5 +2925,20 @@ mod fixture_clock_tests {
         }
         assert_eq!(driver.advance(Duration::from_micros(2_916_667), false, false),
             Duration::from_millis(2916));
+    }
+}
+
+#[cfg(test)]
+mod battery_corner_refresh_tests {
+    use super::*;
+    #[test]
+    fn refresh_tree_keeps_battery_corners_square() {
+        let mut m=bar::Model {profile: hyprv_core::profile::Profile::Laptop, battery_mode:true, reveal:0., ..Default::default()};
+        assert_eq!(corner_tree(&m).children.len(),1,"refresh keeps only the compact strip");
+        let surfaces=corner_surfaces(LayerConfig::default(), corner_tree(&m),1.);
+        assert!(surfaces[0].0.sparse);
+        assert_eq!(surfaces[0].1.children.len(),1);
+        m.battery_mode=false;
+        assert_eq!(corner_tree(&m).children.len(),5,"daily mode restores four corners");
     }
 }

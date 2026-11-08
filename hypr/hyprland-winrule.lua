@@ -14,6 +14,15 @@ wr({
   float = true,
 })
 
+wr({
+  name = "dolphin-centered-half-screen",
+  match = { class = "(?i)^(org\\.kde\\.dolphin|dolphin)$" },
+  float = true,
+  size = "monitor_w*0.5 monitor_h*0.7",
+  center = true,
+  suppress_event = "maximize fullscreen",
+})
+
 wr({ name = "float-pavucontrol", match = { class = "^(pavucontrol)$" }, float = true })
 wr({ name = "float-dankcalendar", match = { class = "^(com\\.danklinux\\.dankcalendar)$" }, float = true, center = true, animation = "popup" })
 wr({ name = "float-blueman", match = { class = "^(blueman-manager)$" }, float = true })
@@ -29,6 +38,13 @@ wr({
   no_initial_focus = true,
   tile = true,
   scrolling_width = 0.5,
+})
+wr({
+  name = "workspace-feishu",
+  match = { class = "^(feishu|bytedance-feishu-stable)$" },
+  workspace = "3 silent",
+  tile = true,
+  scrolling_width = 0.75,
 })
 wr({
   name = "workspace-thunderbird",

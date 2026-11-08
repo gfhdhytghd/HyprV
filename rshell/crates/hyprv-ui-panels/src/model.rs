@@ -278,8 +278,18 @@ pub struct Calendar {
 
 /// All inputs. `now` is the frame clock (monotonic) used for animations; `wall` the local
 /// wall clock (minute precision like the shell's SystemClock).
+#[derive(Clone, Default)]
+pub struct TrayIcon {
+    pub key: String,
+    pub title: String,
+    pub image: Option<Image>,
+}
+
 #[derive(Clone)]
 pub struct Model {
+    pub battery_mode: bool,
+    pub minimal_bar: bool,
+    pub tray: Vec<TrayIcon>,
     pub theme: Theme,
     pub output: Output,
     pub shell: ShellGeometry,
@@ -298,6 +308,9 @@ pub struct Model {
 impl Default for Model {
     fn default() -> Self {
         Self {
+            battery_mode: false,
+            minimal_bar: false,
+            tray: Vec::new(),
             theme: Theme::default(),
             output: Output::default(),
             shell: ShellGeometry::default(),
@@ -449,6 +462,7 @@ mod action_debug_tests {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum HostAction {
+    TrayClick { key: String, right: bool, anchor: Anchor },
     /// Unmap happened; the popup surface can be destroyed.
     Unmapped(PanelKind),
     /// Map the popup's surface (it became visible).

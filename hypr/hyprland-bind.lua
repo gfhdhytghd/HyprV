@@ -2,6 +2,16 @@ local lib = require("hypr.lib")
 
 local main = "SUPER"
 
+local function bind_fullscreen(keys, mode)
+  local args = { mode = mode, action = "toggle" }
+  local fallback = hl.dsp.window.fullscreen(args)
+  hl.bind(keys, function()
+    if not lib.call_plugin_fn("hymission", "fullscreen", args) then
+      hl.dispatch(fallback)
+    end
+  end)
+end
+
 lib.bind_exec("SUPER_L", "true")
 -- Keep the local terminal shortcut available while Viewflow owns pointer input.
 -- Otherwise SUPER is forwarded as Command and SUPER+Q becomes macOS Command+Q.
@@ -19,26 +29,14 @@ lib.bind_exec("ALT + SPACE", "rofi -show drun")
 hl.bind("ALT + A", hl.dsp.pass({ window = "class:^(wechat)$" }))
 hl.bind(main .. " + P", hl.dsp.window.pseudo())
 hl.bind(main .. " + J", hl.dsp.layout("togglesplit"))
-lib.bind_plugin_fn_or_exec(
-  main .. " + O",
-  "hymission",
-  "fullscreen",
-  "hyprctl dispatch fullscreen 1 toggle",
-  { mode = "maximized", action = "toggle" }
-)
+bind_fullscreen(main .. " + O", "maximized")
 hl.bind(main .. " + Y", hl.dsp.window.float({ action = "set" }))
 lib.bind_exec(main .. " + SHIFT + V", "cliphist list | wofi -S dmenu | cliphist decode | wl-copy")
 hl.bind(main .. " + Y", hl.dsp.window.move({ monitor = "1" }))
 hl.bind(main .. " + Y", hl.dsp.window.resize({ x = 1415, y = 2075 }))
 hl.bind(main .. " + Y", hl.dsp.window.move({ x = 1772, y = 861 }))
-lib.bind_exec(main .. " + Y", "quickshell kill -p $HOME/.config/HyprV/quickshell")
-lib.bind_plugin_fn_or_exec(
-  main .. " + SHIFT + O",
-  "hymission",
-  "fullscreen",
-  "hyprctl dispatch fullscreen 0 toggle",
-  { mode = "fullscreen", action = "toggle" }
-)
+lib.bind_exec(main .. " + Y", "systemctl --user stop hyprv-shell.service")
+bind_fullscreen(main .. " + SHIFT + O", "fullscreen")
 hl.bind(main .. " + D", hl.dsp.focus({ workspace = "100" }))
 hl.bind(main .. " + SHIFT + up", hl.dsp.workspace.move({ monitor = "+1" }))
 hl.bind(main .. " + SHIFT + down", hl.dsp.workspace.move({ monitor = "-1" }))
@@ -47,11 +45,11 @@ lib.bind_exec(main .. " + I", "~/.config/HyprV/hypr/scripts/browser-wl-relabel.s
 lib.bind_exec(main .. " + B", "~/.config/HyprV/hypr/scripts/toggle-battery-mode.sh")
 lib.bind_exec(main .. " + T", "~/.config/HyprV/hypr/scripts/rotate-screen-ccw.sh")
 lib.bind_exec(main .. " + R", "~/.config/hypr/scripts/record-script.sh --fullscreen-sound")
-lib.bind_exec(main .. " + SHIFT + R", "~/.config/HyprV/quickshell/scripts/reload.sh && fcitx5")
+lib.bind_exec(main .. " + SHIFT + R", "systemctl --user restart hyprv-shell.service && fcitx5")
 lib.bind_exec(main .. " + SHIFT + S", "~/.config/hypr/scripts/ocr.sh")
 lib.bind_exec(main .. " + N", "swaync-client -t -sw")
 hl.bind(main .. " + SHIFT + b", function() require("hypr.controls").brightness_set(35, true) end)
-lib.bind_exec(main .. " + A", "quickshell ipc call -p $HOME/.config/HyprV/quickshell controlPanel toggle")
+lib.bind_exec(main .. " + A", "\"$HOME/.local/bin/hyprv-shell\" ipc call controlPanel toggle")
 
 hl.bind(main .. " + left", hl.dsp.focus({ direction = "left" }))
 hl.bind(main .. " + right", hl.dsp.focus({ direction = "right" }))

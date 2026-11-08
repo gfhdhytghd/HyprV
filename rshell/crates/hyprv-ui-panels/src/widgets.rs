@@ -18,6 +18,10 @@ use hyprv_ui::{
     skia::{self as sk, svg, Image},
 };
 
+fn active_foreground(pal: &Palette, legacy: &str) -> Color {
+    if pal.card_fill.a == 1. { pal.accent } else { rgb(legacy) }
+}
+
 fn tb(s: &str, px: f32, weight: i32, color: Color) -> TextBox {
     TextBox::new(s, Font::native(px, weight), color)
 }
@@ -154,8 +158,8 @@ pub fn toggle<Z: Clone + PartialEq>(c: &mut Ctx<Z>, frame: Rect, pabs: (f32, f32
     let pal = c.pal;
     let (w, h) = (frame.width, frame.height);
     let active_color = if t.destructive { pal.critical } else { pal.accent };
-    let active_fill = with_alpha(active_color, if pal.dark { 0.28 } else { 0.22 });
-    let active_stroke = with_alpha(active_color, if pal.dark { 0.42 } else { 0.28 });
+    let active_fill = if pal.card_fill.a == 1. && !t.destructive { pal.active_fill } else { with_alpha(active_color, if pal.dark { 0.28 } else { 0.22 }) };
+    let active_stroke = if pal.card_fill.a == 1. { pal.active_stroke } else { with_alpha(active_color, if pal.dark { 0.42 } else { 0.28 }) };
     let hovered = t.enabled && inter.is_hovered(&id);
     let pressed = t.enabled && inter.is_pressed(&id);
     let base = if t.active { active_fill } else { pal.card_fill };
@@ -183,7 +187,7 @@ pub fn toggle<Z: Clone + PartialEq>(c: &mut Ctx<Z>, frame: Rect, pabs: (f32, f32
     let icon_radius = (box_size * 0.34).round();
     let icon_px = if t.icon_only { (box_size * 0.5).clamp(15., 18.) } else { (box_size * 0.46).clamp(15., 18.) };
     let image_size = if t.icon_only { (box_size * 0.74).clamp(18., 22.) } else { (box_size * 0.64).clamp(18., 20.) };
-    let icon_color = if t.active { rgb("#ffffff") } else { pal.primary_text };
+    let icon_color = if t.active { active_foreground(pal, "#ffffff") } else { pal.primary_text };
     let label_visible = !t.icon_only && !t.label.is_empty();
     let label = tb(&t.label, 10., BOLD, icon_color).width((w - 14.).max(40.)).wrap().align(Align::Center);
     let label_h = if label_visible { text_size(&label).1 } else { 0. };
@@ -270,8 +274,8 @@ pub fn split_tile<Z: Clone + PartialEq>(c: &mut Ctx<Z>, frame: Rect, pabs: (f32,
     let pal = c.pal;
     let (w, h) = (frame.width, frame.height);
     let accent = if s.destructive { pal.critical } else { pal.accent };
-    let active_fill = with_alpha(accent, if pal.dark { 0.28 } else { 0.22 });
-    let active_stroke = with_alpha(accent, if pal.dark { 0.42 } else { 0.28 });
+    let active_fill = if pal.card_fill.a == 1. && !s.destructive { pal.active_fill } else { with_alpha(accent, if pal.dark { 0.28 } else { 0.22 }) };
+    let active_stroke = if pal.card_fill.a == 1. { pal.active_stroke } else { with_alpha(accent, if pal.dark { 0.42 } else { 0.28 }) };
     let inset = 6f32.max((h * 0.14).round());
     let well_w = 28f32.max(h - 2. * inset);
     let well_h = 28f32.max(h - 2. * inset);
@@ -285,16 +289,16 @@ pub fn split_tile<Z: Clone + PartialEq>(c: &mut Ctx<Z>, frame: Rect, pabs: (f32,
     let well_color = if lp { darker(wf, 1.08) } else if lh { lighter(wf, 1.04) } else { wf };
     let wframe = Rect::new(inset, inset, well_w, well_h);
     let mut well = rect(wframe, 11., well_color, None);
-    let icon_color = if s.active { rgb("#fff7ef") } else { pal.primary_text };
+    let icon_color = if s.active { active_foreground(pal, "#fff7ef") } else { pal.primary_text };
     well.children.push(text_center(&tb(&s.icon, icon_px, BOLD, icon_color), well_w, well_h, at(me, wframe), c.dpr));
     n.children.push(well);
     // text block
     let block_w = (w - 10. - content_x).max(0.);
-    let chevron = tb(if s.expanded { "\u{F077}" } else { "\u{F078}" }, 11., BOLD, if s.active { rgb("#ffffff") } else { pal.muted_text });
+    let chevron = tb(if s.expanded { "\u{F077}" } else { "\u{F078}" }, 11., BOLD, if s.active { active_foreground(pal, "#ffffff") } else { pal.muted_text });
     let (cw, ch) = text_size(&chevron);
     let col_w = if s.chevron { (block_w - cw - 6.).max(0.) } else { block_w };
-    let title = tb(&s.title, 11., BOLD, if s.active { rgb("#ffffff") } else { pal.primary_text }).width(col_w).elide();
-    let sub = TextBox::new(s.subtitle.clone(), Font::native(9., MEDIUM), if s.active { with_alpha(rgb("#ffffff"), 0.82) } else { pal.muted_text }).width(col_w).elide();
+    let title = tb(&s.title, 11., BOLD, if s.active { active_foreground(pal, "#ffffff") } else { pal.primary_text }).width(col_w).elide();
+    let sub = TextBox::new(s.subtitle.clone(), Font::native(9., MEDIUM), if s.active { if pal.card_fill.a == 1. { pal.muted_text } else { with_alpha(rgb("#ffffff"), 0.82) } } else { pal.muted_text }).width(col_w).elide();
     let th = text_size(&title).1;
     let sh = if s.subtitle.is_empty() { 0. } else { text_size(&sub).1 };
     let col_h = th + if s.subtitle.is_empty() { 0. } else { 2. + sh };
@@ -346,7 +350,7 @@ pub fn slider<Z: Clone + PartialEq>(c: &mut Ctx<Z>, frame: Rect, pabs: (f32, f32
     let (w, h) = (frame.width, frame.height);
     let v = s.value.clamp(0., 100.);
     let fill_w = w * v / 100.;
-    let progress = with_alpha(pal.accent, if pal.dark { 0.28 } else { 0.22 });
+    let progress = if pal.card_fill.a == 1. { pal.active_fill } else { with_alpha(pal.accent, if pal.dark { 0.28 } else { 0.22 }) };
     let mut n = rect(frame, 19., pal.card_fill, None);
     let me = at(pabs, frame);
     let mut prog_full = rect(Rect::new(0., 0., w, h), 19., progress, None);
@@ -357,8 +361,8 @@ pub fn slider<Z: Clone + PartialEq>(c: &mut Ctx<Z>, frame: Rect, pabs: (f32, f32
     let gh = qtext::measure(&s.icon, &Font::native(px, BOLD)).height;
     let gx = if s.icon_left_inset >= 0. { s.icon_left_inset } else { slider_icon_center_x(w, h) - glyph_w / 2. };
     let gy = center(h, gh);
-    let white = tb(&s.icon, px, BOLD, rgb("#ffffff"));
-    let solid = tb(&s.icon, px, BOLD, progress);
+    let white = tb(&s.icon, px, BOLD, active_foreground(pal, "#ffffff"));
+    let solid = tb(&s.icon, px, BOLD, if pal.card_fill.a == 1. { pal.accent } else { progress });
     let fill_clip = Rect::new(0., 0., fill_w, h);
     n.children.push(clip(fill_clip, vec![text(&white, Rect::new(gx, gy, glyph_w, gh), me, c.dpr)]));
     let empty_clip = Rect::new(fill_w, 0., (w - fill_w).max(0.), h);

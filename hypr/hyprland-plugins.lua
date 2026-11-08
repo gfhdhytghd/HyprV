@@ -4,7 +4,11 @@ lib.bind_plugin_fn("SUPER + comma", "hymission", "stage_toggle")
 lib.bind_plugin_fn("SUPER + TAB", "hymission", "toggle")
 lib.bind_plugin_fn("SUPER + SHIFT + TAB","hymission","toggle","reverse")
 lib.bind_plugin_fn("ALT + TAB", "hymission", "open", "onlycurrentworkspace")
-lib.bind_plugin_fn_or_exec("SUPER + s", "hyprcapture", "open", "/home/wilf/.local/bin/hyprcapture-ui")
+hl.bind("SUPER + s", function()
+  if not lib.call_plugin_fn("hyprcapture", "open") then
+    hl.dispatch(hl.dsp.exec_raw([[grim -t jpeg -q 100 -g "$(slurp)" - | swappy -f -]]))
+  end
+end)
 lib.bind_plugin_fn("SUPER + ALT + s", "hyprcapture", "open_editor")
 
 -- TEMP: hymission grouped-window test (2026-08-10). Remove this block after testing.
@@ -196,7 +200,8 @@ do
     -- Both outward gestures toggle the persistent compact/full bar state.
     local function toggle_bar(monitor)
       local quoted = "'" .. monitor:gsub("'", "'\\''") .. "'"
-      hl.exec_cmd("quickshell ipc -p /home/wilf/.config/HyprV/quickshell call bar toggle " .. quoted)
+      local binary = (assert(os.getenv("HOME")) .. "/.local/bin/hyprv-shell"):gsub("'", "'\\''")
+      hl.exec_cmd("'" .. binary .. "' ipc call bar toggle " .. quoted)
     end
     for _, mode in ipairs({"push", "move"}) do
       assert(edge.rule({
