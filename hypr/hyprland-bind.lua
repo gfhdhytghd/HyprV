@@ -45,7 +45,7 @@ lib.bind_exec(main .. " + I", "~/.config/HyprV/hypr/scripts/browser-wl-relabel.s
 lib.bind_exec(main .. " + B", "~/.config/HyprV/hypr/scripts/toggle-battery-mode.sh")
 lib.bind_exec(main .. " + T", "~/.config/HyprV/hypr/scripts/rotate-screen-ccw.sh")
 lib.bind_exec(main .. " + R", "~/.config/hypr/scripts/record-script.sh --fullscreen-sound")
-lib.bind_exec(main .. " + SHIFT + R", "systemctl --user restart hyprv-shell.service && fcitx5")
+lib.bind_exec(main .. " + SHIFT + R", "systemctl --user restart hyprv-shell.service; fcitx5 -r -d")
 lib.bind_exec(main .. " + SHIFT + S", "~/.config/hypr/scripts/ocr.sh")
 lib.bind_exec(main .. " + N", "swaync-client -t -sw")
 hl.bind(main .. " + SHIFT + b", function() require("hypr.controls").brightness_set(35, true) end)

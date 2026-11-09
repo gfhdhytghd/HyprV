@@ -34,7 +34,7 @@ def reconcile():
     elif panel is None or panel.get('disabled', False):
         # Reuse the current monitor rules, including HDR and brightness settings.
         run('hyprctl', 'eval', f'dofile({json.dumps(str(ROOT / "hypr/hyprland-monitors.lua"))})')
-        run('hyprctl', 'dispatch', 'dpms', 'on', 'eDP-1')
+        run('hyprctl', 'dispatch', 'hl.dsp.dpms({action = "on", monitor = "eDP-1"})')
 
 
 def main():

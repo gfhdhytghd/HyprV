@@ -87,7 +87,7 @@ def apply(name, want, have):
         # Re-apply the configured rules; controls.lua resyncs brightness on monitor.added.
         hyprctl("eval", f"dofile({json.dumps(MONITORS_LUA)})")
         time.sleep(1)
-    hyprctl("dispatch", "dpms", "on" if want == "on" else "off", name)
+    hyprctl("dispatch", f'hl.dsp.dpms({{action = "{"on" if want == "on" else "off"}", monitor = "{name}"}})')
 
 
 def main():
